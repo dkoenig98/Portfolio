@@ -3,10 +3,6 @@ let selectedProfile = null;
 let selectedYear = new Date().getFullYear();
 
 const currentYear = new Date().getFullYear();
-let profiles = {
-    dom: { counter: 6, history: [] },
-    lex: { counter: 6, history: [] }
-};
 
 // DOM-Elemente
 const domProfile = document.getElementById('dom-profile');
@@ -25,29 +21,32 @@ jumpButton.addEventListener('click', takeABath);
 historyTabs.forEach(tab => tab.addEventListener('click', switchHistoryTab));
 yearSelect.addEventListener('change', handleYearChange);
 
-
-
 async function loadProjectData() {
     try {
         const response = await fetch('/projects/strondbodbuam/data');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
-        if (data && data.profiles) {
-            profiles = data.profiles;
-            selectedYear = data.selectedYear || new Date().getFullYear();
-        } else {
-            initializeDefaultData();
+        let data = await response.json();
+        
+        if (!data.profiles || Object.keys(data.profiles).length === 0) {
+            // Initialisieren Sie die Daten, wenn sie nicht existieren
+            data = initializeDefaultData();
+            // Speichern Sie die initialisierten Daten im Backend
+            await saveProjectData(data);
         }
+        
+        profiles = data.profiles;
+        selectedYear = data.selectedYear || new Date().getFullYear();
+        
         updateUI();
-        showSelectProfilePrompt(); // Zeige die Aufforderung statt der Historien
+        updateCalendarView(selectedProfile);
     } catch (error) {
         console.error('Error loading project data:', error);
-        initializeDefaultData();
+        const data = initializeDefaultData();
+        await saveProjectData(data);
     }
 }
-
 // Funktion zum Speichern der Projektdaten
 async function saveProjectData() {
     try {
@@ -70,17 +69,31 @@ async function saveProjectData() {
 }
 
 function initializeDefaultData() {
-    profiles = {
-        dom: { counter: 6, history: [] },
-        lex: { counter: 6, history: [] }
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const monthsSince2023 = (currentYear - 2023) * 12 + currentMonth; // Removed +1
+
+    const profiles = {
+        dom: { counter: monthsSince2023, history: [] },
+        lex: { counter: monthsSince2023, history: [] }
     };
 
-    for (let i = 0; i < 6; i++) {
-        const date = new Date(currentYear, i, 1);
-        const entry = `${date.toLocaleDateString('de-DE')} am 12:00:00 - Do gehts oan glei besser!`;
-        profiles.dom.history.push(entry);
-        profiles.lex.history.push(entry);
-    }
+    const years = [2023, currentYear];
+
+    years.forEach(year => {
+        for (let i = 0; i < 12; i++) {
+            if (year === currentYear && i >= currentMonth) {
+                break; // Stop adding entries for the current and future months in the current year
+            }
+            const date = new Date(year, i, 1);
+            const entry = `${date.toLocaleDateString('de-DE')} am 12:00:00 - Do gehts oan glei besser!`;
+            profiles.dom.history.push(entry);
+            profiles.lex.history.push(entry);
+        }
+    });
+
+    return { profiles, selectedYear: currentYear };
 }
 
 function handleYearChange() {
@@ -188,21 +201,32 @@ async function takeABath() {
     clonedImage.classList.add('bathing');
     lakeContainer.appendChild(clonedImage);
 
-    createWaterDrops(clonedImage);
+    // Überprüfen Sie den neuen Counter-Wert
+    const newCounterValue = profiles[selectedProfile].counter + 1;
+    
+    // Wählen Sie die Animation basierend auf dem Counter-Wert
+    let animationType = 'normal';
+    if (newCounterValue === 20) animationType = 'gold';
+    else if (newCounterValue === 25) animationType = 'rainbow';
+    else if (newCounterValue === 30) animationType = 'fireworks';
+    
+    createWaterDrops(clonedImage, animationType);
     await updateCounter();
     await updateHistory();
     updateCalendarView(selectedProfile);
-    document.querySelectorAll('.history-list').forEach(list => list.style.display = 'none');
-    const activeList = document.getElementById(`${selectedProfile}-history`);
-    activeList.style.display = 'grid';
     
-    document.querySelectorAll('.history-tab').forEach(tab => tab.classList.remove('active'));
-    document.querySelector(`.history-tab[data-profile="${selectedProfile}"]`).classList.add('active');
+    // Zeigen Sie eine spezielle Nachricht für Meilensteine
+    let message = `Oke ${selectedProfile} des woa 2 cm koit!`;
+    if (newCounterValue === 20) message = `Wahnsinn, ${selectedProfile}! 20 Monate - du bist a echta Strondbodbuam!`;
+    else if (newCounterValue === 25) message = `25 Monate, ${selectedProfile}! Du bist scho fast mit'm See verwandt!`;
+    else if (newCounterValue === 30) message = `30 Monate, ${selectedProfile}! Du bist jetzt offiziell a Wasserratte!`;
     
-    showMessage(`Oke ${selectedProfile} des woa 2 cm koit!`);
+    showMessage(message);
     
     setTimeout(() => {
-        lakeContainer.removeChild(clonedImage);
+        if (clonedImage.parentNode === lakeContainer) {
+            lakeContainer.removeChild(clonedImage);
+        }
         
         window.scrollTo({
             top: originalScrollPosition,
@@ -211,16 +235,34 @@ async function takeABath() {
     }, 3000);
 }
 
-function createWaterDrops(element) {
+function createWaterDrops(element, animationType = 'normal') {
     const lakeRect = lakeContainer.getBoundingClientRect();
     const elementRect = element.getBoundingClientRect();
     const centerX = elementRect.left + elementRect.width / 2 - lakeRect.left;
     const centerY = elementRect.top + elementRect.height / 2 - lakeRect.top;
 
-    for (let i = 0; i < 30; i++) {
+    const dropCount = animationType === 'fireworks' ? 50 : 30;
+
+    for (let i = 0; i < dropCount; i++) {
         setTimeout(() => {
             const drop = document.createElement('div');
             drop.classList.add('water-drop');
+            
+            // Setzen Sie verschiedene Stile basierend auf dem Animationstyp
+            if (animationType === 'gold') {
+                drop.style.backgroundColor = '#FFD700';
+                drop.style.boxShadow = '0 0 5px #FFD700';
+            } else if (animationType === 'rainbow') {
+                const hue = (i / dropCount) * 360;
+                drop.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
+                drop.style.boxShadow = `0 0 5px hsl(${hue}, 100%, 50%)`;
+            } else if (animationType === 'fireworks') {
+                const angle = (i / dropCount) * Math.PI * 2;
+                const distance = Math.random() * 150 + 100;
+                drop.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
+                drop.style.setProperty('--ty', `${Math.sin(angle) * distance - 200}px`);
+            }
+            
             const angle = Math.random() * Math.PI * 2;
             const distance = Math.random() * 100 + 50;
             drop.style.left = `${centerX + Math.cos(angle) * distance}px`;
@@ -248,6 +290,7 @@ async function updateHistory() {
 
     profiles[selectedProfile].history.unshift(bathEntry);
 
+    // Entfernen Sie doppelte Einträge für denselben Monat und Jahr
     profiles[selectedProfile].history = profiles[selectedProfile].history.filter((entry, index, self) =>
         index === self.findIndex((t) => {
             const entryDate = new Date(t.split(' ')[0].split('.').reverse().join('-'));
@@ -314,35 +357,35 @@ function updateUI() {
     });
 }
 
-async function resetData() {
-    const currentYear = new Date().getFullYear();
-    profiles = {
-        dom: { counter: 6, history: [] },
-        lex: { counter: 6, history: [] }
-    };
+// async function resetData() {
+//     const currentYear = new Date().getFullYear();
+//     profiles = {
+//         dom: { counter: 6, history: [] },
+//         lex: { counter: 6, history: [] }
+//     };
 
-    for (let i = 0; i < 6; i++) {
-        const date = new Date(currentYear, i, 1);
-        const entry = `${date.toLocaleDateString('de-DE')} am 12:00:00 - Do gehts oan glei besser!`;
-        profiles.dom.history.push(entry);
-        profiles.lex.history.push(entry);
-    }
+//     for (let i = 0; i < 6; i++) {
+//         const date = new Date(currentYear, i, 1);
+//         const entry = `${date.toLocaleDateString('de-DE')} am 12:00:00 - Do gehts oan glei besser!`;
+//         profiles.dom.history.push(entry);
+//         profiles.lex.history.push(entry);
+//     }
 
-    await saveProjectData();
-    updateUI();
-    selectedProfile = null;
-    document.querySelectorAll('.profile').forEach(profile => profile.classList.remove('selected'));
-    jumpButton.disabled = true;
-    jumpButton.querySelector('.button-text').textContent = 'Geht scho!';
+//     await saveProjectData();
+//     updateUI();
+//     selectedProfile = null;
+//     document.querySelectorAll('.profile').forEach(profile => profile.classList.remove('selected'));
+//     jumpButton.disabled = true;
+//     jumpButton.querySelector('.button-text').textContent = 'Geht scho!';
     
-    yearSelect.value = currentYear;
-    selectedYear = currentYear;
+//     yearSelect.value = currentYear;
+//     selectedYear = currentYear;
     
-    showSelectProfilePrompt();
-    showMessage('Alle Daten wurden zurückgesetzt!');
-}
+//     showSelectProfilePrompt();
+//     showMessage('Alle Daten wurden zurückgesetzt!');
+// }
 
-document.getElementById('reset-button').addEventListener('click', resetData);
+// document.getElementById('reset-button').addEventListener('click', resetData);
 
 function initYearSelect() {
     const startYear = currentYear - 2;
