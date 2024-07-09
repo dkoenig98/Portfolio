@@ -17,10 +17,14 @@ router.get('/data', async (req, res) => {
     }
 });
 
-// Speichern der Strondbodbuam-Daten
 router.post('/data', async (req, res) => {
     try {
-        const update = { data: req.body };
+        const update = { 
+            $set: { 
+                'data.profiles': req.body.profiles,
+                'data.selectedYear': req.body.selectedYear
+            } 
+        };
         const options = { upsert: true, new: true, setDefaultsOnInsert: true };
         const project = await Project.findOneAndUpdate(
             { projectName: 'strondbodbuam' },

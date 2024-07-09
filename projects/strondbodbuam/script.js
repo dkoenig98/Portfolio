@@ -49,26 +49,29 @@ async function loadProjectData() {
       debugLog(`Profiles after load: ${JSON.stringify(profiles)}`);
       debugLog(`Selected year: ${selectedYear}`);
       
-      await saveProjectData(data);
+      await saveProjectData();
       updateUI();
       updateCalendarView(selectedProfile);
     } catch (error) {
       console.error('Error loading project data:', error);
       debugLog('Error loading project data. Initializing default data.');
       const data = initializeDefaultData();
-      await saveProjectData(data);
+      await saveProjectData();
     }
-}
+  }
 
 // Funktion zum Speichern der Projektdaten
-async function saveProjectData(data) {
+async function saveProjectData() {
     try {
       const response = await fetch('/projects/strondbodbuam/data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          profiles: profiles,
+          selectedYear: selectedYear
+        }),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -77,33 +80,33 @@ async function saveProjectData(data) {
     } catch (error) {
       console.error('Error saving project data:', error);
     }
-  }
+}
 
 function initializeDefaultData() {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
-    const monthsSince2023 = (currentYear - 2023) * 12 + currentMonth; // Removed +1
-
+    const monthsSince2023 = (currentYear - 2023) * 12 + currentMonth;
+  
     const profiles = {
-        dom: { counter: monthsSince2023, history: [] },
-        lex: { counter: monthsSince2023, history: [] }
+      dom: { counter: monthsSince2023, history: [] },
+      lex: { counter: monthsSince2023, history: [] }
     };
-
+  
     const years = [2023, currentYear];
-
+  
     years.forEach(year => {
-        for (let i = 0; i < 12; i++) {
-            if (year === currentYear && i >= currentMonth) {
-                break; // Stop adding entries for the current and future months in the current year
-            }
-            const date = new Date(year, i, 1);
-            const entry = `${date.toLocaleDateString('de-DE')} am 12:00:00 - Do gehts oan glei besser!`;
-            profiles.dom.history.push(entry);
-            profiles.lex.history.push(entry);
+      for (let i = 0; i < 12; i++) {
+        if (year === currentYear && i > currentMonth) {
+          break;
         }
+        const date = new Date(year, i, 1);
+        const entry = `${date.toLocaleDateString('de-DE')} am 12:00:00 - Do gehts oan glei besser!`;
+        profiles.dom.history.push(entry);
+        profiles.lex.history.push(entry);
+      }
     });
-
+  
     return { profiles, selectedYear: currentYear };
 }
 
@@ -332,9 +335,9 @@ async function updateHistory() {
   
     debugLog(`Updated history: ${JSON.stringify(profiles[selectedProfile].history)}`);
   
-    await saveProjectData({profiles: profiles, selectedYear: selectedYear});
+    await saveProjectData();
     updateCalendarView(selectedProfile);
-  }
+}
 
 async function hasJumpedThisMonth(profile) {
     const currentDate = new Date();
@@ -352,7 +355,7 @@ async function hasJumpedThisMonth(profile) {
   
     debugLog(`Has jumped this month: ${result}`);
     return result;
-}
+  }
 
 function switchHistoryTab(event) {
     const profile = event.target.dataset.profile;
