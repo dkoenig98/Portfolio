@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
             image: '/projects/norwaycounter/lf.webp',
             link: '/projects/norwaycounter/index.html'
         }
-        // Fügen Sie hier weitere Projekte hinzu
     ];
 
     // Funktion zum Laden der Projekte
@@ -43,113 +42,117 @@ document.addEventListener('DOMContentLoaded', () => {
     // Projekte laden
     loadProjects();
 
-    const scrollToSection = (e) => {
-        e.preventDefault();
-        const targetId = e.currentTarget.getAttribute('href');
-        const targetSection = document.querySelector(targetId);
-        const navHeight = document.querySelector('header').offsetHeight;
-        const targetPosition = targetSection.getBoundingClientRect().top + window.pageYOffset - navHeight;
-
-        window.scrollTo({
-            top: targetPosition,
-            behavior: 'smooth'
-        });
-    };
-
-    // Event Listener für Navigations-Links
-    document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', scrollToSection);
-    });
-    
-
-    // Intersection Observer für Scroll-Animationen
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-
-    const observerCallback = (entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('in-view');
-                observer.unobserve(entry.target);
-            }
-        });
-    };
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-    document.querySelectorAll('section, .project-card').forEach(el => {
-        el.classList.add('fade-in');
-        observer.observe(el);
+    // Typed.js Initialisierung
+    const typed = new Typed('#typed-text', {
+        strings: ['Webentwickler', 'Naturliebhaber', 'IT-Enthusiast'],
+        typeSpeed: 50,
+        backSpeed: 50,
+        backDelay: 2000,
+        loop: true
     });
 
-    // Aktiven Navigationslink hervorheben
-    const navLinks = document.querySelectorAll('nav a');
-    const sections = document.querySelectorAll('section');
-
-    window.addEventListener('scroll', () => {
-        let current = '';
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            if (scrollY >= sectionTop - sectionHeight / 3) {
-                current = section.getAttribute('id');
+    // Particles.js Initialisierung
+    particlesJS('particles-js', {
+        particles: {
+            number: { value: 80, density: { enable: true, value_area: 800 } },
+            color: { value: "#ffffff" },
+            shape: { type: "circle" },
+            opacity: { value: 0.5, random: false },
+            size: { value: 3, random: true },
+            line_linked: {
+                enable: true,
+                distance: 150,
+                color: "#ffffff",
+                opacity: 0.4,
+                width: 1
+            },
+            move: {
+                enable: true,
+                speed: 2,
+                direction: "none",
+                random: false,
+                straight: false,
+                out_mode: "out",
+                bounce: false,
             }
-        });
-
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href').slice(1) === current) {
-                link.classList.add('active');
+        },
+        interactivity: {
+            detect_on: "canvas",
+            events: {
+                onhover: { enable: true, mode: "repulse" },
+                onclick: { enable: true, mode: "push" },
+                resize: true
+            },
+            modes: {
+                repulse: { distance: 100, duration: 0.4 },
+                push: { particles_nb: 4 }
             }
+        },
+        retina_detect: true
+    });
+
+    // Smooth Scroll für Navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            const navbarHeight = document.querySelector('header').offsetHeight;
+            const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+            
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
         });
     });
 
-    // Einfache Typ-Animation für die Hauptüberschrift
-    const typeWriter = (element, text, speed = 150) => {
-        let i = 0;
-        const timer = setInterval(() => {
-            if (i < text.length) {
-                element.textContent += text.charAt(i);
-                i++;
-            } else {
-                clearInterval(timer);
-            }
-        }, speed);
-    };
+    // Mobile Navigation Toggle
+    const navToggle = document.querySelector('.nav-toggle');
+    const nav = document.querySelector('nav');
 
-    const h1Element = document.querySelector('h1');
-    if (h1Element) {
-        const originalText = h1Element.textContent;
-        h1Element.textContent = '';
-        typeWriter(h1Element, originalText);
-    }
+    navToggle.addEventListener('click', () => {
+        navToggle.classList.toggle('active');
+        nav.classList.toggle('active');
+    });
 
+    // Schließe das mobile Menü, wenn ein Link geklickt wird
+    document.querySelectorAll('nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            navToggle.classList.remove('active');
+            nav.classList.remove('active');
+        });
+    });
 
-     // Mobile Navigation Toggle
-     const navToggle = document.querySelector('.nav-toggle');
-     const nav = document.querySelector('nav');
- 
-     navToggle.addEventListener('click', () => {
-         navToggle.classList.toggle('active');
-         nav.classList.toggle('active');
-     });
- 
-     // Schließe das mobile Menü, wenn ein Link geklickt wird
-     document.querySelectorAll('nav a').forEach(link => {
-         link.addEventListener('click', () => {
-             navToggle.classList.remove('active');
-             nav.classList.remove('active');
-         });
-     });
- 
-     // Schließe das mobile Menü, wenn außerhalb geklickt wird
-     document.addEventListener('click', (e) => {
-         if (!nav.contains(e.target) && !navToggle.contains(e.target)) {
-             navToggle.classList.remove('active');
-             nav.classList.remove('active');
-         }
-     });
+    // Schließe das mobile Menü, wenn außerhalb geklickt wird
+    document.addEventListener('click', (e) => {
+        if (!nav.contains(e.target) && !navToggle.contains(e.target)) {
+            navToggle.classList.remove('active');
+            nav.classList.remove('active');
+        }
+    });
+
+        // Ripple-Effekt für Projekt-Links
+    document.querySelectorAll('.project-link').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            this.appendChild(ripple);
+
+            const x = e.clientX - e.target.offsetLeft;
+            const y = e.clientY - e.target.offsetTop;
+            
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+
+            const link = this.getAttribute('href');
+            
+            setTimeout(() => {
+                ripple.remove();
+                window.location.href = link;
+            }, 600); // Entspricht der Dauer der Ripple-Animation
+        });
+    });
 });
