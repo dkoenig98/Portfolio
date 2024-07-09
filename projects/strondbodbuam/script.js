@@ -45,7 +45,6 @@ async function loadProjectData() {
     } catch (error) {
         console.error('Error loading project data:', error);
         initializeDefaultData();
-        showSelectProfilePrompt();
     }
 }
 
@@ -115,10 +114,19 @@ function selectProfile(profile) {
 
 function showSelectProfilePrompt() {
     const historyContainers = document.querySelectorAll('.history-list');
+    let promptShown = false; // Flagge, um zu überprüfen, ob die Meldung bereits angezeigt wurde
+
     historyContainers.forEach(container => {
-        container.innerHTML = '<p class="select-profile-prompt">Klick auf Dom oder Lex, dasst die jeweilige Historie siagst.</p>';
-        container.style.display = 'block';
+        if (!promptShown) {
+            container.innerHTML = '<p class="select-profile-prompt">Klick auf Dom oder Lex, dasst die jeweilige Historie siagst.</p>';
+            container.style.display = 'block';
+            promptShown = true; // Setze die Flagge, nachdem die Meldung angezeigt wurde
+        } else {
+            container.innerHTML = ''; // Leere den Container, wenn die Meldung bereits angezeigt wurde
+            container.style.display = 'none'; // Optionale Zeile, um den Container auszublenden
+        }
     });
+
     // Deaktiviere die Jahresauswahl, bis ein Profil ausgewählt wurde
     yearSelect.disabled = true;
 }
