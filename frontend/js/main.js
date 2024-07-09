@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
             image: '/projects/strondbodbuam/sbb.webp',
             link: '/projects/strondbodbuam/index.html'
         },
+        {
+            title: 'Rinnerhütte',
+            description: 'Eine moderne Website für die Rinnerhütte im Toten Gebirge.',
+            image: '/projects/rinnerhuette/images/huette.jpg',
+            link: '/projects/rinnerhuette/index.html'
+        }
         // Fügen Sie hier weitere Projekte hinzu
     ];
 
