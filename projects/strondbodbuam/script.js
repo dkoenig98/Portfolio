@@ -315,16 +315,19 @@ async function updateHistory() {
     updateCalendarView(selectedProfile);
 }
 
-function hasJumpedThisMonth(profile) {
+async function hasJumpedThisMonth(profile) {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
-
-    return profiles[profile].history.some(entry => {
-        const entryDate = new Date(entry.split(' ')[0].split('.').reverse().join('-'));
-        return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
+  
+    const result = profiles[profile].history.some(entry => {
+      const entryDate = new Date(entry.split(' ')[0].split('.').reverse().join('-'));
+      return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
     });
-}
+  
+    console.log(`Has jumped this month: ${result}`); // Debugging
+    return result;
+  }
 
 function switchHistoryTab(event) {
     const profile = event.target.dataset.profile;
@@ -420,6 +423,26 @@ document.addEventListener('keydown', (e) => {
         secretCode = '';
     }
 });
+
+async function initializeApp() {
+    await loadProjectData();
+    updateUI();
+    showSelectProfilePrompt();
+  }
+  
+  window.addEventListener('load', initializeApp);
+
+function addTouchSupport(element, handler) {
+    element.addEventListener('click', handler);
+    element.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      handler.call(this, e);
+    });
+  }
+  
+  addTouchSupport(domProfile, () => selectProfile('dom'));
+  addTouchSupport(lexProfile, () => selectProfile('lex'));
+  addTouchSupport(jumpButton, takeABath);
 
 // Initialisierung
 initYearSelect();

@@ -321,6 +321,16 @@ h1 {
     }
 }
 
+@media (max-width: 768px) {
+    .history-list {
+      display: flex;
+      flex-direction: column;
+    }
+    .month-entry {
+      margin-bottom: 10px;
+    }
+  }
+
 .history-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
