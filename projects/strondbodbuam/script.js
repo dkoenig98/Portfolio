@@ -37,7 +37,10 @@ async function loadProjectData() {
       if (!data.profiles || Object.keys(data.profiles).length === 0) {
         debugLog('Initializing default data');
         data = initializeDefaultData();
-        await saveProjectData(data);
+      } else {
+        // Ensure both profiles have a history array
+        if (!data.profiles.dom.history) data.profiles.dom.history = [];
+        if (!data.profiles.lex.history) data.profiles.lex.history = [];
       }
       
       profiles = data.profiles;
@@ -46,6 +49,7 @@ async function loadProjectData() {
       debugLog(`Profiles after load: ${JSON.stringify(profiles)}`);
       debugLog(`Selected year: ${selectedYear}`);
       
+      await saveProjectData(data);
       updateUI();
       updateCalendarView(selectedProfile);
     } catch (error) {
@@ -54,27 +58,26 @@ async function loadProjectData() {
       const data = initializeDefaultData();
       await saveProjectData(data);
     }
-  }
-// Funktion zum Speichern der Projektdaten
-async function saveProjectData() {
-    try {
-        const response = await fetch('/projects/strondbodbuam/data', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                profiles: profiles,
-                selectedYear: selectedYear
-            }),
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-    } catch (error) {
-        console.error('Error saving project data:', error);
-    }
 }
+
+// Funktion zum Speichern der Projektdaten
+async function saveProjectData(data) {
+    try {
+      const response = await fetch('/projects/strondbodbuam/data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      debugLog('Data saved successfully');
+    } catch (error) {
+      console.error('Error saving project data:', error);
+    }
+  }
 
 function initializeDefaultData() {
     const currentDate = new Date();
@@ -311,6 +314,10 @@ async function updateHistory() {
   
     debugLog(`Updating history for ${selectedProfile} with entry: ${bathEntry}`);
   
+    if (!profiles[selectedProfile].history) {
+      profiles[selectedProfile].history = [];
+    }
+  
     profiles[selectedProfile].history.unshift(bathEntry);
   
     // Entfernen Sie doppelte Einträge für denselben Monat und Jahr
@@ -325,9 +332,9 @@ async function updateHistory() {
   
     debugLog(`Updated history: ${JSON.stringify(profiles[selectedProfile].history)}`);
   
-    await saveProjectData();
+    await saveProjectData({profiles: profiles, selectedYear: selectedYear});
     updateCalendarView(selectedProfile);
-}
+  }
 
 async function hasJumpedThisMonth(profile) {
     const currentDate = new Date();
