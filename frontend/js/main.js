@@ -5,19 +5,22 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'Strondbodbuam',
             description: 'Ein innovativer Counter für Hallstättersee-Sprünge mit kreativen CSS-Animationen.',
             image: '/projects/strondbodbuam/see.webp',
-            link: '/projects/strondbodbuam/index.html'
+            link: '/projects/strondbodbuam/index.html',
+            passwordProtected: true
         },
         {
             title: 'Rinnerhütte',
             description: 'Eine moderne Website für die Rinnerhütte im Toten Gebirge.',
             image: '/projects/rinnerhuette/images/huette.webp',
-            link: '/projects/rinnerhuette/index.html'
+            link: '/projects/rinnerhuette/index.html',
+            passwordProtected: false
         },
         {
             title: 'Norway Counter',
             description: 'Ein Countdown für eine Reise nach Norwegen mit JavaScript.',
             image: '/projects/norwaycounter/lf.webp',
-            link: '/projects/norwaycounter/index.html'
+            link: '/projects/norwaycounter/index.html',
+            passwordProtected: true
         }
     ];
 
@@ -32,15 +35,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="project-info">
                     <h3 class="project-title">${project.title}</h3>
                     <p class="project-description">${project.description}</p>
-                    <a href="${project.link}" class="project-link">Zum Projekt</a>
+                    <a href="#" class="project-link" data-link="${project.link}" data-protected="${project.passwordProtected}">Zum Projekt</a>
                 </div>
             `;
             projectContainer.appendChild(projectCard);
         });
     };
 
+    const promptPassword = (link) => {
+        const password = prompt("Bitte geben Sie das Passwort ein:");
+        if (password) {
+            // Hier würden Sie normalerweise eine Serveranfrage machen, um das Passwort zu überprüfen
+            // Für dieses Beispiel verwenden wir ein hartcodiertes Passwort
+            if (password === "dkpw") {
+                window.location.href = link;
+            } else {
+                alert("Falsches Passwort. Zugriff verweigert.");
+            }
+        }
+    };
+
     // Projekte laden
     loadProjects();
+
+    document.getElementById('project-container').addEventListener('click', (e) => {
+        if (e.target.classList.contains('project-link')) {
+            e.preventDefault();
+            const link = e.target.dataset.link;
+            const isProtected = e.target.dataset.protected === 'true';
+            
+            if (isProtected) {
+                promptPassword(link);
+            } else {
+                window.location.href = link;
+            }
+        }
+    });
 
     // Typed.js Initialisierung
     const typed = new Typed('#typed-text', {
