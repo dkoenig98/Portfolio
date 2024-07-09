@@ -1,3 +1,7 @@
+function debugLog(message) {
+    console.log(`DEBUG: ${message}`);
+  }
+
 // Globale Variablen
 let selectedProfile = null;
 let selectedYear = new Date().getFullYear();
@@ -23,30 +27,34 @@ yearSelect.addEventListener('change', handleYearChange);
 
 async function loadProjectData() {
     try {
-        const response = await fetch('/projects/strondbodbuam/data');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        let data = await response.json();
-        
-        if (!data.profiles || Object.keys(data.profiles).length === 0) {
-            // Initialisieren Sie die Daten, wenn sie nicht existieren
-            data = initializeDefaultData();
-            // Speichern Sie die initialisierten Daten im Backend
-            await saveProjectData(data);
-        }
-        
-        profiles = data.profiles;
-        selectedYear = data.selectedYear || new Date().getFullYear();
-        
-        updateUI();
-        updateCalendarView(selectedProfile);
-    } catch (error) {
-        console.error('Error loading project data:', error);
-        const data = initializeDefaultData();
+      const response = await fetch('/projects/strondbodbuam/data');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      let data = await response.json();
+      debugLog(`Loaded data: ${JSON.stringify(data)}`);
+      
+      if (!data.profiles || Object.keys(data.profiles).length === 0) {
+        debugLog('Initializing default data');
+        data = initializeDefaultData();
         await saveProjectData(data);
+      }
+      
+      profiles = data.profiles;
+      selectedYear = data.selectedYear || new Date().getFullYear();
+      
+      debugLog(`Profiles after load: ${JSON.stringify(profiles)}`);
+      debugLog(`Selected year: ${selectedYear}`);
+      
+      updateUI();
+      updateCalendarView(selectedProfile);
+    } catch (error) {
+      console.error('Error loading project data:', error);
+      debugLog('Error loading project data. Initializing default data.');
+      const data = initializeDefaultData();
+      await saveProjectData(data);
     }
-}
+  }
 // Funktion zum Speichern der Projektdaten
 async function saveProjectData() {
     try {
@@ -233,6 +241,8 @@ async function takeABath() {
     else if (newCounterValue === 30) message = `30 Monate, ${selectedProfile}! Du bist jetzt offiziell a Wasserratte!`;
     
     showMessage(message);
+
+    debugLog(`Bath taken successfully for ${selectedProfile}`);
     
     setTimeout(() => {
         if (clonedImage.parentNode === lakeContainer) {
@@ -298,19 +308,23 @@ async function updateHistory() {
     const bathDate = currentDate.toLocaleDateString('de-DE');
     const bathTime = currentDate.toLocaleTimeString('de-DE');
     const bathEntry = `${bathDate} am ${bathTime} - Do gehts oan glei besser!`;
-
+  
+    debugLog(`Updating history for ${selectedProfile} with entry: ${bathEntry}`);
+  
     profiles[selectedProfile].history.unshift(bathEntry);
-
+  
     // Entfernen Sie doppelte Einträge für denselben Monat und Jahr
     profiles[selectedProfile].history = profiles[selectedProfile].history.filter((entry, index, self) =>
-        index === self.findIndex((t) => {
-            const entryDate = new Date(t.split(' ')[0].split('.').reverse().join('-'));
-            const currentEntryDate = new Date(entry.split(' ')[0].split('.').reverse().join('-'));
-            return entryDate.getMonth() === currentEntryDate.getMonth() && 
-                   entryDate.getFullYear() === currentEntryDate.getFullYear();
-        })
+      index === self.findIndex((t) => {
+        const entryDate = new Date(t.split(' ')[0].split('.').reverse().join('-'));
+        const currentEntryDate = new Date(entry.split(' ')[0].split('.').reverse().join('-'));
+        return entryDate.getMonth() === currentEntryDate.getMonth() && 
+               entryDate.getFullYear() === currentEntryDate.getFullYear();
+      })
     );
-
+  
+    debugLog(`Updated history: ${JSON.stringify(profiles[selectedProfile].history)}`);
+  
     await saveProjectData();
     updateCalendarView(selectedProfile);
 }
@@ -320,14 +334,18 @@ async function hasJumpedThisMonth(profile) {
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
   
+    debugLog(`Checking for ${profile} in month ${currentMonth + 1} and year ${currentYear}`);
+    debugLog(`Profile history: ${JSON.stringify(profiles[profile].history)}`);
+  
     const result = profiles[profile].history.some(entry => {
       const entryDate = new Date(entry.split(' ')[0].split('.').reverse().join('-'));
+      debugLog(`Entry date: ${entryDate}, Month: ${entryDate.getMonth()}, Year: ${entryDate.getFullYear()}`);
       return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
     });
   
-    console.log(`Has jumped this month: ${result}`); // Debugging
+    debugLog(`Has jumped this month: ${result}`);
     return result;
-  }
+}
 
 function switchHistoryTab(event) {
     const profile = event.target.dataset.profile;
