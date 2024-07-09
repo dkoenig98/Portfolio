@@ -62,25 +62,50 @@ async function loadProjectData() {
 
 // Funktion zum Speichern der Projektdaten
 async function saveProjectData() {
-    try {
-      const response = await fetch('/projects/strondbodbuam/data', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          profiles: profiles,
-          selectedYear: selectedYear
-        }),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      debugLog('Data saved successfully');
-    } catch (error) {
-      console.error('Error saving project data:', error);
+    debugLog('Saving project data');
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        try {
+          const response = await fetch('/projects/strondbodbuam/data', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              profiles: profiles,
+              selectedYear: selectedYear
+            }),
+          });
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          debugLog('Data saved successfully');
+          resolve();
+        } catch (error) {
+          console.error('Error saving project data:', error);
+          resolve();
+        }
+      }, 100); // 100ms Verzögerung
+    });
+}
+
+async function checkDataConsistency() {
+    const response = await fetch('/projects/strondbodbuam/data');
+    const serverData = await response.json();
+    
+    debugLog('Checking data consistency');
+    debugLog(`Server data: ${JSON.stringify(serverData)}`);
+    debugLog(`Client data: ${JSON.stringify({ profiles, selectedYear })}`);
+    
+    if (JSON.stringify(serverData) !== JSON.stringify({ profiles, selectedYear })) {
+      debugLog('Data inconsistency detected. Reloading data.');
+      await reloadData();
+    } else {
+      debugLog('Data is consistent');
     }
 }
+
+setInterval(checkDataConsistency, 5000);
 
 function initializeDefaultData() {
     const currentDate = new Date();
@@ -201,6 +226,8 @@ async function takeABath() {
         return;
     }
 
+    await reloadData();
+
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
@@ -239,6 +266,7 @@ async function takeABath() {
     await updateCounter();
     await updateHistory();
     updateCalendarView(selectedProfile);
+    await reloadData();
     
     // Zeigen Sie eine spezielle Nachricht für Meilensteine
     let message = `Oke ${selectedProfile} des woa 2 cm koit!`;
@@ -398,6 +426,13 @@ function updateUI() {
         counterElement.textContent = `${profiles[profile].counter} Monat${profiles[profile].counter !== 1 ? 'e' : ''}`;
     });
 }
+
+async function reloadData() {
+    debugLog('Reloading data from server');
+    await loadProjectData();
+    updateUI();
+    updateCalendarView(selectedProfile);
+  }
 
 // async function resetData() {
 //     const currentYear = new Date().getFullYear();
