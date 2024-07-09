@@ -15,11 +15,14 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://dominic1998koenig:l1Nwa7RlakCjigIM@dk.cwplage.mongodb.net/?retryWrites=true&w=majority&appName=dk')
-  .then(() => console.log('MongoDB verbunden'))
+mongoose.connect(process.env.MONGODB_URI, { 
+  useNewUrlParser: true, 
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000
+}).then(() => console.log('MongoDB verbunden'))
   .catch(err => {
     console.error('MongoDB Verbindungsfehler:', err);
-    process.exit(1);  // Beendet die App bei einem Verbindungsfehler
+    process.exit(1);
   });
 
   app.use((err, req, res, next) => {
@@ -27,7 +30,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://dominic1998koenig:l1N
     res.status(500).send('Something broke!');
   });
 
-  
+
 // Projektspezifische Routen einbinden
 const strondbodbuamRoutes = require('./routes/strondbodbuam');
 app.use('/projects/strondbodbuam', strondbodbuamRoutes);
