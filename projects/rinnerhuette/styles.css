@@ -42,7 +42,7 @@
        height: 100vh;
        display: flex;
        align-items: center;
-       background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/home.jpg');
+       background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/home.webp');
        background-size: cover;
        background-position: center;
        color: white;
@@ -219,15 +219,15 @@
    }
    
    #ueber-uns .image-box {
-       background-image: url('images/huette.jpg');
+       background-image: url('images/huette.webp');
    }
    
    #übernachtung .image-box {
-       background-image: url('images/test.jpg');
+       background-image: url('images/test.webp');
    }
    
    #kontakt .image-box {
-       background-image: url('images/huetten_wirtin.jpg');
+       background-image: url('images/huetten_wirtin.webp');
    }
    
    #map {
@@ -448,11 +448,11 @@
    }
    
    .einzelzimmer-image {
-       background-image: url('images/zimmer1.jpg');
+       background-image: url('images/zimmer1.webp');
    }
    
    .schlaflager-image {
-       background-image: url('images/zimmer2.jpg');
+       background-image: url('images/zimmer2.webp');
    }
    
    .booking-page h1 {
@@ -460,7 +460,7 @@
    }
    
    .booking-header {
-       background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/booking.jpg');
+       background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/booking.webp');
        background-size: cover;
        background-position: center;
        color: white;
@@ -628,7 +628,7 @@
       ********************************
       ******************************* */
    .wanderungen-page .wanderungen-header {
-       background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/wanderung.jpg');
+       background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/wanderung.webp');
        background-size: cover;
        background-position: center;
        color: white;
