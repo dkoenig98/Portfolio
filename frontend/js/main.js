@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             title: 'Rinnerhütte',
             description: 'Eine moderne Website für die Rinnerhütte im Toten Gebirge.',
-            image: '/projects/rinnerhuette/images/huette.jpg',
+            image: '/projects/rinnerhuette/images/huette.webp',
             link: '/projects/rinnerhuette/index.html'
         }
         // Fügen Sie hier weitere Projekte hinzu
