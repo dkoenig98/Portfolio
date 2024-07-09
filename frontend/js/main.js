@@ -12,6 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Eine moderne Website für die Rinnerhütte im Toten Gebirge.',
             image: '/projects/rinnerhuette/images/huette.webp',
             link: '/projects/rinnerhuette/index.html'
+        },
+        {
+            title: 'Norway Counter',
+            description: 'Ein Countdown für eine Reise nach Norwegen mit JavaScript.',
+            image: '/projects/norwaycounter/lf.webp',
+            link: '/projects/norwaycounter/index.html'
         }
         // Fügen Sie hier weitere Projekte hinzu
     ];

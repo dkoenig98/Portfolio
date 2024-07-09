@@ -144,7 +144,7 @@ function showSelectProfilePrompt() {
     yearSelect.disabled = true;
 }
 
-async function updateCalendarView(profile) {
+function updateCalendarView(profile) {
     if (!profile) {
         showSelectProfilePrompt();
         return;
@@ -158,7 +158,7 @@ async function updateCalendarView(profile) {
     months.forEach((month, index) => {
         const monthEntry = profiles[profile].history.find(entry => {
             const entryDate = new Date(entry.split(' ')[0].split('.').reverse().join('-'));
-            return entryDate.getMonth() === index && entryDate.getFullYear() === parseInt(selectedYear);
+            return entryDate.getMonth() === index && entryDate.getFullYear() === selectedYear;
         });
 
         const monthElement = document.createElement('div');
@@ -178,11 +178,6 @@ async function updateCalendarView(profile) {
         historyList.appendChild(monthElement);
     });
 }
-
-// Fügen Sie Touch-Events hinzu
-domProfile.addEventListener('touchstart', () => selectProfile('dom'));
-lexProfile.addEventListener('touchstart', () => selectProfile('lex'));
-jumpButton.addEventListener('touchstart', takeABath);
 
 let originalScrollPosition = 0;
 
@@ -229,7 +224,7 @@ async function takeABath() {
     createWaterDrops(clonedImage, animationType);
     await updateCounter();
     await updateHistory();
-    await updateCalendarView(selectedProfile);
+    updateCalendarView(selectedProfile);
     
     // Zeigen Sie eine spezielle Nachricht für Meilensteine
     let message = `Oke ${selectedProfile} des woa 2 cm koit!`;
