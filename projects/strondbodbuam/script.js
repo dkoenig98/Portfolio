@@ -182,7 +182,22 @@ function updateCalendarView(profile) {
 let originalScrollPosition = 0;
 
 async function takeABath() {
-    if (!selectedProfile || hasJumpedThisMonth(selectedProfile)) {
+    if (!selectedProfile) {
+        showMessage("Bitte wähle zuerst ein Profil aus.");
+        return;
+    }
+
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+
+    // Überprüfen, ob bereits ein Eintrag für diesen Monat existiert
+    const alreadyJumped = profiles[selectedProfile].history.some(entry => {
+        const entryDate = new Date(entry.split(' ')[0].split('.').reverse().join('-'));
+        return entryDate.getFullYear() === currentYear && entryDate.getMonth() === currentMonth;
+    });
+
+    if (alreadyJumped) {
         showMessage(`He ${selectedProfile}, du woast des monat scho drin!`);
         return;
     }
@@ -262,7 +277,7 @@ function createWaterDrops(element, animationType = 'normal') {
                 drop.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
                 drop.style.setProperty('--ty', `${Math.sin(angle) * distance - 200}px`);
             }
-            
+
             const angle = Math.random() * Math.PI * 2;
             const distance = Math.random() * 100 + 50;
             drop.style.left = `${centerX + Math.cos(angle) * distance}px`;
