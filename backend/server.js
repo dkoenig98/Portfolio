@@ -16,11 +16,10 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Verbindung
-mongoose.connect('mongodb+srv://dominic1998koenig:l1Nwa7RlakCjigIM@dk.cwplage.mongodb.net/?retryWrites=true&w=majority&appName=dk', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://dominic1998koenig:l1Nwa7RlakCjigIM@dk.cwplage.mongodb.net/?retryWrites=true&w=majority&appName=dk', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
-
 // Projektspezifische Routen einbinden
 const strondbodbuamRoutes = require('./routes/strondbodbuam');
 app.use('/projects/strondbodbuam', strondbodbuamRoutes);

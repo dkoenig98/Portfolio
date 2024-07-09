@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             title: 'Strondbodbuam',
             description: 'Ein innovativer Counter für Hallstättersee-Sprünge mit kreativen CSS-Animationen.',
-            image: '/projects/strondbodbuam/sbb.webp',
+            image: '/projects/strondbodbuam/see.webp',
             link: '/projects/strondbodbuam/index.html'
         },
         {
