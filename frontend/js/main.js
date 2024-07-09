@@ -13,14 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Eine moderne Website für die Rinnerhütte im Toten Gebirge.',
             image: '/projects/rinnerhuette/images/huette.webp',
             link: '/projects/rinnerhuette/index.html',
-            passwordProtected: false
+            passwordProtected: true
         },
         {
             title: 'Norway Counter',
             description: 'Ein Countdown für eine Reise nach Norwegen mit JavaScript.',
             image: '/projects/norwaycounter/lf.webp',
             link: '/projects/norwaycounter/index.html',
-            passwordProtected: true
+            passwordProtected: false
         }
     ];
 
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (password) {
             // Hier würden Sie normalerweise eine Serveranfrage machen, um das Passwort zu überprüfen
             // Für dieses Beispiel verwenden wir ein hartcodiertes Passwort
-            if (password === "dkpw") {
+            if (password === "dev") {
                 window.location.href = link;
             } else {
                 alert("Falsches Passwort. Zugriff verweigert.");
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Projekte laden
     loadProjects();
 
-    document.getElementById('project-container').addEventListener('click', (e) => {
+        document.getElementById('project-container').addEventListener('click', (e) => {
         if (e.target.classList.contains('project-link')) {
             e.preventDefault();
             const link = e.target.dataset.link;
