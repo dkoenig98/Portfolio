@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
             höhenmeter: "120 hm",
             gehzeit: "30 Minuten",
             schwierigkeit: "leicht",
-            bild: "see.jpg",
+            bild: "see.webp",
             beschreibung: "Wunderschöner Bergsee",
             gpxFile: "Wildensee.gpx"
         },
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
             höhenmeter: "570 hm",
             gehzeit: "3 Stunden",
             schwierigkeit: "mittel",
-            bild: "rinner.jpg",
+            bild: "rinner.webp",
             beschreibung: "Ein wunderschöner Gipfel auf 2021m Höhe",
             gpxFile: "Rinnerkogel.gpx"
         },
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
             höhenmeter: "940 hm",
             gehzeit: "1 Stunde",
             schwierigkeit: "schwer",
-            bild: "weiß.jpg",
+            bild: "weiß.webp",
             beschreibung: "Kein markierter Weg, nur ein Jägersteig, aber man wird durch eine unfassbare Aussicht über das Tote Gebirge belohnt",
             gpxFile: "weißhorn.gpx"
         },
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
             höhenmeter: "300 hm",
             gehzeit: "1,5 Stunden",
             schwierigkeit: "leicht",
-            bild: "appelhaus.jpg",
+            bild: "appelhaus.webp",
             beschreibung: "Gut markierter Wanderweg durch das wunderschöne Tote Gebirge. Die Hütte bietet eine beeindruckende Aussicht und eine gemütliche Einkehrmöglichkeit.",
             gpxFile: "Albert-Appel-Haus.gpx"
         },
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
             höhenmeter: "940 hm",
             gehzeit: "3,5 Stunden",
             schwierigkeit: "mittel",
-            bild: "hochkogelhaus.jpg",
+            bild: "hochkogelhaus.webp",
             beschreibung: "Eine lange, aber lohnende Wanderung durch das Tote Gebirge.",
             gpxFile: "Hochkogelhaus.gpx"
         }
