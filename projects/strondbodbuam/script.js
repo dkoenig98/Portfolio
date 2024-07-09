@@ -144,7 +144,7 @@ function showSelectProfilePrompt() {
     yearSelect.disabled = true;
 }
 
-function updateCalendarView(profile) {
+async function updateCalendarView(profile) {
     if (!profile) {
         showSelectProfilePrompt();
         return;
@@ -158,7 +158,7 @@ function updateCalendarView(profile) {
     months.forEach((month, index) => {
         const monthEntry = profiles[profile].history.find(entry => {
             const entryDate = new Date(entry.split(' ')[0].split('.').reverse().join('-'));
-            return entryDate.getMonth() === index && entryDate.getFullYear() === selectedYear;
+            return entryDate.getMonth() === index && entryDate.getFullYear() === parseInt(selectedYear);
         });
 
         const monthElement = document.createElement('div');
@@ -179,6 +179,11 @@ function updateCalendarView(profile) {
     });
 }
 
+// Fügen Sie Touch-Events hinzu
+domProfile.addEventListener('touchstart', () => selectProfile('dom'));
+lexProfile.addEventListener('touchstart', () => selectProfile('lex'));
+jumpButton.addEventListener('touchstart', takeABath);
+
 let originalScrollPosition = 0;
 
 async function takeABath() {
@@ -191,11 +196,7 @@ async function takeABath() {
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
 
-    // Überprüfen, ob bereits ein Eintrag für diesen Monat existiert
-    const alreadyJumped = profiles[selectedProfile].history.some(entry => {
-        const entryDate = new Date(entry.split(' ')[0].split('.').reverse().join('-'));
-        return entryDate.getFullYear() === currentYear && entryDate.getMonth() === currentMonth;
-    });
+    const alreadyJumped = await hasJumpedThisMonth(selectedProfile);
 
     if (alreadyJumped) {
         showMessage(`He ${selectedProfile}, du woast des monat scho drin!`);
@@ -228,7 +229,7 @@ async function takeABath() {
     createWaterDrops(clonedImage, animationType);
     await updateCounter();
     await updateHistory();
-    updateCalendarView(selectedProfile);
+    await updateCalendarView(selectedProfile);
     
     // Zeigen Sie eine spezielle Nachricht für Meilensteine
     let message = `Oke ${selectedProfile} des woa 2 cm koit!`;
