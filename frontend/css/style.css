@@ -222,15 +222,11 @@ footer {
         font-size: 2rem;
     }
 
-    .hero {
-        padding: 6rem 0 3rem;
-    }
-
     .nav-container {
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        padding: 1rem;
+        padding: 0.5rem; /* Reduziertes Padding */
     }
 
     .nav-toggle {
@@ -238,14 +234,15 @@ footer {
         background: none;
         border: none;
         cursor: pointer;
+        padding: 0.5rem; /* Reduziertes Padding */
     }
 
     .nav-toggle span {
         display: block;
-        width: 25px;
-        height: 3px;
+        width: 22px; /* Leicht reduzierte Breite */
+        height: 2px; /* Reduzierte Höhe */
         background-color: var(--text-color);
-        margin: 5px 0;
+        margin: 4px 0; /* Reduzierter Abstand */
         transition: 0.4s;
     }
 
@@ -253,11 +250,11 @@ footer {
         position: fixed;
         top: 0;
         right: -100%;
-        width: 70%;
+        width: 60%; /* Reduzierte Breite */
         height: 100vh;
         background-color: var(--bg-color-start);
         transition: 0.3s;
-        padding-top: 60px;
+        padding-top: 50px; /* Reduziertes Padding */
     }
 
     nav.active {
@@ -270,11 +267,11 @@ footer {
     }
 
     nav ul li {
-        margin: 1rem 0;
+        margin: 0.8rem 0; /* Reduzierter Abstand */
     }
 
     .nav-toggle.active span:nth-child(1) {
-        transform: rotate(-45deg) translate(-5px, 6px);
+        transform: rotate(-45deg) translate(-4px, 5px); /* Angepasste Transformation */
     }
 
     .nav-toggle.active span:nth-child(2) {
@@ -282,11 +279,12 @@ footer {
     }
 
     .nav-toggle.active span:nth-child(3) {
-        transform: rotate(45deg) translate(-5px, -6px);
+        transform: rotate(45deg) translate(-4px, -5px); /* Angepasste Transformation */
     }
 
+    /* Anpassung für den Hauptinhalt, um Platz für die Navigationsleiste zu schaffen */
     main {
-        padding-top: 60px;
+        padding-top: 50px; /* Reduziertes Padding */
     }
 }
 
