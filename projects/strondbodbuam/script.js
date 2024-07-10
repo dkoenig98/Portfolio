@@ -153,7 +153,8 @@ function updateCalendarView(profile) {
 
     months.forEach((month, index) => {
         const monthEntry = profiles[profile].history.find(entry => {
-            const entryDate = new Date(entry.split(' ')[0].split('.').reverse().join('-'));
+            if (!entry) return false; // Überspringe null-Einträge
+            const entryDate = new Date(entry);
             return entryDate.getMonth() === index && entryDate.getFullYear() === selectedYear;
         });
 
@@ -162,7 +163,7 @@ function updateCalendarView(profile) {
         
         if (monthEntry) {
             monthElement.classList.add('active');
-            const entryDate = new Date(monthEntry.split(' ')[0].split('.').reverse().join('-'));
+            const entryDate = new Date(monthEntry);
             monthElement.innerHTML = `
                 <h3>${month}</h3>
                 <p>${entryDate.getDate()}. ${month}</p>
@@ -184,8 +185,6 @@ async function takeABath() {
     await loadProjectData(); // Lade aktuelle Daten vor der Aktualisierung
 
     const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
     const todayString = currentDate.toISOString().split('T')[0]; // Format: "YYYY-MM-DD"
 
     if (!profiles[selectedProfile].history) {
@@ -215,13 +214,13 @@ async function takeABath() {
     
     createWaterDrops(clonedImage, animationType);
     await updateCounter();
-    await updateHistory();
+    await updateHistory(todayString);
     updateCalendarView(selectedProfile);
     
     let message = `Oke ${selectedProfile} des woa 2 cm koit!`;
-    if (newCounterValue === 20) message = `Wahnsinn, ${selectedProfile}! 20 Monate - du bist a echta Strondbodbuam!`;
-    else if (newCounterValue === 25) message = `25 Monate, ${selectedProfile}! Du bist scho fast mit'm See verwandt!`;
-    else if (newCounterValue === 30) message = `30 Monate, ${selectedProfile}! Du bist jetzt offiziell a Wasserratte!`;
+    if (newCounterValue === 5) message = `Wahnsinn, ${selectedProfile}! 20 Monate - du bist a echta Strondbodbuam!`;
+    else if (newCounterValue === 10) message = `25 Monate, ${selectedProfile}! Du bist scho fast mit'm See verwandt!`;
+    else if (newCounterValue === 12) message = `30 Monate, ${selectedProfile}! Du bist jetzt offiziell a Wasserratte!`;
     
     showMessage(message);
     
@@ -285,8 +284,8 @@ async function updateHistory(dateString) {
 
     profiles[selectedProfile].history.push(dateString);
 
-    // Entferne Duplikate und sortiere die History
-    profiles[selectedProfile].history = [...new Set(profiles[selectedProfile].history)].sort().reverse();
+    // Entferne null-Einträge und Duplikate, dann sortiere die History
+    profiles[selectedProfile].history = [...new Set(profiles[selectedProfile].history.filter(entry => entry !== null))].sort().reverse();
 
     await saveProjectData();
     updateCalendarView(selectedProfile);
