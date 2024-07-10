@@ -31,25 +31,30 @@ async function loadProjectData() {
         profiles = data.profiles || {};
         selectedYear = data.selectedYear || new Date().getFullYear();
         
+        console.log('Loaded data:', JSON.stringify(data)); // Logging für Debugging
+        
         updateUI();
         updateCalendarView(selectedProfile);
     } catch (error) {
         console.error('Error loading project data:', error);
-        showMessage('Fehler beim Laden der Daten. Bitte versuchen Sie es später erneut.');
+        showMessage('Fehler beim Laden der Daten. Bitte versuche es später erneut.');
     }
 }
 
 async function saveProjectData() {
     try {
+        const dataToSave = {
+            profiles: profiles,
+            selectedYear: selectedYear
+        };
+        console.log('Saving data:', JSON.stringify(dataToSave)); // Logging für Debugging
+        
         const response = await fetch('/projects/strondbodbuam/data', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                profiles: profiles,
-                selectedYear: selectedYear
-            }),
+            body: JSON.stringify(dataToSave),
         });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -181,11 +186,13 @@ async function takeABath() {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
+    const todayString = currentDate.toISOString().split('T')[0]; // Format: "YYYY-MM-DD"
 
-    const alreadyJumped = profiles[selectedProfile].history.some(entry => {
-        const entryDate = new Date(entry.split(' ')[0].split('.').reverse().join('-'));
-        return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
-    });
+    if (!profiles[selectedProfile].history) {
+        profiles[selectedProfile].history = [];
+    }
+
+    const alreadyJumped = profiles[selectedProfile].history.includes(todayString);
 
     if (alreadyJumped) {
         showMessage(`He ${selectedProfile}, du woast des monat scho drin!`);
@@ -271,26 +278,15 @@ async function updateCounter() {
     await saveProjectData();
 }
 
-async function updateHistory() {
-    const currentDate = new Date();
-    const bathDate = currentDate.toLocaleDateString('de-DE');
-    const bathTime = currentDate.toLocaleTimeString('de-DE');
-    const bathEntry = `${bathDate} am ${bathTime} - Do gehts oan glei besser!`;
-
+async function updateHistory(dateString) {
     if (!profiles[selectedProfile].history) {
         profiles[selectedProfile].history = [];
     }
 
-    profiles[selectedProfile].history.unshift(bathEntry);
+    profiles[selectedProfile].history.push(dateString);
 
-    profiles[selectedProfile].history = profiles[selectedProfile].history.filter((entry, index, self) =>
-        index === self.findIndex((t) => {
-            const entryDate = new Date(t.split(' ')[0].split('.').reverse().join('-'));
-            const currentEntryDate = new Date(entry.split(' ')[0].split('.').reverse().join('-'));
-            return entryDate.getMonth() === currentEntryDate.getMonth() && 
-                   entryDate.getFullYear() === currentEntryDate.getFullYear();
-        })
-    );
+    // Entferne Duplikate und sortiere die History
+    profiles[selectedProfile].history = [...new Set(profiles[selectedProfile].history)].sort().reverse();
 
     await saveProjectData();
     updateCalendarView(selectedProfile);

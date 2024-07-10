@@ -7,18 +7,29 @@ router.get('/data', async (req, res) => {
     try {
         const project = await Project.findOne({ projectName: 'strondbodbuam' });
         if (project) {
+            console.log('Sending data:', JSON.stringify(project.data)); // Logging für Debugging
             res.json(project.data);
         } else {
-            res.json({ profiles: {}, selectedYear: new Date().getFullYear() });
+            const defaultData = { 
+                profiles: {
+                    dom: { counter: 0, history: [] },
+                    lex: { counter: 0, history: [] }
+                }, 
+                selectedYear: new Date().getFullYear() 
+            };
+            console.log('Sending default data:', JSON.stringify(defaultData)); // Logging für Debugging
+            res.json(defaultData);
         }
     } catch (error) {
         console.error('Error loading strondbodbuam data:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
 
 router.post('/data', async (req, res) => {
     try {
+        console.log('Received data:', JSON.stringify(req.body)); // Logging für Debugging
+
         const update = { 
             $set: { 
                 'data.profiles': req.body.profiles,
@@ -31,10 +42,12 @@ router.post('/data', async (req, res) => {
             update,
             options
         );
+
+        console.log('Updated data:', JSON.stringify(project.data)); // Logging für Debugging
         res.json(project.data);
     } catch (error) {
         console.error('Error saving strondbodbuam data:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
 
