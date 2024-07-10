@@ -26,25 +26,16 @@ async function loadProjectData() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        let data = await response.json();
+        const data = await response.json();
         
-        if (!data.profiles || Object.keys(data.profiles).length === 0) {
-            data = initializeDefaultData();
-        } else {
-            if (!data.profiles.dom.history) data.profiles.dom.history = [];
-            if (!data.profiles.lex.history) data.profiles.lex.history = [];
-        }
-        
-        profiles = data.profiles;
+        profiles = data.profiles || {};
         selectedYear = data.selectedYear || new Date().getFullYear();
         
-        await saveProjectData();
         updateUI();
         updateCalendarView(selectedProfile);
     } catch (error) {
         console.error('Error loading project data:', error);
-        const data = initializeDefaultData();
-        await saveProjectData();
+        showMessage('Fehler beim Laden der Daten. Bitte versuchen Sie es später erneut.');
     }
 }
 
@@ -65,6 +56,7 @@ async function saveProjectData() {
         }
     } catch (error) {
         console.error('Error saving project data:', error);
+        showMessage('Fehler beim Speichern der Daten. Bitte versuchen Sie es später erneut.');
     }
 }
 
@@ -356,4 +348,4 @@ window.addEventListener('load', initializeApp);
 
 // Initialisierung
 initYearSelect();
-loadProjectData();
+window.addEventListener('load', loadProjectData);

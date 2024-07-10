@@ -1,2 +1,4 @@
 node_modules/
 .env
+tree.ps1
+tree.txt

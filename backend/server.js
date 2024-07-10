@@ -1,11 +1,7 @@
-//Für jedes neue Projekt muss ich:
-// - Eine neue Routendatei im routes-Ordner erstellen.
-// - Die neue Routendatei in server.js einbinden.
-// - Das Frontend-Skript des Projekts anpassen, um die entsprechenden Routen zu verwenden.
-
+// backend/server.js
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
+const connectDB = require('./config/database');
 const cors = require('cors');
 const path = require('path');
 
@@ -15,20 +11,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI, { 
-  useNewUrlParser: true, 
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000
-}).then(() => console.log('MongoDB verbunden'))
-  .catch(err => {
-    console.error('MongoDB Verbindungsfehler:', err);
-    process.exit(1);
-  });
-
-  app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-  });
+// Datenbankverbindung
+connectDB();
 
 
 // Projektspezifische Routen einbinden
