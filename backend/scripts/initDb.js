@@ -1,12 +1,11 @@
 // backend/scripts/initDb.js
 const path = require('path');
 const dotenv = require('dotenv');
+const mongoose = require('mongoose');
+const Project = require('../models/Project');
 
 // Laden der Umgebungsvariablen aus der .env-Datei im Hauptverzeichnis
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-
-const mongoose = require('mongoose');
-const Project = require('../models/Project');
 
 const connectDB = async () => {
   if (!process.env.MONGODB_URI) {
@@ -27,55 +26,45 @@ const connectDB = async () => {
   }
 };
 
-const initializeStrondbodbuam = async () => {
+const initializeProjects = async () => {
   try {
     await connectDB();
 
-    const existingProject = await Project.findOne({ projectName: 'strondbodbuam' });
-    if (existingProject) {
-      console.log('Strondbodbuam project already exists');
-      return;
+    const projects = ['strondbodbuam', 'rinnerhuette', 'norwaycounter'];
+
+    for (const projectName of projects) {
+      const existingProject = await Project.findOne({ projectName });
+      if (existingProject) {
+        console.log(`${projectName} Projekt existiert bereits`);
+        continue;
+      }
+
+      const initialData = {
+        projectName,
+        data: {}
+      };
+
+      if (projectName === 'strondbodbuam') {
+        initialData.data = {
+          profiles: {
+            dom: { counter: 0, history: [] },
+            lex: { counter: 0, history: [] }
+          },
+          selectedYear: new Date().getFullYear()
+        };
+      }
+
+      const newProject = new Project(initialData);
+      await newProject.save();
+      console.log(`${projectName} Projekt erfolgreich initialisiert`);
     }
 
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
-    const monthsSince2023 = (currentYear - 2023) * 12 + currentMonth;
-
-    const initialData = {
-      projectName: 'strondbodbuam',
-      data: {
-        profiles: {
-          dom: { counter: monthsSince2023, history: [] },
-          lex: { counter: monthsSince2023, history: [] }
-        },
-        selectedYear: currentYear
-      }
-    };
-
-    // Fügen Sie Einträge für jeden Monat seit 2023 hinzu
-    const years = [2023, currentYear];
-    years.forEach(year => {
-      for (let i = 0; i < 12; i++) {
-        if (year === currentYear && i > currentMonth) {
-          break;
-        }
-        const date = new Date(year, i, 1);
-        const entry = `${date.toLocaleDateString('de-DE')} am 12:00:00 - Do gehts oan glei besser!`;
-        initialData.data.profiles.dom.history.push(entry);
-        initialData.data.profiles.lex.history.push(entry);
-      }
-    });
-
-    const newProject = new Project(initialData);
-    await newProject.save();
-    console.log('Strondbodbuam project initialized successfully');
   } catch (error) {
-    console.error('Error initializing Strondbodbuam project:', error);
+    console.error('Fehler bei der Initialisierung der Projekte:', error);
   } finally {
     await mongoose.connection.close();
     console.log('MongoDB Verbindung geschlossen');
   }
 };
 
-initializeStrondbodbuam().then(() => process.exit());
+initializeProjects().then(() => process.exit());

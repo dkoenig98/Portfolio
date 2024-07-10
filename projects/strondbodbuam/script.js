@@ -54,9 +54,11 @@ async function saveProjectData() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
+        // Lade die Daten nach dem Speichern neu, um Konsistenz zu gewährleisten
+        await loadProjectData();
     } catch (error) {
         console.error('Error saving project data:', error);
-        showMessage('Fehler beim Speichern der Daten. Bitte versuchen Sie es später erneut.');
+        showMessage('Fehler beim Speichern der Daten. Bitte versuche es später erneut.');
     }
 }
 
@@ -174,7 +176,7 @@ async function takeABath() {
         return;
     }
 
-    await loadProjectData();
+    await loadProjectData(); // Lade aktuelle Daten vor der Aktualisierung
 
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
