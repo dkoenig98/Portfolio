@@ -211,6 +211,10 @@ async function takeABath() {
     if (newCounterValue === 20) animationType = 'gold';
     else if (newCounterValue === 25) animationType = 'rainbow';
     else if (newCounterValue === 30) animationType = 'fireworks';
+    else if (newCounterValue === 35) animationType = 'gold';
+    else if (newCounterValue === 36) animationType = 'rainbow';
+    else if (newCounterValue === 40) animationType = 'fireworks';
+    else if (newCounterValue === 48) animationType = 'gold';
     
     createWaterDrops(clonedImage, animationType);
     await updateCounter();
@@ -218,9 +222,13 @@ async function takeABath() {
     updateCalendarView(selectedProfile);
     
     let message = `Oke ${selectedProfile} des woa 2 cm koit!`;
-    if (newCounterValue === 5) message = `Wahnsinn, ${selectedProfile}! 20 Monate - du bist a echta Strondbodbuam!`;
-    else if (newCounterValue === 10) message = `25 Monate, ${selectedProfile}! Du bist scho fast mit'm See verwandt!`;
-    else if (newCounterValue === 12) message = `30 Monate, ${selectedProfile}! Du bist jetzt offiziell a Wasserratte!`;
+    if (newCounterValue === 20) message = `Wahnsinn, ${selectedProfile}! 20 Monate - du bist a echta Strondbodbuam!`;
+    else if (newCounterValue === 24) message = `2 Joa scho wow, ${selectedProfile}! Du bist scho fast mit'm See verwandt!`;
+    else if (newCounterValue === 30) message = `30 Monate, ${selectedProfile}! Du bist jetzt offiziell a Wosserrotz!`;
+    else if (newCounterValue === 35) message = `35 Monate, ${selectedProfile}! Des nimmt jo koa Ende!`;
+    else if (newCounterValue === 36) message = `3 Joa, ${selectedProfile}! Jeds Monat in See - du spinnst jo!`;
+    else if (newCounterValue === 40) message = `40 Monate, ${selectedProfile}! Bist du a Strondbodbua oder eh scho da See?`;
+    else if (newCounterValue === 48) message = `4 Joa du bist da Wahnsinn!, ${selectedProfile}! Ned schlecht owa dua weiter!`;
     
     showMessage(message);
     
@@ -292,10 +300,13 @@ async function updateHistory(dateString) {
 }
 
 function showMessage(message) {
+    const lakeContainer = document.querySelector('.lake-container');
     const messageElement = document.createElement('div');
     messageElement.textContent = message;
     messageElement.classList.add('message');
-    document.body.appendChild(messageElement);
+    
+    // Fügen Sie das Nachrichtenelement am Anfang des lake-containers ein
+    lakeContainer.insertAdjacentElement('afterbegin', messageElement);
 
     setTimeout(() => {
         messageElement.classList.add('show');
@@ -329,11 +340,41 @@ let secretCode = '';
 document.addEventListener('keydown', (e) => {
     secretCode += e.key;
     if (secretCode.includes('strondbodbuam')) {
-        showMessage('You found the secret Strondbodbuam code! 🎉');
-        createWaterDrops(document.querySelector('.lake-container'));
+        showMessage('Da Geheime Strondbod Code! 🌈');
+        createConfetti();
         secretCode = '';
     }
 });
+
+function createConfetti() {
+    const colors = [
+        '#ff4f4f', '#4fff4f', '#4f4fff', '#ffff4f', '#ff4fff', '#4fffff',
+        '#ff9f4f', '#ff4f9f', '#4fff9f', '#9f4fff', '#4f9fff', '#9fff4f'
+    ];
+    const confettiCount = 200;
+    const container = document.querySelector('.lake-container');
+    const containerRect = container.getBoundingClientRect();
+
+    for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.backgroundColor = color;
+        confetti.style.boxShadow = `0 0 6px ${color}`;
+        
+        confetti.style.left = Math.random() * containerRect.width + 'px';
+        confetti.style.animationDuration = (Math.random() * 3 + 2) + 's'; // 2-5 seconds
+        confetti.style.animationDelay = (Math.random() * 5) + 's'; // 0-5 seconds delay
+        
+        container.appendChild(confetti);
+
+        // Remove confetti after animation
+        confetti.addEventListener('animationend', () => {
+            confetti.remove();
+        });
+    }
+}
 
 async function initializeApp() {
     await loadProjectData();

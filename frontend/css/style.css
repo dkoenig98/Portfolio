@@ -2,9 +2,9 @@
 
 :root {
     --bg-color-start: #0a0a0a;
-    --bg-color-end: #1a1a2e;
+    --bg-color-end: #1a1a36;
     --text-color: #ffffff;
-    --accent-color: #ff6b6b;
+    --accent-color: #FF7F50; /* oder #ff6b6b oder #40E0D0 oder #8A4FFF */
     --secondary-color: #40E0D0; /* oder #FFA500 oder #40E0D0 oder #8A4FFF */
     --skill-bg-color: rgba(255, 255, 255, 0.1);
 }
@@ -77,6 +77,10 @@ section {
     text-shadow: 0 0 5px var(--accent-color);
 }
 
+.glow-text-secondary {
+    text-shadow: 0 0 5px var(--secondary-color);
+}
+
 h1, h2, h3 {
     margin-bottom: 1rem;
 }
@@ -103,6 +107,11 @@ h2 {
     object-fit: cover;
     border: 4px solid var(--accent-color);
     margin-bottom: 2rem;
+    transition: transform 0.5s ease;
+}
+
+.image-change {
+    transform: scale(1.1);
 }
 
 .skills-list {
@@ -280,3 +289,4 @@ footer {
         padding-top: 60px;
     }
 }
+

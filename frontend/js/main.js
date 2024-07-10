@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    const profileImage = document.querySelector('.profile-image');
+    let currentImageIndex = 1;
+    const totalImages = 3;
     // Projekte-Daten
     const projects = [
         {
@@ -24,6 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
+    // Setze das initiale Bild
+    profileImage.src = `/images/thatsme${currentImageIndex}.webp`;
+
+    profileImage.addEventListener('click', () => {
+        currentImageIndex = (currentImageIndex % totalImages) + 1;
+        profileImage.src = `/images/thatsme${currentImageIndex}.webp`;
+        profileImage.classList.add('image-change');
+        setTimeout(() => profileImage.classList.remove('image-change'), 500);
+    });
+
     // Funktion zum Laden der Projekte
     const loadProjects = () => {
         const projectContainer = document.getElementById('project-container');
@@ -35,7 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="project-info">
                     <h3 class="project-title">${project.title}</h3>
                     <p class="project-description">${project.description}</p>
-                    <a href="#" class="project-link" data-link="${project.link}" data-protected="${project.passwordProtected}">Zum Projekt</a>
+                    <a href="#" class="project-link" data-link="${project.link}" data-protected="${project.passwordProtected}">
+                        ${project.passwordProtected ? 'Passwort eingeben' : 'Zum Projekt'}
+                    </a>
                 </div>
             `;
             projectContainer.appendChild(projectCard);
@@ -186,3 +202,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
