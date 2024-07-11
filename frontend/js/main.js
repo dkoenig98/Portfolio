@@ -25,7 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
             image: '/projects/norwaycounter/lf.webp',
             link: '/projects/norwaycounter/index.html',
             passwordProtected: false
-        }
+        },
+        {   title: 'Fotografie Portfolio',
+            description: 'Eine Website für einen unglaublich talentierten Fotografen mit dynamischem Bildladen.',
+            image: '/projects/luki-portfolio/images/profile.webp',
+            link: '/projects/luki-portfolio/index.html',
+            passwordProtected: true
+        },
     ];
 
     // Setze das initiale Bild
