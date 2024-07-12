@@ -66,7 +66,7 @@ function endGame(success) {
         endTime = new Date().getTime();
         const reactionTime = endTime - startTime;
         reactionButton.textContent = `${reactionTime} ms`;
-        result.textContent = `Deine Reaktionszeit: ${reactionTime} ms`;
+        result.textContent = `Dei Reaktionszeit: ${reactionTime} ms`;
         const isHighscore = saveScore(reactionTime);
         if (isHighscore) {
             showHighscoreMessage(reactionTime);
@@ -121,9 +121,9 @@ function showHighscoreMessage(score) {
     let message;
     
     if (rank === 1) {
-        message = `Aha.. Ned schlcht heast! Platz ${rank}!`;
+        message = `Aha.. Ned schlecht heast - Plotz ${rank}!`;
     } else if (rank <= 3) {
-        message = `Fian erstn hods zwoa ned greicht owa immerhin Top 3! Plotz ${rank}!`;
+        message = `Fian erstn hods zwoa ned greicht owa immerhin Top 3 - Plotz ${rank}!`;
     } else {
         message = `Bissi schneller dasst a moi wos erreichst jetzt bist nua Plotz ${rank}!`;
     }
