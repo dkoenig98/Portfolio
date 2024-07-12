@@ -15,9 +15,14 @@ app.use(express.json());
 connectDB();
 
 
-// Projektspezifische Routen einbinden
+
+// StrondboBuam
 const strondbodbuamRoutes = require('./routes/strondbodbuam');
 app.use('/projects/strondbodbuam', strondbodbuamRoutes);
+
+// Reaction Game
+const reactionGameRoutes = require('./routes/reaction-game');
+app.use('/projects/reaction-game', reactionGameRoutes);
 
 // Allgemeine Projekt-Routen
 app.get('/api/projects', async (req, res) => {

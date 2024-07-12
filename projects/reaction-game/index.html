@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hornets Reaktions-Challenge</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="color-mode-1">
+    <div class="game-container">
+        <header>
+            <h1 class="game-title">Hornets Reaktions-Challenge</h1>
+            <div class="color-mode-switch">
+                <input type="checkbox" id="color-mode-toggle">
+                <label for="color-mode-toggle" class="switch-label">
+                    <span class="switch-inner"></span>
+                    <span class="switch-switch"></span>
+                </label>
+            </div>
+        </header>
+
+        <main>
+            <div id="username-input" class="username-input">
+                <input type="text" id="username" placeholder="Dein Username">
+                <button id="start-game">Spiel starten</button>
+            </div>
+
+            <div id="game-area" class="game-area hidden">
+                <button id="reaction-button">Start</button>
+                <div id="result" class="result"></div>
+            </div>
+        </main>
+
+        <aside class="scoreboard">
+            <h2>Top Reaktionszeiten</h2>
+            <ol id="highscores"></ol>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

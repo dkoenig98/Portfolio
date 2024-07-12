@@ -32,6 +32,13 @@ document.addEventListener('DOMContentLoaded', () => {
             link: '/projects/luki-portfolio/index.html',
             passwordProtected: true
         },
+        {
+            title: 'Reaction Game',
+            description: 'Ein Reaktionsspiel, bei dem die Reaktionszeit gemessen wird.',
+            image: '/projects/reaction-game/logo.png',
+            link: '/projects/reaction-game/index.html',
+            passwordProtected: false
+        },
     ];
 
     // Setze das initiale Bild

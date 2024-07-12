@@ -30,7 +30,7 @@ const initializeProjects = async () => {
   try {
     await connectDB();
 
-    const projects = ['strondbodbuam', 'rinnerhuette', 'norwaycounter'];
+    const projects = ['strondbodbuam', 'rinnerhuette', 'norwaycounter', 'reaction-game'];
 
     for (const projectName of projects) {
       const existingProject = await Project.findOne({ projectName });
@@ -51,6 +51,10 @@ const initializeProjects = async () => {
             lex: { counter: 0, history: [] }
           },
           selectedYear: new Date().getFullYear()
+        };
+      } else if (projectName === 'reaction-game') {
+        initialData.data = {
+          highscores: []
         };
       }
 
