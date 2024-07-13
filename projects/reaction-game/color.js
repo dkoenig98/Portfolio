@@ -1,7 +1,5 @@
 // DOM Elements
 const body = document.body;
-const usernameInput = document.getElementById('username');
-const startGameButton = document.getElementById('start-game');
 const gameArea = document.getElementById('game-area');
 const reactionButton = document.getElementById('reaction-button');
 const result = document.getElementById('result');
@@ -12,7 +10,6 @@ const targetColorSpan = document.getElementById('color-name');
 let startTime, endTime;
 let timeoutId;
 let isWaiting = false;
-let username = '';
 let highscores = [];
 let targetColor = '';
 let colorChangeInterval;
@@ -26,6 +23,12 @@ const colors = [
     { name: 'Lila', value: '#AF52DE' },
     { name: 'Orange', value: '#FF9500' }
 ];
+
+let username = localStorage.getItem('username');
+if (!username) {
+    username = 'Anonymous';
+    console.warn('Username not set, using "Anonymous"');
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -42,6 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
     gameArea.classList.remove('hidden');
     loadHighscores();
 });
+
+// Funktion für haptisches Feedback
+function vibrate(pattern) {
+    if ("vibrate" in navigator) {
+        navigator.vibrate(pattern);
+    }
+}
 
 // Reaction button click
 reactionButton.addEventListener('click', handleClick);
@@ -70,6 +80,7 @@ function startGame() {
         targetColorSpan.style.color = targetColor;
         startColorChange();
         isWaiting = false;
+        vibrate(200); // Kurze Vibration, wenn das Spiel startet
     }, delay);
 }
 
@@ -90,13 +101,10 @@ function changeButtonColor() {
 }
 
 function getContrastColor(hexcolor) {
-    // Convert hex to RGB
     var r = parseInt(hexcolor.substr(1,2),16);
     var g = parseInt(hexcolor.substr(3,2),16);
     var b = parseInt(hexcolor.substr(5,2),16);
-    // Get YIQ ratio
     var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    // Return black or white depending on YIQ ratio
     return (yiq >= 128) ? 'black' : 'white';
 }
 
@@ -110,12 +118,16 @@ function endGame(success) {
         const isHighscore = saveScore(reactionTime);
         if (isHighscore) {
             showHighscoreMessage(reactionTime);
+            vibrate([100, 50, 100]); // Doppelte Vibration für Highscore
+        } else {
+            vibrate(100); // Einfache Vibration für erfolgreichen Klick
         }
     } else {
         reactionButton.style.backgroundColor = '#FF3B30'; // Error color
         reactionButton.style.color = 'white';
         reactionButton.textContent = 'Schod';
         result.textContent = 'Foische Farb oda zu frua!';
+        vibrate([50, 50, 50]); // Dreifache kurze Vibration für Fehler
     }
     clearTimeout(timeoutId);
     
@@ -135,29 +147,50 @@ function saveScore(score) {
         score: score
     };
     
-    const isHighscore = highscores.length < 10 || score < highscores[highscores.length - 1].score;
+    const isHighscore = !highscores.length || score < highscores[highscores.length - 1].score;
     
     if (isHighscore) {
-        highscores.push(newScore);
-        highscores.sort((a, b) => a.score - b.score);
-        highscores = highscores.slice(0, 10); // Keep only top 10 scores
-        updateHighscoresDisplay();
-        saveHighscoresToServer();
+        saveHighscoresToServer(newScore);
     }
     
     return isHighscore;
 }
 
+function saveHighscoresToServer(scoreData) {
+    fetch('/projects/reaction-game/data/color', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(scoreData),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        highscores = Array.isArray(data) ? data : [];
+        updateHighscoresDisplay();
+    })
+    .catch((error) => console.error('Error saving highscore:', error));
+}
+
 function updateHighscoresDisplay() {
     highscoresList.innerHTML = '';
-    highscores.forEach((score, index) => {
-        const li = document.createElement('li');
-        li.textContent = `${score.username}: ${score.score} ms`;
-        if (index < 3) {
-            li.classList.add('top-three');
-        }
-        highscoresList.appendChild(li);
-    });
+    if (Array.isArray(highscores)) {
+        highscores.forEach((score, index) => {
+            const li = document.createElement('li');
+            li.textContent = `${score.username}: ${score.score} ms`;
+            if (index < 3) {
+                li.classList.add('top-three');
+            }
+            highscoresList.appendChild(li);
+        });
+    } else {
+        console.error('Highscores is not an array:', highscores);
+    }
 }
 
 function showHighscoreMessage(score) {
@@ -177,26 +210,19 @@ function showHighscoreMessage(score) {
 
 function loadHighscores() {
     fetch('/projects/reaction-game/data/color')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            highscores = data || [];
+            highscores = Array.isArray(data) ? data : [];
             updateHighscoresDisplay();
         })
-        .catch(error => console.error('Error:', error));
-}
-
-function saveHighscoresToServer(score) {
-    fetch('/projects/reaction-game/data/color', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: username, score: score }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        highscores = data;
-        updateHighscoresDisplay();
-    })
-    .catch((error) => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            highscores = []; // Ensure highscores is always an array
+            updateHighscoresDisplay();
+        });
 }

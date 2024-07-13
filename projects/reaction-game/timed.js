@@ -1,7 +1,5 @@
 // DOM Elements
 const body = document.body;
-const usernameInput = document.getElementById('username');
-const startGameButton = document.getElementById('start-game');
 const gameArea = document.getElementById('game-area');
 const reactionButton = document.getElementById('reaction-button');
 const result = document.getElementById('result');
@@ -13,11 +11,16 @@ const clickCountDisplay = document.getElementById('click-count');
 let startTime, endTime;
 let timeoutId;
 let isWaiting = false;
-let username = '';
 let highscores = [];
 let timeLeft = 60;
 let clickCount = 0;
 let timerInterval;
+
+let username = localStorage.getItem('username');
+if (!username) {
+    username = 'Anonymous';
+    console.warn('Username not set, using "Anonymous"');
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -35,12 +38,19 @@ document.addEventListener('DOMContentLoaded', () => {
     loadHighscores();
 });
 
+// Funktion für haptisches Feedback
+function vibrate(pattern) {
+    if ("vibrate" in navigator) {
+        navigator.vibrate(pattern);
+    }
+}
+
 // Reaction button click
 reactionButton.addEventListener('click', handleClick);
 
 function handleClick() {
     if (reactionButton.textContent === 'Start') {
-        startRound();
+        startGame();
     } else if (isWaiting) {
         endRound(false);
     } else {
@@ -74,6 +84,7 @@ function startRound() {
         reactionButton.textContent = 'Klick!';
         startTime = new Date().getTime();
         isWaiting = false;
+        vibrate(200); // Kurze Vibration, wenn der Button aktiv wird
     }, delay);
 }
 
@@ -85,11 +96,13 @@ function endRound(success) {
         result.textContent = `Dei Reaktionszeit: ${reactionTime} ms`;
         clickCount++;
         updateClickCountDisplay();
+        vibrate(100); // Einfache Vibration für erfolgreichen Klick
     } else {
         reactionButton.classList.remove('active');
         reactionButton.classList.add('error');
         reactionButton.textContent = 'Zu frua!';
         result.textContent = 'Dei Finga san schnölla wie dei Kopf!';
+        vibrate([50, 50, 50]); // Dreifache kurze Vibration für Fehler
     }
     
     setTimeout(() => {
@@ -107,10 +120,8 @@ function endGame() {
     reactionButton.classList.add('game-over');
     reactionButton.textContent = 'Zeit um!';
     result.textContent = `Gesamtklicks: ${clickCount}`;
-    const isHighscore = saveScore(clickCount);
-    if (isHighscore) {
-        showHighscoreMessage(clickCount);
-    }
+    saveScore(clickCount);
+    vibrate([100, 50, 100]); // Vibration am Ende des Spiels
 }
 
 function updateTimerDisplay() {
@@ -127,29 +138,51 @@ function saveScore(score) {
         score: score
     };
     
-    const isHighscore = highscores.length < 10 || score > highscores[highscores.length - 1].score;
+    const isHighscore = !highscores.length || score > highscores[highscores.length - 1].score;
     
     if (isHighscore) {
-        highscores.push(newScore);
-        highscores.sort((a, b) => b.score - a.score);
-        highscores = highscores.slice(0, 10); // Keep only top 10 scores
-        updateHighscoresDisplay();
-        saveHighscoresToServer();
+        saveHighscoresToServer(newScore);
+    } else {
+        updateHighscoresDisplay(); // Aktualisiere die Anzeige auch wenn kein neuer Highscore
     }
-    
-    return isHighscore;
+}
+
+function saveHighscoresToServer(scoreData) {
+    fetch('/projects/reaction-game/data/timed', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(scoreData),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        highscores = Array.isArray(data) ? data : [];
+        updateHighscoresDisplay();
+        showHighscoreMessage(scoreData.score);
+    })
+    .catch((error) => console.error('Error saving highscore:', error));
 }
 
 function updateHighscoresDisplay() {
     highscoresList.innerHTML = '';
-    highscores.forEach((score, index) => {
-        const li = document.createElement('li');
-        li.textContent = `${score.username}: ${score.score} Klicks`;
-        if (index < 3) {
-            li.classList.add('top-three');
-        }
-        highscoresList.appendChild(li);
-    });
+    if (Array.isArray(highscores)) {
+        highscores.forEach((score, index) => {
+            const li = document.createElement('li');
+            li.textContent = `${score.username}: ${score.score} klicks`;
+            if (index < 3) {
+                li.classList.add('top-three');
+            }
+            highscoresList.appendChild(li);
+        });
+    } else {
+        console.error('Highscores is not an array:', highscores);
+    }
 }
 
 function showHighscoreMessage(score) {
@@ -169,26 +202,19 @@ function showHighscoreMessage(score) {
 
 function loadHighscores() {
     fetch('/projects/reaction-game/data/timed')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            highscores = data || [];
+            highscores = Array.isArray(data) ? data : [];
             updateHighscoresDisplay();
         })
-        .catch(error => console.error('Error:', error));
-}
-
-function saveHighscoresToServer(score) {
-    fetch('/projects/reaction-game/data/timed', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: username, score: score }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        highscores = data;
-        updateHighscoresDisplay();
-    })
-    .catch((error) => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            highscores = []; // Ensure highscores is always an array
+            updateHighscoresDisplay();
+        });
 }

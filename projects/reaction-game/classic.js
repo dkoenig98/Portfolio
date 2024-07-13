@@ -9,8 +9,13 @@ const highscoresList = document.getElementById('highscores');
 let startTime, endTime;
 let timeoutId;
 let isWaiting = false;
-let username = '';
 let highscores = [];
+
+let username = localStorage.getItem('username');
+if (!username) {
+    username = 'Anonymous';
+    console.warn('Username not set, using "Anonymous"');
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -97,29 +102,50 @@ function saveScore(score) {
         score: score
     };
     
-    const isHighscore = highscores.length < 10 || score < highscores[highscores.length - 1].score;
+    const isHighscore = !highscores.length || score < highscores[highscores.length - 1].score;
     
     if (isHighscore) {
-        highscores.push(newScore);
-        highscores.sort((a, b) => a.score - b.score);
-        highscores = highscores.slice(0, 10); // Keep only top 10 scores
-        updateHighscoresDisplay();
-        saveHighscoresToServer();
+        saveHighscoresToServer(newScore);
     }
     
     return isHighscore;
 }
 
+function saveHighscoresToServer(scoreData) {
+    fetch('/projects/reaction-game/data/classic', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(scoreData),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        highscores = Array.isArray(data) ? data : [];
+        updateHighscoresDisplay();
+    })
+    .catch((error) => console.error('Error saving highscore:', error));
+}
+
 function updateHighscoresDisplay() {
     highscoresList.innerHTML = '';
-    highscores.forEach((score, index) => {
-        const li = document.createElement('li');
-        li.textContent = `${score.username}: ${score.score} ms`;
-        if (index < 3) {
-            li.classList.add('top-three');
-        }
-        highscoresList.appendChild(li);
-    });
+    if (Array.isArray(highscores)) {
+        highscores.forEach((score, index) => {
+            const li = document.createElement('li');
+            li.textContent = `${score.username}: ${score.score} ms`;
+            if (index < 3) {
+                li.classList.add('top-three');
+            }
+            highscoresList.appendChild(li);
+        });
+    } else {
+        console.error('Highscores is not an array:', highscores);
+    }
 }
 
 function showHighscoreMessage(score) {
@@ -139,26 +165,19 @@ function showHighscoreMessage(score) {
 
 function loadHighscores() {
     fetch('/projects/reaction-game/data/classic')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            highscores = data || [];
+            highscores = Array.isArray(data) ? data : [];
             updateHighscoresDisplay();
         })
-        .catch(error => console.error('Error:', error));
-}
-
-function saveHighscoresToServer(score) {
-    fetch('/projects/reaction-game/data/classic', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: username, score: score }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        highscores = data;
-        updateHighscoresDisplay();
-    })
-    .catch((error) => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            highscores = []; // Ensure highscores is always an array
+            updateHighscoresDisplay();
+        });
 }
