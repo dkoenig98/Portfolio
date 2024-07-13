@@ -85,13 +85,11 @@ main {
     margin-bottom: 2rem;
 }
 
-.username-input {
+#username-input {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    max-width: 300px;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 
 #username {
@@ -134,6 +132,15 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
+}
+
+.button-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem 0;
 }
 
 #reaction-button {
@@ -146,7 +153,17 @@ main {
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 2px;
-    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 600px) {
+    #reaction-button {
+        width: 150px;
+        height: 150px;
+        font-size: 1.2rem;
+    }
 }
 
 .color-mode-1 #reaction-button {
@@ -170,6 +187,13 @@ main {
     text-align: center;
     width: 100%;
     margin-top: 1rem;
+}
+
+#mode-info {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    text-align: center; /* Zentriert den Text */
+    width: 100%; /* Stellt sicher, dass es die volle Breite einnimmt */
 }
 
 .scoreboard {
@@ -274,12 +298,6 @@ main {
         margin-bottom: 1rem;
     }
 
-    #reaction-button {
-        width: 150px;
-        height: 150px;
-        font-size: 1.2rem;
-    }
-
     .scoreboard {
         margin-top: 2rem;
     }
@@ -324,4 +342,142 @@ main {
 #reaction-button.active,
 #reaction-button.error {
     transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.menu-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.menu-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: var(--primary-color-1);
+    color: var(--background-color-1);
+}
+
+.color-mode-2 .menu-btn {
+    background-color: var(--primary-color-2);
+    color: var(--background-color-2);
+}
+
+.menu-btn:hover {
+    transform: scale(1.05);
+}
+#back-to-menu {
+    margin-top: 2rem;
+}
+
+#target-color {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+#color-name {
+    font-weight: bold;
+}
+
+/* Farbklassen für den Reaktionsbutton */
+#reaction-button.red { background-color: #ff0000; }
+#reaction-button.blue { background-color: #0000ff; }
+#reaction-button.green { background-color: #00ff00; }
+#reaction-button.yellow { background-color: #ffff00; }
+
+/* Anpassung der Textfarbe für bessere Lesbarkeit */
+#reaction-button.yellow, #reaction-button.green {
+    color: #000000;
+}
+
+#reaction-button.red, #reaction-button.blue {
+    color: #ffffff;
+}
+
+#timer, #click-count {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+#timer {
+    font-weight: bold;
+}
+
+.game-over {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+#set-username {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.color-mode-1 #set-username {
+    background-color: var(--primary-color-1);
+    color: var(--background-color-1);
+}
+
+.color-mode-2 #set-username {
+    background-color: var(--primary-color-2);
+    color: var(--background-color-2);
+}
+
+#set-username:hover {
+    transform: scale(1.05);
+}
+
+#mode-selection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+#welcome-message {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+#choose-mode {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.color-mode-1 #choose-mode {
+    background-color: var(--secondary-color-1);
+    color: var(--background-color-1);
+}
+
+.color-mode-2 #choose-mode {
+    background-color: var(--secondary-color-2);
+    color: var(--background-color-2);
+}
+
+#choose-mode:hover {
+    transform: scale(1.05);
 }

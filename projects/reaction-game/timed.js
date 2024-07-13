@@ -1,12 +1,13 @@
 // DOM Elements
 const body = document.body;
-const colorModeToggle = document.getElementById('color-mode-toggle');
 const usernameInput = document.getElementById('username');
 const startGameButton = document.getElementById('start-game');
 const gameArea = document.getElementById('game-area');
 const reactionButton = document.getElementById('reaction-button');
 const result = document.getElementById('result');
 const highscoresList = document.getElementById('highscores');
+const timerDisplay = document.getElementById('timer');
+const clickCountDisplay = document.getElementById('click-count');
 
 // Game variables
 let startTime, endTime;
@@ -14,24 +15,24 @@ let timeoutId;
 let isWaiting = false;
 let username = '';
 let highscores = [];
+let timeLeft = 60;
+let clickCount = 0;
+let timerInterval;
 
-// Color mode toggle
-colorModeToggle.addEventListener('change', () => {
-    body.classList.toggle('color-mode-1');
-    body.classList.toggle('color-mode-2');
-    updateHighscoresDisplay(); // Refresh highscores to update top-three styling
-});
-
-// Start game button click
-startGameButton.addEventListener('click', () => {
-    username = usernameInput.value.trim();
-    if (username) {
-        document.getElementById('username-input').classList.add('hidden');
-        gameArea.classList.remove('hidden');
-        loadHighscores();
-    } else {
-        alert('Wie soin ma die den nenna?');
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    const savedMode = localStorage.getItem('colorMode') || '1';
+    body.classList.add(`color-mode-${savedMode}`);
+    
+    username = localStorage.getItem('username');
+    if (!username) {
+        alert('Bitte setze zuerst deinen Usernamen im Hauptmenü!');
+        window.location.href = 'index.html';
+        return;
     }
+
+    gameArea.classList.remove('hidden');
+    loadHighscores();
 });
 
 // Reaction button click
@@ -39,15 +40,30 @@ reactionButton.addEventListener('click', handleClick);
 
 function handleClick() {
     if (reactionButton.textContent === 'Start') {
-        startGame();
+        startRound();
     } else if (isWaiting) {
-        endGame(false);
+        endRound(false);
     } else {
-        endGame(true);
+        endRound(true);
     }
 }
 
 function startGame() {
+    timeLeft = 60;
+    clickCount = 0;
+    updateTimerDisplay();
+    updateClickCountDisplay();
+    startRound();
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+            endGame();
+        }
+    }, 1000);
+}
+
+function startRound() {
     reactionButton.classList.remove('active', 'error');
     reactionButton.textContent = 'Woat...';
     isWaiting = true;
@@ -55,34 +71,54 @@ function startGame() {
     const delay = Math.floor(Math.random() * 2000) + 1000; // Random delay between 1-3 seconds
     timeoutId = setTimeout(() => {
         reactionButton.classList.add('active');
-        reactionButton.textContent = 'Geht scho klick!';
+        reactionButton.textContent = 'Klick!';
         startTime = new Date().getTime();
         isWaiting = false;
     }, delay);
 }
 
-function endGame(success) {
+function endRound(success) {
     if (success) {
         endTime = new Date().getTime();
         const reactionTime = endTime - startTime;
         reactionButton.textContent = `${reactionTime} ms`;
         result.textContent = `Dei Reaktionszeit: ${reactionTime} ms`;
-        const isHighscore = saveScore(reactionTime);
-        if (isHighscore) {
-            showHighscoreMessage(reactionTime);
-        }
+        clickCount++;
+        updateClickCountDisplay();
     } else {
         reactionButton.classList.remove('active');
         reactionButton.classList.add('error');
-        reactionButton.textContent = 'Schod';
-        result.textContent = 'Deine Finger san schnölla wie dei Kopf.';
-        clearTimeout(timeoutId);
+        reactionButton.textContent = 'Zu frua!';
+        result.textContent = 'Dei Finga san schnölla wie dei Kopf!';
     }
     
     setTimeout(() => {
-        reactionButton.classList.remove('active', 'error');
-        reactionButton.textContent = 'Start';
-    }, 2000);
+        if (timeLeft > 0) {
+            startRound();
+        } else {
+            endGame();
+        }
+    }, 1000);
+}
+
+function endGame() {
+    clearInterval(timerInterval);
+    clearTimeout(timeoutId);
+    reactionButton.classList.add('game-over');
+    reactionButton.textContent = 'Zeit um!';
+    result.textContent = `Gesamtklicks: ${clickCount}`;
+    const isHighscore = saveScore(clickCount);
+    if (isHighscore) {
+        showHighscoreMessage(clickCount);
+    }
+}
+
+function updateTimerDisplay() {
+    timerDisplay.textContent = `Zeit: ${timeLeft}s`;
+}
+
+function updateClickCountDisplay() {
+    clickCountDisplay.textContent = `Klicks: ${clickCount}`;
 }
 
 function saveScore(score) {
@@ -91,11 +127,11 @@ function saveScore(score) {
         score: score
     };
     
-    const isHighscore = highscores.length < 10 || score < highscores[highscores.length - 1].score;
+    const isHighscore = highscores.length < 10 || score > highscores[highscores.length - 1].score;
     
     if (isHighscore) {
         highscores.push(newScore);
-        highscores.sort((a, b) => a.score - b.score);
+        highscores.sort((a, b) => b.score - a.score);
         highscores = highscores.slice(0, 10); // Keep only top 10 scores
         updateHighscoresDisplay();
         saveHighscoresToServer();
@@ -108,7 +144,7 @@ function updateHighscoresDisplay() {
     highscoresList.innerHTML = '';
     highscores.forEach((score, index) => {
         const li = document.createElement('li');
-        li.textContent = `${score.username}: ${score.score} ms`;
+        li.textContent = `${score.username}: ${score.score} Klicks`;
         if (index < 3) {
             li.classList.add('top-three');
         }
@@ -125,37 +161,34 @@ function showHighscoreMessage(score) {
     } else if (rank <= 3) {
         message = `Fian erstn hods zwoa ned greicht owa immerhin Top 3 - Plotz ${rank}!`;
     } else {
-        message = `Bissi schneller dasst a moi wos erreichst jetzt bist nua Plotz ${rank}!`;
+        message = `Schnölla klickn dasst a moi wos erreichst jetzt bist nua Plotz ${rank}!`;
     }
     
     alert(message);
 }
 
 function loadHighscores() {
-    fetch('/projects/reaction-game/data')
+    fetch('/projects/reaction-game/data/timed')
         .then(response => response.json())
         .then(data => {
-            highscores = data.highscores || [];
+            highscores = data || [];
             updateHighscoresDisplay();
         })
         .catch(error => console.error('Error:', error));
 }
 
-function saveHighscoresToServer() {
-    fetch('/projects/reaction-game/data', {
+function saveHighscoresToServer(score) {
+    fetch('/projects/reaction-game/data/timed', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ highscores: highscores }),
+        body: JSON.stringify({ username: username, score: score }),
     })
     .then(response => response.json())
-    .then(data => console.log('Success:', data))
+    .then(data => {
+        highscores = data;
+        updateHighscoresDisplay();
+    })
     .catch((error) => console.error('Error:', error));
 }
-
-// Initialize color mode
-body.classList.add('color-mode-1');
-
-// Load highscores on page load
-loadHighscores();

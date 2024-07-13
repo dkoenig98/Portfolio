@@ -20,23 +20,25 @@
         </header>
 
         <main>
-            <div id="username-input" class="username-input">
+            <div id="username-input">
                 <input type="text" id="username" placeholder="Dein Username">
-                <button id="start-game">Spiel starten</button>
+                <button id="set-username">Username setzen</button>
             </div>
 
-            <div id="game-area" class="game-area hidden">
-                <button id="reaction-button">Start</button>
-                <div id="result" class="result"></div>
+            <div id="mode-selection" class="hidden">
+                <p id="welcome-message"></p>
+                <button id="choose-mode">Wähle den Modus</button>
+            </div>
+
+            <div id="main-menu" class="menu-screen hidden">
+                <h2>Hauptmenü</h2>
+                <a href="classic.html" class="menu-btn">Klassisch</a>
+                <a href="timed.html" class="menu-btn">Zeitbegrenzt</a>
+                <a href="color.html" class="menu-btn">Farbenmodus</a>
             </div>
         </main>
-
-        <aside class="scoreboard">
-            <h2>Top Reaktionszeiten</h2>
-            <ol id="highscores"></ol>
-        </aside>
     </div>
 
-    <script src="script.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>

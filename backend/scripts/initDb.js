@@ -54,7 +54,9 @@ const initializeProjects = async () => {
         };
       } else if (projectName === 'reaction-game') {
         initialData.data = {
-          highscores: []
+          classicHighscores: [],
+          timedHighscores: [],
+          colorHighscores: []
         };
       }
 
