@@ -28,6 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
     loadHighscores();
 });
 
+// Funktion für haptisches Feedback
+function vibrate(pattern) {
+    if ("vibrate" in navigator) {
+        navigator.vibrate(pattern);
+    }
+}
+
 // Reaction button click
 reactionButton.addEventListener('click', handleClick);
 
@@ -49,9 +56,10 @@ function startGame() {
     const delay = Math.floor(Math.random() * 2000) + 1000; // Random delay between 1-3 seconds
     timeoutId = setTimeout(() => {
         reactionButton.classList.add('active');
-        reactionButton.textContent = 'Geht scho klick!';
+        reactionButton.textContent = 'Klick!';
         startTime = new Date().getTime();
         isWaiting = false;
+        vibrate(200); // Kurze Vibration, wenn der Button aktiv wird
     }, delay);
 }
 
@@ -64,6 +72,9 @@ function endGame(success) {
         const isHighscore = saveScore(reactionTime);
         if (isHighscore) {
             showHighscoreMessage(reactionTime);
+            vibrate([100, 50, 100]); // Doppelte Vibration für Highscore
+        } else {
+            vibrate(100); // Einfache Vibration für erfolgreichen Klick
         }
     } else {
         reactionButton.classList.remove('active');
@@ -71,6 +82,7 @@ function endGame(success) {
         reactionButton.textContent = 'Schod';
         result.textContent = 'Deine Finger san schnölla wie dei Kopf.';
         clearTimeout(timeoutId);
+        vibrate([50, 50, 50]); // Dreifache kurze Vibration für Fehler
     }
     
     setTimeout(() => {
