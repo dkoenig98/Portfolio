@@ -26,7 +26,13 @@
                     </div>
                 </div>
             </div>
-            <img src="logo.png" alt="Company Logo" class="company-logo">
+            <img src="logo.png" alt="Company Logo" class="company-logo" id="companyLogo">
+			<div class="theme-toggle">
+				<button id="themeToggle" class="theme-toggle-button" aria-label="Theme wechseln">
+					<i class="fas fa-sun light-icon"></i>
+					<i class="fas fa-moon dark-icon"></i>
+				</button>
+			</div>
         </header>
 
          <!-- News Widget -->
@@ -40,8 +46,8 @@
                     <span class="news-date">07. November 2024</span>
                 </div>
                 <div class="news-content">
-                    <h3>Achtung: Neue Phishing-Kampagne aktiv</h3>
-                    <p>Aktuell sind gefälschte Microsoft Teams Meeting-Einladungen im Umlauf. Die E-Mails enthalten einen verdächtigen Link zur "Meeting-Teilnahme". Bitte seien Sie besonders aufmerksam.</p>
+                    <h3>Achtung: Neue Phishing-E-Mail</h3>
+                    <p>Aktuell sind gefälschte Microsoft Teams Meeting-Einladungen im Umlauf. Die E-Mails enthalten einen verdächtigen Link zur "Meeting-Teilnahme". Bitte sei besonders aufmerksam.</p>
                     <div class="news-details">
                         <div class="detail-item">
                             <i class="fas fa-exclamation-triangle"></i>
@@ -52,7 +58,7 @@
                             <span>Verdächtige Links: "teams-meeting.com"</span>
                         </div>
                     </div>
-                    <button class="news-action">
+                    <button class="news-action" onclick="window.location.href='warnung.html'">
                         Mehr erfahren
                         <i class="fas fa-arrow-right"></i>
                     </button>
@@ -64,7 +70,7 @@
         <div class="level-progress">
             <div class="progress-header">
                 <span>Level 3 Progress</span>
-                <span>2750 / 3000 XP</span>
+                <span>275 / 300 XP</span>
             </div>
             <div class="progress-bar">
                 <div class="progress-fill" style="width: 87.5%"></div>
@@ -79,8 +85,8 @@
                 </div>
                 <div class="stat-info">
                     <span class="stat-label">Gesamt Punkte</span>
-                    <span class="stat-value">2750</span>
-                    <span class="stat-change positive">+250 diese Woche</span>
+                    <span class="stat-value">275</span>
+                    <span class="stat-change positive">+25 diese Woche</span>
                 </div>
             </div>
 
@@ -101,7 +107,7 @@
                 </div>
                 <div class="stat-info">
                     <span class="stat-label">Schulungen</span>
-                    <span class="stat-value">8/10</span>
+                    <span class="stat-value">8/12</span>
                     <span class="stat-change">2 ausstehend</span>
                 </div>
             </div>
@@ -113,7 +119,7 @@
                 <div class="stat-info">
                     <span class="stat-label">Phishing Mails</span>
                     <span class="stat-value">12</span>
-                    <span class="stat-change">Diesen Monat</span>
+                    <span class="stat-change">Diesen Monat gemeldet</span>
                 </div>
             </div>
         </div>
@@ -133,7 +139,7 @@
             <div class="chart-stats">
                 <div class="stat-pill">
                     <span class="label">Durchschnitt/Monat</span>
-                    <span class="value">245 Punkte</span>
+                    <span class="value">42.5 Punkte</span>
                 </div>
                 <div class="stat-pill positive">
                     <span class="label">Trend</span>
@@ -146,11 +152,15 @@
             <div class="chart-legend">
                 <div class="legend-item">
                     <span class="legend-dot"></span>
-                    <span>Gesammelte Punkte</span>
+                    <span>Deine Puntke</span>
+                </div>
+				 <div class="legend-item">
+                    <span class="legend-dot comparison"></span>
+                    <span>Durchschnitt muki</span>
                 </div>
                 <div class="legend-item dashed">
                     <span class="legend-line"></span>
-                    <span>Durchschnitt</span>
+                    <span>Dein Durchschnitt</span>
                 </div>
             </div>
         </div>
@@ -172,7 +182,7 @@
                             <div class="name">Dominic König</div>
                             <div class="details">
                                 <span class="department">IT</span>
-                                <span class="points">2900 Punkte</span>
+                                <span class="points">275 Punkte</span>
                             </div>
                         </div>
                     </div>
@@ -185,7 +195,7 @@
                             <div class="name">Ivo Gavric</div>
                             <div class="details">
                                 <span class="department">IT</span>
-                                <span class="points">2850 Punkte</span>
+                                <span class="points">270 Punkte</span>
                             </div>
                         </div>
                     </div>
@@ -198,7 +208,7 @@
                             <div class="name">Sepp Zalud</div>
                             <div class="details">
                                 <span class="department">IT</span>
-                                <span class="points">2800 Punkte</span>
+                                <span class="points">260 Punkte</span>
                             </div>
                         </div>
                     </div>
@@ -220,7 +230,7 @@
                             <div class="name">IT-Abteilung</div>
                             <div class="details">
                                 <span class="members">12 Mitarbeiter</span>
-                                <span class="points">8500 Punkte</span>
+                                <span class="points">850 Punkte</span>
                             </div>
                         </div>
                     </div>
@@ -233,7 +243,7 @@
                             <div class="name">KFZ-Vertrag</div>
                             <div class="details">
                                 <span class="members">25 Mitarbeiter</span>
-                                <span class="points">8200 Punkte</span>
+                                <span class="points">840 Punkte</span>
                             </div>
                         </div>
                     </div>
@@ -246,7 +256,7 @@
                             <div class="name">Personal</div>
                             <div class="details">
                                 <span class="members">5 Mitarbeiter</span>
-                                <span class="points">7900 Punkte</span>
+                                <span class="points">790 Punkte</span>
                             </div>
                         </div>
                     </div>
@@ -380,33 +390,33 @@
                 </div>
                 <div class="rewards-list">
                     <div class="reward-item">
-                        <div class="reward-points">5000 Punkte</div>
+                        <div class="reward-points">800 Punkte</div>
                         <div class="reward-content">
                             <h4>3 Stunden Zeitausgleich</h4>
                             <div class="progress-bar">
                                 <div class="progress" style="width: 55%"></div>
                             </div>
-                            <p class="progress-text">2750 / 5000 Punkte</p>
+                            <p class="progress-text">275 / 800 Punkte</p>
                         </div>
                     </div>
                     <div class="reward-item">
-                        <div class="reward-points">3000 Punkte</div>
+                        <div class="reward-points">600 Punkte</div>
                         <div class="reward-content">
                             <h4>20€ in Form von Ischler Taler</h4>
                             <div class="progress-bar">
                                 <div class="progress" style="width: 92%"></div>
                             </div>
-                            <p class="progress-text">2750 / 3000 Punkte</p>
+                            <p class="progress-text">275 / 600 Punkte</p>
                         </div>
                     </div>
                     <div class="reward-item locked">
-                        <div class="reward-points">10000 Punkte</div>
+                        <div class="reward-points">1000 Punkte</div>
                         <div class="reward-content">
                             <h4>Extra Urlaubstag</h4>
                             <div class="progress-bar">
                                 <div class="progress" style="width: 27%"></div>
                             </div>
-                            <p class="progress-text">2750 / 10000 Punkte</p>
+                            <p class="progress-text">275 / 1000 Punkte</p>
                         </div>
                     </div>
                 </div>
@@ -454,6 +464,11 @@
                 </div>
             </div>
         </div>
+		
+		<!-- backToTop -->
+		<button id="backToTop" class="back-to-top" aria-label="Zurück nach oben">
+			<i class="fas fa-arrow-up"></i>
+		</button>
     </div>
 
     <!-- Recharts CDN für die Diagramme -->
