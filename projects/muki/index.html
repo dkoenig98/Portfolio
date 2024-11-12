@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Awareness Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header mit Benutzerinfo -->
+        <header class="dashboard-header">
+            <div class="user-info">
+                <img src="profile.JPEG" alt="Profile" class="profile-image">
+                <div class="user-details">
+                    <div class="user-name-container">
+                        <h1>Dominic König</h1>
+                        <span class="department-badge">IT</span>
+                    </div>
+                    <div class="user-level">
+                        <i class="fas fa-star"></i>
+                        <span>Security Hero</span>
+                        <span class="separator">•</span>
+                        <span>Level 3</span>
+                    </div>
+                </div>
+            </div>
+            <img src="logo.png" alt="Company Logo" class="company-logo">
+        </header>
+
+         <!-- News Widget -->
+         <div class="news-section">
+            <div class="news-card">
+                <div class="news-header">
+                    <div class="news-tag urgent">
+                        <i class="fas fa-bell"></i>
+                        <span>Aktuelle Warnung</span>
+                    </div>
+                    <span class="news-date">07. November 2024</span>
+                </div>
+                <div class="news-content">
+                    <h3>Achtung: Neue Phishing-Kampagne aktiv</h3>
+                    <p>Aktuell sind gefälschte Microsoft Teams Meeting-Einladungen im Umlauf. Die E-Mails enthalten einen verdächtigen Link zur "Meeting-Teilnahme". Bitte seien Sie besonders aufmerksam.</p>
+                    <div class="news-details">
+                        <div class="detail-item">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Absender prüfen: Externe Microsoft-Adressen</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-link"></i>
+                            <span>Verdächtige Links: "teams-meeting.com"</span>
+                        </div>
+                    </div>
+                    <button class="news-action">
+                        Mehr erfahren
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level Progress -->
+        <div class="level-progress">
+            <div class="progress-header">
+                <span>Level 3 Progress</span>
+                <span>2750 / 3000 XP</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 87.5%"></div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon trophy">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Gesamt Punkte</span>
+                    <span class="stat-value">2750</span>
+                    <span class="stat-change positive">+250 diese Woche</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon alert">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Phishing Score</span>
+                    <span class="stat-value">95%</span>
+                    <span class="stat-change positive">+5% zum Vormonat</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon award">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Schulungen</span>
+                    <span class="stat-value">8/10</span>
+                    <span class="stat-change">2 ausstehend</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon chart">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Phishing Mails</span>
+                    <span class="stat-value">12</span>
+                    <span class="stat-change">Diesen Monat</span>
+                </div>
+            </div>
+        </div>
+        <!-- Charts & Leaderboards Row -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <div class="chart-title">
+                    <h3>Punkteverlauf</h3>
+                    <span class="chart-subtitle">Deine Aktivität der letzten 6 Monate</span>
+                </div>
+                <div class="chart-actions">
+                    <button class="chart-button active" data-period="6">6 Monate</button>
+                    <button class="chart-button" data-period="3">3 Monate</button>
+                    <button class="chart-button" data-period="1">1 Monat</button>
+                </div>
+            </div>
+            <div class="chart-stats">
+                <div class="stat-pill">
+                    <span class="label">Durchschnitt/Monat</span>
+                    <span class="value">245 Punkte</span>
+                </div>
+                <div class="stat-pill positive">
+                    <span class="label">Trend</span>
+                    <span class="value">+12.5%</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+            <div class="chart-legend">
+                <div class="legend-item">
+                    <span class="legend-dot"></span>
+                    <span>Gesammelte Punkte</span>
+                </div>
+                <div class="legend-item dashed">
+                    <span class="legend-line"></span>
+                    <span>Durchschnitt</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Separate Leaderboards Row -->
+        <div class="leaderboards-row">
+            <!-- Individual Leaderboard -->
+            <div class="leaderboard-card">
+                <div class="leaderboard-header">
+                    <h3>Top Mitarbeiter</h3>
+                </div>
+                <div class="leaderboard-list">
+                    <div class="leaderboard-item gold">
+                        <div class="rank-medal">
+                            <i class="fas fa-crown"></i>
+                            <span class="rank">1</span>
+                        </div>
+                        <div class="leaderboard-content">
+                            <div class="name">Dominic König</div>
+                            <div class="details">
+                                <span class="department">IT</span>
+                                <span class="points">2900 Punkte</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="leaderboard-item silver">
+                        <div class="rank-medal">
+                            <i class="fas fa-crown"></i>
+                            <span class="rank">2</span>
+                        </div>
+                        <div class="leaderboard-content">
+                            <div class="name">Ivo Gavric</div>
+                            <div class="details">
+                                <span class="department">IT</span>
+                                <span class="points">2850 Punkte</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="leaderboard-item bronze">
+                        <div class="rank-medal">
+                            <i class="fas fa-crown"></i>
+                            <span class="rank">3</span>
+                        </div>
+                        <div class="leaderboard-content">
+                            <div class="name">Sepp Zalud</div>
+                            <div class="details">
+                                <span class="department">IT</span>
+                                <span class="points">2800 Punkte</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Department Leaderboard -->
+            <div class="leaderboard-card">
+                <div class="leaderboard-header">
+                    <h3>Top Abteilungen</h3>
+                </div>
+                <div class="leaderboard-list">
+                    <div class="leaderboard-item gold">
+                        <div class="rank-medal">
+                            <i class="fas fa-users"></i>
+                            <span class="rank">1</span>
+                        </div>
+                        <div class="leaderboard-content">
+                            <div class="name">IT-Abteilung</div>
+                            <div class="details">
+                                <span class="members">12 Mitarbeiter</span>
+                                <span class="points">8500 Punkte</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="leaderboard-item silver">
+                        <div class="rank-medal">
+                            <i class="fas fa-users"></i>
+                            <span class="rank">2</span>
+                        </div>
+                        <div class="leaderboard-content">
+                            <div class="name">KFZ-Vertrag</div>
+                            <div class="details">
+                                <span class="members">25 Mitarbeiter</span>
+                                <span class="points">8200 Punkte</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="leaderboard-item bronze">
+                        <div class="rank-medal">
+                            <i class="fas fa-users"></i>
+                            <span class="rank">3</span>
+                        </div>
+                        <div class="leaderboard-content">
+                            <div class="name">Personal</div>
+                            <div class="details">
+                                <span class="members">5 Mitarbeiter</span>
+                                <span class="points">7900 Punkte</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz and Feedback Section -->
+        <div class="interaction-section">
+            <div class="quiz-card">
+                <div class="card-header">
+                    <div>
+                        <h3>Monatliches Security Quiz</h3>
+                        <p>Verdiene bis zu 25 Punkte!</p>
+                    </div>
+                    <div class="quiz-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                </div>
+                <div class="quiz-content">
+                    <div class="question">
+                        <p>Was ist Phishing?</p>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="q1">
+                                <span>Ein Angeltechnik</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="q1">
+                                <span>Eine Art von Cyberbetrug</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="q1">
+                                <span>Ein Computervirus</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="open-question">
+                        <p>Beschreibe eine verdächtige E-Mail, die du kürzlich erhalten hast:</p>
+                        <textarea placeholder="Deine Antwort..."></textarea>
+                    </div>
+                    <button class="submit-button">Quiz einreichen</button>
+                </div>
+            </div>
+
+            <div class="feedback-card">
+                <div class="card-header">
+                    <div>
+                        <h3>Feedback</h3>
+                        <p>Verdiene 25 Punkte für dein Feedback einmal pro Quartal!</p>
+                    </div>
+                    <div class="feedback-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                </div>
+                <form class="feedback-form">
+                    <div class="form-group">
+                        <label>Wie zufrieden bist du mit den Security-Awareness Maßnahmen?</label>
+                        <select>
+                            <option>Sehr zufrieden</option>
+                            <option>Zufrieden</option>
+                            <option>Neutral</option>
+                            <option>Unzufrieden</option>
+                            <option>Sehr unzufrieden</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Was können wir verbessern?</label>
+                        <textarea placeholder="Dein Feedback..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-button">Feedback senden (+25 Punkte)</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="info-widgets-row">
+            <!-- Punkte-Guide Widget -->
+            <div class="info-card">
+                <div class="card-header">
+                    <h3>So sammelst du Punkte</h3>
+                    <div class="info-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                </div>
+                <div class="points-guide-list">
+                    <div class="guide-item">
+                        <div class="points">+50</div>
+                        <div class="action">
+                            <h4>Phishing-Mail melden</h4>
+                            <p>Für jede korrekt identifizierte Phishing-Mail</p>
+                        </div>
+                    </div>
+                    <div class="guide-item">
+                        <div class="points">+25</div>
+                        <div class="action">
+                            <h4>Security Quiz</h4>
+                            <p>Monatliches Quiz erfolgreich abschließen</p>
+                        </div>
+                    </div>
+                    <div class="guide-item">
+                        <div class="points">+150</div>
+                        <div class="action">
+                            <h4>Schulung abschließen</h4>
+                            <p>Jede Security-Awareness Schulung erfolgreich beenden</p>
+                        </div>
+                    </div>
+                    <div class="guide-item">
+                        <div class="points">+25</div>
+                        <div class="action">
+                            <h4>Feedback geben</h4>
+                            <p>Monatliches Feedback zu Security-Maßnahmen</p>
+                        </div>
+                    </div>
+                    <div class="guide-item">
+                        <div class="points">+200</div>
+                        <div class="action">
+                            <h4>Security Champion</h4>
+                            <p>Monatsbonus für besonderes Engagement</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Rewards Widget -->
+            <div class="info-card">
+                <div class="card-header">
+                    <h3>Verfügbare Rewards</h3>
+                    <div class="info-icon reward">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                </div>
+                <div class="rewards-list">
+                    <div class="reward-item">
+                        <div class="reward-points">5000 Punkte</div>
+                        <div class="reward-content">
+                            <h4>3 Stunden Zeitausgleich</h4>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 55%"></div>
+                            </div>
+                            <p class="progress-text">2750 / 5000 Punkte</p>
+                        </div>
+                    </div>
+                    <div class="reward-item">
+                        <div class="reward-points">3000 Punkte</div>
+                        <div class="reward-content">
+                            <h4>20€ in Form von Ischler Taler</h4>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 92%"></div>
+                            </div>
+                            <p class="progress-text">2750 / 3000 Punkte</p>
+                        </div>
+                    </div>
+                    <div class="reward-item locked">
+                        <div class="reward-points">10000 Punkte</div>
+                        <div class="reward-content">
+                            <h4>Extra Urlaubstag</h4>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 27%"></div>
+                            </div>
+                            <p class="progress-text">2750 / 10000 Punkte</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Performance Comparison Widget -->
+            <div class="info-card">
+                <div class="card-header">
+                    <h3>Deine Performance</h3>
+                    <div class="info-icon performance">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="performance-stats">
+                    <div class="stat-comparison">
+                        <div class="comparison-label">
+                            <span>Punktesammlung pro Monat</span>
+                            <span class="value positive">+15% über Durchschnitt</span>
+                        </div>
+                        <div class="comparison-bar">
+                            <div class="average-marker" style="left: 85%"></div>
+                            <div class="your-position" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-comparison">
+                        <div class="comparison-label">
+                            <span>Phishing-Erkennungsrate</span>
+                            <span class="value positive">+8% über Durchschnitt</span>
+                        </div>
+                        <div class="comparison-bar">
+                            <div class="average-marker" style="left: 87%"></div>
+                            <div class="your-position" style="width: 95%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-comparison">
+                        <div class="comparison-label">
+                            <span>Schulungsabschlüsse</span>
+                            <span class="value">Durchschnittlich</span>
+                        </div>
+                        <div class="comparison-bar">
+                            <div class="average-marker" style="left: 80%"></div>
+                            <div class="your-position" style="width: 80%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recharts CDN für die Diagramme -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

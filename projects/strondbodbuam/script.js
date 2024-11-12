@@ -2,6 +2,7 @@
 let selectedProfile = null;
 let selectedYear = new Date().getFullYear();
 let profiles = {};
+let weatherData = null;
 
 const currentYear = new Date().getFullYear();
 
@@ -31,7 +32,7 @@ async function loadProjectData() {
         profiles = data.profiles || {};
         selectedYear = data.selectedYear || new Date().getFullYear();
         
-        console.log('Loaded data:', JSON.stringify(data)); // Logging für Debugging
+        console.log('Loaded data:', JSON.stringify(data));
         
         updateUI();
         updateCalendarView(selectedProfile);
@@ -47,7 +48,7 @@ async function saveProjectData() {
             profiles: profiles,
             selectedYear: selectedYear
         };
-        console.log('Saving data:', JSON.stringify(dataToSave)); // Logging für Debugging
+        console.log('Saving data:', JSON.stringify(dataToSave));
         
         const response = await fetch('/projects/strondbodbuam/data', {
             method: 'POST',
@@ -59,7 +60,6 @@ async function saveProjectData() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        // Lade die Daten nach dem Speichern neu, um Konsistenz zu gewährleisten
         await loadProjectData();
     } catch (error) {
         console.error('Error saving project data:', error);
@@ -375,6 +375,7 @@ function createConfetti() {
         });
     }
 }
+
 
 async function initializeApp() {
     await loadProjectData();
