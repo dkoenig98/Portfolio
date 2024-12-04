@@ -49,6 +49,152 @@
        padding: 6rem 0 3rem;
        text-align: center;
    }
+
+   /* Style Switcher */
+    .style-switcher {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background-color: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+    }
+
+    .style-switcher h3 {
+        margin: 0 0 10px 0;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .style-button {
+        display: block;
+        width: 100%;
+        padding: 8px 15px;
+        margin: 5px 0;
+        border: none;
+        border-radius: 5px;
+        background-color: #f0f0f0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .style-button:hover {
+        background-color: #e0e0e0;
+    }
+
+    .style-button.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    @media screen and (max-width: 768px) {
+        .style-switcher {
+            top: auto;
+            bottom: 20px;
+            right: 20px;
+            left: 20px;
+        }
+        
+        .style-button {
+            display: inline-block;
+            width: auto;
+            margin: 5px;
+        }
+    }
+
+    /* Variante 1: Rustikal & Traditionell */
+    .style-rustic {
+        --primary-color: #8B4513;  /* Sattes Braun */
+        --secondary-color: #A0522D; /* Helleres Braun */
+        --accent-color: #D2691E;   /* Warmes Orange */
+        --bg-color: #FDF5E6;       /* Cremefarbener Hintergrund */
+        --text-color: #3E2723;     /* Dunkles Braun für Text */
+        
+        font-family: 'Crimson Text', serif;
+    }
+
+    .style-rustic .nav-links li a {
+        font-family: 'Crimson Text', serif;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .style-rustic .cta-button {
+        background-color: var(--accent-color);
+        border: 2px solid #8B4513;
+        font-family: 'Crimson Text', serif;
+    }
+
+    /* Variante 2: Modern & Minimalistisch */
+    .style-modern {
+        --primary-color: #2C3E50;  /* Tiefes Blaugrau */
+        --secondary-color: #34495E; /* Helleres Blaugrau */
+        --accent-color: #3498DB;   /* Helles Blau */
+        --bg-color: #FFFFFF;       /* Reines Weiß */
+        --text-color: #2C3E50;     /* Dunkelgrau für Text */
+        
+        font-family: 'Inter', sans-serif;
+    }
+
+    .style-modern .nav-links li a {
+        font-weight: 400;
+        text-transform: none;
+    }
+
+    .style-modern .cta-button {
+        background-color: var(--accent-color);
+        border-radius: 2px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Variante 3: Naturverbunden & Organisch */
+    .style-nature {
+        --primary-color: #2E7D32;  /* Waldgrün */
+        --secondary-color: #388E3C; /* Helleres Grün */
+        --accent-color: #FFA000;   /* Warmes Gelb */
+        --bg-color: #F1F8E9;       /* Helles Grün */
+        --text-color: #1B5E20;     /* Dunkelgrün für Text */
+        
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .style-nature .nav-links li a {
+        font-weight: 500;
+    }
+
+    .style-nature .cta-button {
+        background-color: var(--accent-color);
+        border-radius: 25px;
+        padding: 1rem 2rem;
+    }
+
+    /* Variante 4: Alpine & Luxuriös */
+    .style-alpine {
+        --primary-color: #1A237E;  /* Tiefes Blau */
+        --secondary-color: #303F9F; /* Königsblau */
+        --accent-color: #C2185B;   /* Beerenrot */
+        --bg-color: #F5F5F5;       /* Helles Grau */
+        --text-color: #0D47A1;     /* Dunkles Blau für Text */
+        
+        font-family: 'Playfair Display', serif;
+    }
+
+    .style-alpine .nav-links li a {
+        font-family: 'Montserrat', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .style-alpine .cta-button {
+        background-color: var(--accent-color);
+        border-radius: 0;
+        font-family: 'Montserrat', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
    
    nav {
        position: fixed;
@@ -833,6 +979,8 @@
    .leaflet-control-container .leaflet-bottom {
        bottom: 0 !important;
    }
+
+
    
    
    

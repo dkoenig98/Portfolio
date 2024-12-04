@@ -150,7 +150,89 @@ function checkMapVisibility() {
     }
 }
 
+// Style Switcher
+document.addEventListener('DOMContentLoaded', function() {
+    // Style-Definitionen
+    const styles = {
+        default: {
+            primaryColor: '#415468',
+            secondaryColor: '#6e8898',
+            accentColor: '#ff6b6b',
+            bgColor: '#f7f7f7',
+            textColor: '#333'
+        },
+        rustic: {
+            primaryColor: '#8B4513',
+            secondaryColor: '#A0522D',
+            accentColor: '#D2691E',
+            bgColor: '#FDF5E6',
+            textColor: '#3E2723'
+        },
+        modern: {
+            primaryColor: '#2C3E50',
+            secondaryColor: '#34495E',
+            accentColor: '#3498DB',
+            bgColor: '#FFFFFF',
+            textColor: '#2C3E50'
+        },
+        nature: {
+            primaryColor: '#2E7D32',
+            secondaryColor: '#388E3C',
+            accentColor: '#FFA000',
+            bgColor: '#F1F8E9',
+            textColor: '#1B5E20'
+        },
+        alpine: {
+            primaryColor: '#1A237E',
+            secondaryColor: '#303F9F',
+            accentColor: '#C2185B',
+            bgColor: '#F5F5F5',
+            textColor: '#0D47A1'
+        }
+    };
+
+    // Funktion zum Anwenden eines Stils
+    function applyStyle(styleName) {
+        const style = styles[styleName];
+        const root = document.documentElement;
+        
+        // CSS-Variablen aktualisieren
+        root.style.setProperty('--primary-color', style.primaryColor);
+        root.style.setProperty('--secondary-color', style.secondaryColor);
+        root.style.setProperty('--accent-color', style.accentColor);
+        root.style.setProperty('--bg-color', style.bgColor);
+        root.style.setProperty('--text-color', style.textColor);
+
+        // Active-Klasse der Buttons aktualisieren
+        document.querySelectorAll('.style-button').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.style === styleName) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Stil in localStorage speichern
+        localStorage.setItem('selectedStyle', styleName);
+    }
+
+    // Event-Listener für die Buttons
+    document.querySelectorAll('.style-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const styleName = button.dataset.style;
+            applyStyle(styleName);
+        });
+    });
+
+    // Gespeicherten Stil beim Laden wiederherstellen
+    const savedStyle = localStorage.getItem('selectedStyle');
+    if (savedStyle) {
+        applyStyle(savedStyle);
+    }
+});
+
 // Fügen Sie diese Event-Listener am Ende der Datei hinzu:
 window.addEventListener('scroll', checkMapVisibility);
 window.addEventListener('resize', checkMapVisibility);
 document.addEventListener('DOMContentLoaded', checkMapVisibility);
+
+

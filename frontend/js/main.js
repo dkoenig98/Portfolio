@@ -33,11 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
             passwordProtected: true
         },
         {
-            title: 'Reaction Game',
-            description: 'Ein Reaktionsspiel, bei dem die Reaktionszeit gemessen wird.',
-            image: '/projects/reaction-game/logo.png',
-            link: '/projects/reaction-game/index.html',
-            passwordProtected: false
+            title: 'Awareness Dashboard',
+            description: 'Ein Awarness Dashboard für Mitarbeiter.',
+            image: '/projects/muki/logo.jpeg',
+            link: '/projects/muki/index.html',
+            passwordProtected: true
         },
     ];
 
