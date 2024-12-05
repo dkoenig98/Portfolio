@@ -72,5 +72,17 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
+app.post('/api/verify-password', (req, res) => {
+  const { password } = req.body;
+  // Passwort in Umgebungsvariable speichern
+  const correctPassword = process.env.PROJECT_PASSWORD;
+  
+  if (password === correctPassword) {
+      res.json({ success: true });
+  } else {
+      res.status(401).json({ success: false, message: 'Falsches Passwort' });
+  }
+});
+
 // Server starten
 app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));

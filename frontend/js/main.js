@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Ein innovativer Counter für Hallstättersee-Sprünge mit kreativen CSS-Animationen.',
             image: '/projects/strondbodbuam/see.webp',
             link: '/projects/strondbodbuam/index.html',
-            passwordProtected: true
+            passwordProtected: false
         },
         {
             title: 'Rinnerhütte',
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Eine Website für einen unglaublich talentierten Fotografen mit dynamischem Bildladen.',
             image: '/projects/luki-portfolio/images/profile.webp',
             link: '/projects/luki-portfolio/index.html',
-            passwordProtected: true
+            passwordProtected: false
         },
         {
             title: 'Awareness Dashboard',
@@ -78,15 +78,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const promptPassword = (link) => {
+    const promptPassword = async (link) => {
         const password = prompt("Bitte geben Sie das Passwort ein:");
         if (password) {
-            // Hier würden Sie normalerweise eine Serveranfrage machen, um das Passwort zu überprüfen
-            // Für dieses Beispiel verwenden wir ein hartcodiertes Passwort
-            if (password === "dev") {
-                window.location.href = link;
-            } else {
-                alert("Falsches Passwort. Zugriff verweigert.");
+            try {
+                const response = await fetch('/api/verify-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.location.href = link;
+                } else {
+                    alert("Falsches Passwort. Zugriff verweigert.");
+                }
+            } catch (error) {
+                console.error('Fehler bei der Passwortüberprüfung:', error);
+                alert("Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.");
             }
         }
     };
