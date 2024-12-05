@@ -8,6 +8,15 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+// Am Anfang der server.js nach den imports
+app.use((req, res, next) => {
+  if (req.header('x-forwarded-proto') !== 'https' && process.env.NODE_ENV === 'production') {
+      res.redirect(`https://${req.header('host')}${req.url}`);
+  } else {
+      next();
+  }
+});
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -59,3 +68,4 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
+
