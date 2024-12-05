@@ -30,6 +30,28 @@ app.use(express.json());
 // Datenbankverbindung
 connectDB();
 
+// Clean URL Middleware
+app.use((req, res, next) => {
+    // Für Projekte-Ordner
+    if (req.url.startsWith('/projects/')) {
+        // Wenn die URL auf / endet oder kein Dateiformat hat
+        if (req.url.endsWith('/') || !req.url.match(/\.[^/]*$/)) {
+            // Entferne abschließenden Slash und füge index.html hinzu
+            req.url = req.url.replace(/\/?$/, '/index.html');
+        }
+    }
+    next();
+});
+
+// Entferne .html Endungen
+app.use((req, res, next) => {
+    if (req.url.match(/\.html$/)) {
+        // Entferne .html von der URL
+        req.url = req.url.replace('.html', '');
+    }
+    next();
+});
+
 // Routes
 // DogCare Calendar Routes
 const dogcareRoutes = require('./routes/dogcare-calendar');
@@ -42,6 +64,36 @@ app.use('/projects/strondbodbuam', strondbodbuamRoutes);
 // Reaction Game Routes
 const reactionGameRoutes = require('./routes/reaction-game');
 app.use('/projects/reaction-game', reactionGameRoutes);
+
+// Passwort-Verifikations-Route
+app.post('/api/verify-password', (req, res) => {
+    const { password, projectId } = req.body;
+    
+    const projectPasswords = {
+        'strondbodbuam': process.env.PASSWORD_STRONDBODBUAM,
+        'rinnerhuette': process.env.PASSWORD_RINNERHUETTE,
+        'luki-portfolio': process.env.PASSWORD_PORTFOLIO,
+        'muki': process.env.PASSWORD_MUKI
+    };
+
+    const correctPassword = projectPasswords[projectId];
+    
+    if (!correctPassword) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Ungültiges Projekt' 
+        });
+    }
+
+    if (password === correctPassword) {
+        res.json({ success: true });
+    } else {
+        res.status(401).json({ 
+            success: false, 
+            message: 'Falsches Passwort' 
+        });
+    }
+});
 
 // API Routes für Projekte
 app.get('/api/projects', async (req, res) => {
@@ -65,23 +117,13 @@ app.post('/api/projects', async (req, res) => {
 
 // Statische Dateien
 app.use(express.static(path.join(__dirname, '../frontend')));
-app.use('/projects', express.static(path.join(__dirname, '../projects')));
+app.use('/projects', express.static(path.join(__dirname, '../projects'), {
+    extensions: ['html']
+}));
 
 // Catch-all Route für Single Page Application
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/index.html'));
-});
-
-app.post('/api/verify-password', (req, res) => {
-  const { password } = req.body;
-  // Passwort in Umgebungsvariable speichern
-  const correctPassword = process.env.PROJECT_PASSWORD;
-  
-  if (password === correctPassword) {
-      res.json({ success: true });
-  } else {
-      res.status(401).json({ success: false, message: 'Falsches Passwort' });
-  }
 });
 
 // Server starten
