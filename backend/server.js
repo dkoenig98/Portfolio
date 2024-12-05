@@ -5,6 +5,9 @@ const connectDB = require('./config/database');
 const cors = require('cors');
 const path = require('path');
 
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -14,7 +17,9 @@ app.use(express.json());
 // Datenbankverbindung
 connectDB();
 
-
+// DogCare Calendar Routes
+const dogcareRoutes = require('./routes/dogcare-calendar');
+app.use('/projects/dogcare-calendar', dogcareRoutes);
 
 // StrondboBuam
 const strondbodbuamRoutes = require('./routes/strondbodbuam');

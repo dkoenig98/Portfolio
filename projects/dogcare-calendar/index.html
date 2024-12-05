@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shanti's Kindergartenplan</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="login-section">
+        <div class="login-container">
+            <img src="shanti.jpg" alt="Shanti" class="login-image">
+            <h2>Shanti's Kindergartenplan</h2>
+            <form id="loginForm" class="login-form">
+                <input type="text" id="username" placeholder="Benutzername" required>
+                <input type="password" id="password" placeholder="Passwort" required>
+                <button type="submit">Anmelden</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Calendar Section (wird nach Login angezeigt) -->
+    <div id="calendarSection" class="calendar-section" style="display: none;">
+        <div class="container">
+            <div class="header">
+                <h1>Shanti's Kindergartenplan</h1>
+            </div>
+            
+            <div class="nav-buttons">
+                <button id="prevMonth" class="nav-button">&#10094;</button>
+                <button id="nextMonth" class="nav-button">&#10095;</button>
+            </div>
+            <div id="currentMonth" class="current-month"></div>
+
+            <div class="calendar-container">
+                <div class="weekdays">
+                    <div class="weekday">Mo</div>
+                    <div class="weekday">Di</div>
+                    <div class="weekday">Mi</div>
+                    <div class="weekday">Do</div>
+                    <div class="weekday">Fr</div>
+                    <div class="weekday">Sa</div>
+                    <div class="weekday">So</div>
+                </div>
+                <div class="calendar" id="calendar"></div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-dot regular"></div>
+                    <span>Tag (07:00 - 15:30)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot full"></div>
+                    <span>24h (07:00 - 09:00)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot night"></div>
+                    <span>Nacht (21:00 - 09:00)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="appointmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Termin für <span id="selectedDate"></span></h3>
+                <button class="close-button" id="closeModal">&times;</button>
+            </div>
+            <div class="time-slots">
+                <div class="time-slot regular" data-type="regular">
+                    <div class="time-slot-info">
+                        <span class="time">07:00 - 15:30</span>
+                        <span class="label">Tagdienst</span>
+                    </div>
+                    <div class="time-slot-icon">→</div>
+                </div>
+                <div class="time-slot full" data-type="full">
+                    <div class="time-slot-info">
+                        <span class="time">07:00 - 09:00 (+1)</span>
+                        <span class="label">24h Dienst</span>
+                    </div>
+                    <div class="time-slot-icon">→</div>
+                </div>
+                <div class="time-slot night" data-type="night">
+                    <div class="time-slot-info">
+                        <span class="time">21:00 - 09:00</span>
+                        <span class="label">Nachtdienst</span>
+                    </div>
+                    <div class="time-slot-icon">→</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="api.js"></script>
+    <script src="calendar.js"></script>
+</body>
+</html>

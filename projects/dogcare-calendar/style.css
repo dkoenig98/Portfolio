@@ -1,0 +1,564 @@
+:root {
+    /* Hauptfarben */
+    --primary-color: #5c6bc0;      /* Indigo - anders als die Dienstfarben */
+    --secondary-color: #f8f9fa;    /* Helleres Grau für Hintergründe */
+    --text-color: #2c3e50;         /* Dunkleres Blau für Text */
+    --border-color: #e9ecef;       /* Hellgrau für Borders */
+    --primary-color-dark: #3e81d4;
+    
+    /* Dienstfarben - thematisch passend */
+    --regular-duty: #4fc3f7;       /* Helles Blau wie Tageshimmel */
+    --full-duty: #ff9800;          /* Orange wie Sonnenauf-/untergang */
+    --night-duty: #1a237e;         /* Dunkles Marineblau wie Nachthimmel */
+    
+    /* Effekte */
+    --hover-brightness: 0.95;
+    --transition-speed: 0.2s;
+    
+    /* Schatten */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-lg: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+/* Login Styles */
+.login-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--secondary-color);
+    padding: 20px;
+}
+
+.login-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    object-fit: cover;
+    border: 3px solid var(--primary-color);
+}
+
+.login-container h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.login-form input {
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.login-form button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.login-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Navigation Button Styles */
+.nav-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-direction: row-reverse;
+}
+
+.nav-button {
+    background: var(--primary-color);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    background: var(--primary-color-dark);
+}
+
+.nav-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Mobile styles */
+@media (max-width: 480px) {
+    .nav-buttons {
+        display: none;  /* Verstecken auf Mobile, da wir Swipe nutzen */
+    }
+}
+
+/* Header Layout für bessere Button-Positionierung */
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 8px;
+    position: relative;
+    margin-top: 40px; /* Platz für den Abmelde-Button */
+}
+
+.title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+/* Logout Button Style */
+.logout-button {
+    position: absolute;
+    top: -35px; /* Mehr Abstand nach oben */
+    right: 0;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.logout-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Desktop-spezifische Styles */
+@media (min-width: 768px) {
+    .day {
+        cursor: pointer;
+    }
+
+    .modal-content {
+        max-width: 500px;
+    }
+
+    .delete-option {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
+    }
+
+    .delete-button {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+
+    .delete-button:hover {
+        background: #c82333;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--secondary-color);
+    min-height: 100vh;
+    padding: 16px;
+}
+
+/* Container */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+}
+
+/* Current Month */
+.current-month {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: var(--text-color);
+}
+
+/* Calendar Container */
+.calendar-container {
+    margin-bottom: 16px;
+    touch-action: pan-y pinch-zoom;
+    user-select: none;
+}
+
+/* Weekdays Grid */
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.weekday {
+    background: var(--primary-color);
+    color: white;
+    padding: 8px 4px;
+    text-align: center;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* Calendar Grid */
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+/* Calendar Days */
+.day, .empty-day {
+    aspect-ratio: 1;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform var(--transition-speed);
+}
+
+.day:hover {
+    transform: scale(1.05);
+}
+
+.day.today {
+    border: 2px solid var(--primary-color);
+    font-weight: bold;
+}
+
+/* Duty Styles */
+.day.regular-duty { 
+    background-color: var(--regular-duty); 
+    color: var(--text-color);
+    border: none;
+}
+
+.day.full-duty { 
+    background-color: var(--full-duty);
+    color: white;
+    border: none;
+}
+
+.day.night-duty { 
+    background-color: var(--night-duty);
+    color: white;
+    border: none;
+}
+
+/* Legend */
+.legend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+    padding: 12px;
+    background: var(--secondary-color);
+    border-radius: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-dot.regular { background-color: var(--regular-duty); }
+.legend-dot.full { background-color: var(--full-duty); }
+.legend-dot.night { background-color: var(--night-duty); }
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-color);
+    padding: 4px;
+}
+
+/* Time Slots */
+.time-slots {
+    display: grid;
+    gap: 12px;
+}
+
+.time-slot {
+    padding: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all var(--transition-speed);
+}
+
+.time-slot:hover {
+    transform: translateX(4px);
+    filter: brightness(var(--hover-brightness));
+}
+
+.time-slot-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.time-slot .time {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.time-slot .label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.time-slot.regular { 
+    background: var(--regular-duty); 
+    color: var(--text-color);
+}
+
+.time-slot.full { 
+    background: var(--full-duty); 
+    color: white;
+}
+
+.time-slot.night { 
+    background: var(--night-duty); 
+    color: white;
+}
+
+/* Mobile Optimierungen */
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+    }
+
+    .container {
+        padding: 12px;
+        padding-bottom: 100px;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+
+    .nav-buttons {
+        display: none;
+    }
+
+    .weekday {
+        font-size: 12px;
+        padding: 6px 2px;
+    }
+
+    .day {
+        font-size: 14px;
+    }
+
+    .legend {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        margin: 0;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+    }
+
+    .legend-item {
+        justify-content: center;
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .time-slot {
+        padding: 12px;
+    }
+
+    .time-slot .time {
+        font-size: 14px;
+    }
+
+    .time-slot .label {
+        font-size: 12px;
+    }
+}
+
+/* Tablet Optimierungen */
+@media (min-width: 481px) and (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+
+    .title {
+        font-size: 22px;
+    }
+
+    .weekday {
+        font-size: 13px;
+    }
+
+    .day {
+        font-size: 15px;
+    }
+}
+
+/* Landscape Mode Optimierungen */
+@media (max-height: 480px) and (orientation: landscape) {
+    .container {
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+
+    .day {
+        aspect-ratio: auto;
+        height: 40px;
+    }
+
+    .legend {
+        position: static;
+        flex-direction: row;
+        padding: 8px;
+    }
+}
+
+.day.continuation {
+    opacity: 0.7;  /* Macht den Tag etwas transparenter */
+    position: relative;
+    border: 2px dashed !important; /* Gestrichelte Umrandung */
+}
+
+/* Spezifische Styles für jeden Diensttyp */
+.day.regular-duty.continuation {
+    border-color: var(--regular-duty) !important;
+    background-color: transparent !important;
+    color: var(--regular-duty) !important;
+}
+
+.day.full-duty.continuation {
+    border-color: var(--full-duty) !important;
+    background-color: transparent !important;
+    color: var(--full-duty) !important;
+}
+
+.day.night-duty.continuation {
+    border-color: var(--night-duty) !important;
+    background-color: transparent !important;
+    color: var(--night-duty) !important;
+}
+
+/* Optional: Kleiner Pfeil der nach oben zeigt um auf den Vortag zu verweisen */
+.day.continuation::after {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+}

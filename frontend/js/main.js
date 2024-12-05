@@ -39,6 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
             link: '/projects/muki/index.html',
             passwordProtected: true
         },
+        {
+            title: 'Shanty Kindergarten',
+            description: 'Ein Kalendar der unsere Arbeit wesentlich erleichtert.',
+            image: '/projects/dogcare-calendar/shanti.jpg',
+            link: '/projects/dogcare-calendar/index.html',
+            passwordProtected: false
+        },
     ];
 
     // Setze das initiale Bild
