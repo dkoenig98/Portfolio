@@ -80,7 +80,8 @@ router.post('/appointments', authenticateToken, async (req, res) => {
         }
 
         await appointment.save();
-        if (req.user.role === 'sitter') {
+        // Hier die Änderung: E-Mail wird gesendet, wenn der Owner einen Termin erstellt
+        if (req.user.role === 'owner') {
             await emailService.sendAppointmentNotification(appointment);
         }
         res.status(201).json(appointment);
