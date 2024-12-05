@@ -32,7 +32,7 @@ class Auth {
             return false;
         }
     }
-
+// test
     logout() {
         this.token = null;
         this.role = null;
