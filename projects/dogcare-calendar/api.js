@@ -41,7 +41,7 @@ class DogCareAPI {
             return null;
         }
     }
-
+//
     async deleteAppointment(date) {
         try {
             const response = await fetch(`${this.baseUrl}/appointments/${date}`, {
