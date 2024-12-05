@@ -1,71 +1,76 @@
-// backend/server.js
+// Importiere erforderliche Module
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/database');
 const cors = require('cors');
 const path = require('path');
 
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+// Initialisiere Express App
+const app = express();
 
-// Am Anfang der server.js nach den imports
+// Aktiviere Vertrauen in Proxy (wichtig für Heroku)
+app.enable('trust proxy');
+
+// HTTPS Redirect Middleware für Produktion
 app.use((req, res, next) => {
-  if (req.header('x-forwarded-proto') !== 'https' && process.env.NODE_ENV === 'production') {
-      res.redirect(`https://${req.header('host')}${req.url}`);
-  } else {
-      next();
-  }
+    if (req.header('x-forwarded-proto') !== 'https' && process.env.NODE_ENV === 'production') {
+        res.redirect(`https://${req.header('host')}${req.url}`);
+    } else {
+        next();
+    }
 });
 
-const app = express();
+// Port Konfiguration
 const PORT = process.env.PORT || 5000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
 // Datenbankverbindung
 connectDB();
 
+// Routes
 // DogCare Calendar Routes
 const dogcareRoutes = require('./routes/dogcare-calendar');
 app.use('/projects/dogcare-calendar', dogcareRoutes);
 
-// StrondboBuam
+// StrondboBuam Routes
 const strondbodbuamRoutes = require('./routes/strondbodbuam');
 app.use('/projects/strondbodbuam', strondbodbuamRoutes);
 
-// Reaction Game
+// Reaction Game Routes
 const reactionGameRoutes = require('./routes/reaction-game');
 app.use('/projects/reaction-game', reactionGameRoutes);
 
-// Allgemeine Projekt-Routen
+// API Routes für Projekte
 app.get('/api/projects', async (req, res) => {
-  try {
-    const projects = await Project.find({}, 'projectName');
-    res.json(projects);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+    try {
+        const projects = await Project.find({}, 'projectName');
+        res.json(projects);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
 app.post('/api/projects', async (req, res) => {
-  const project = new Project(req.body);
-  try {
-    const newProject = await project.save();
-    res.status(201).json(newProject);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
+    const project = new Project(req.body);
+    try {
+        const newProject = await project.save();
+        res.status(201).json(newProject);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
 });
 
-// Statische Dateien servieren
+// Statische Dateien
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/projects', express.static(path.join(__dirname, '../projects')));
 
-// Catch-all Route für SPA
+// Catch-all Route für Single Page Application
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+    res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
+// Server starten
 app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
-
