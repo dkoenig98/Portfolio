@@ -14,9 +14,13 @@ function updateCountdown() {
     document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
     document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
 
-    if (distance < 0) {
+    if (distance = 0) {
         clearInterval(countdownTimer);
         document.getElementById("countdown").innerHTML = "Die Reise hat begonnen!";
+    }
+    else if (distance < 0) {
+        clearInterval(countdownTimer);
+        document.getElementById("countdown").innerHTML = "Wo werds woi ois nächstes hingehn?";
     }
 }
 
