@@ -1,202 +1,27 @@
+/* -----------------------------
+   CSS-Variablen & Grundaufbau
+----------------------------- */
 :root {
-    /* Hauptfarben */
-    --primary-color: #5c6bc0;      /* Indigo - anders als die Dienstfarben */
-    --secondary-color: #f8f9fa;    /* Helleres Grau für Hintergründe */
-    --text-color: #2c3e50;         /* Dunkleres Blau für Text */
-    --border-color: #e9ecef;       /* Hellgrau für Borders */
-    --primary-color-dark: #3e81d4;
+    --primary-color: #14B8A6;      
+    --primary-color-dark: #0D9488; 
+    --secondary-color: #f8fafc;    
+    --text-color: #334155;        
+    --border-color: #e2e8f0;      
     
-    /* Dienstfarben - thematisch passend */
-    --regular-duty: #4fc3f7;       /* Helles Blau wie Tageshimmel */
-    --full-duty: #ff9800;          /* Orange wie Sonnenauf-/untergang */
-    --night-duty: #1a237e;         /* Dunkles Marineblau wie Nachthimmel */
+    --regular-duty: #0EA5E9;       /* Elektrisches Blau für Tag */
+    --full-duty: #A855F7;          /* Helles Violett für 24h */
+    --night-duty: #334155;         /* Navy Slate für Nacht */
     
-    /* Effekte */
     --hover-brightness: 0.95;
-    --transition-speed: 0.2s;
+    --transition-speed: 0.3s;    
+    --hover-transform: scale(1.02);
     
-    /* Schatten */
     --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
-    --shadow-lg: 0 8px 15px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 16px rgba(0,0,0,0.1);
 }
 
-/* Login Styles */
-.login-section {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--secondary-color);
-    padding: 20px;
-}
-
-.login-container {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: var(--shadow-lg);
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-}
-
-.login-image {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    margin: 0 auto 1.5rem;
-    object-fit: cover;
-    border: 3px solid var(--primary-color);
-}
-
-.login-container h2 {
-    color: var(--primary-color);
-    margin-bottom: 1.5rem;
-    font-size: 1.8rem;
-}
-
-.login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.login-form input {
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 16px;
-}
-
-.login-form button {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.login-form button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* Navigation Button Styles */
-.nav-buttons {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-direction: row-reverse;
-}
-
-.nav-button {
-    background: var(--primary-color);
-    border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.nav-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    background: var(--primary-color-dark);
-}
-
-.nav-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Mobile styles */
-@media (max-width: 480px) {
-    .nav-buttons {
-        display: none;  /* Verstecken auf Mobile, da wir Swipe nutzen */
-    }
-}
-
-/* Header Layout für bessere Button-Positionierung */
-.header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 24px;
-    padding: 8px;
-    position: relative;
-    margin-top: 40px; /* Platz für den Abmelde-Button */
-}
-
-.title {
-    text-align: center;
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--primary-color);
-}
-/* Logout Button Style */
-.logout-button {
-    position: absolute;
-    top: -35px; /* Mehr Abstand nach oben */
-    right: 0;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s;
-}
-
-.logout-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* Desktop-spezifische Styles */
-@media (min-width: 768px) {
-    .day {
-        cursor: pointer;
-    }
-
-    .modal-content {
-        max-width: 500px;
-    }
-
-    .delete-option {
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border-color);
-        text-align: center;
-    }
-
-    .delete-button {
-        background: #dc3545;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.2s;
-    }
-
-    .delete-button:hover {
-        background: #c82333;
-    }
-}
-
+/* Reset & Basis-Styles */
 * {
     margin: 0;
     padding: 0;
@@ -210,76 +35,243 @@ body {
     background-color: var(--secondary-color);
     min-height: 100vh;
     padding: 16px;
+    /* Subtiler Hintergrund-Pattern */
+    background-image: 
+        url('shanti.jpg'),
+        linear-gradient(135deg, rgba(245,247,250,0.97) 0%, rgba(228,233,242,0.97) 100%);
+    background-blend-mode: overlay;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
 }
 
-/* Container */
+/* Container & Layout */
 .container {
     max-width: 800px;
     margin: 0 auto;
-    background: white;
-    padding: 20px;
-    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.98);
+    padding: 25px;
+    border-radius: 20px;
     box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(10px);
+    transition: transform var(--transition-speed);
 }
 
-/* Current Month */
-.current-month {
+.header {
+    margin-bottom: 20px;
+    padding: 0;
     text-align: center;
+    position: relative;
+}
+
+.title {
+    font-size: 26px;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;  /* Abstand zum Navigationsbereich */
+}
+/* -----------------------------
+   Login Bereich
+----------------------------- */
+.login-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(245,247,250,0.95) 0%, rgba(228,233,242,0.95) 100%);
+    padding: 20px;
+}
+
+.login-container {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.login-image {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    margin: 0 auto 2rem;
+    object-fit: cover;
+    border: 4px solid var(--primary-color);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-speed);
+}
+
+.login-image:hover {
+    transform: scale(1.05);
+}
+
+.login-container h2 {
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.login-form input {
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all var(--transition-speed);
+}
+
+.login-form input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(92,107,192,0.2);
+    outline: none;
+}
+
+.login-form button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    margin-top: 1rem;
+}
+
+.login-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* -----------------------------
+   Kalender Navigation
+----------------------------- */
+/* Monats-Navigation Container */
+.month-navigation {
+    display: flex;
+    align-items: center;  /* Vertikale Zentrierung */
+    justify-content: center;
+    margin: 20px 0;       /* Abstand zum Kalender */
+    gap: 20px;  /* Etwas mehr Abstand zwischen den Elementen */
+}
+
+.current-month {
+    background: var(--primary-color);
+    color: white;         /* Weiße Schrift */
+    padding: 8px 24px;
+    border-radius: 25px;
     font-size: 18px;
     font-weight: 500;
-    margin-bottom: 16px;
-    color: var(--text-color);
+    min-width: 200px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
 }
 
-/* Calendar Container */
+.nav-button {
+    width: 36px;
+    height: 36px;
+    background: white;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    box-shadow: var(--shadow-sm);
+    font-size: 18px;
+}
+
+.nav-button:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+
+.logout-button {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: white;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 250;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.logout-button:hover {
+    background: #dc3546b1;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* -----------------------------
+   Kalender Grid & Tage
+----------------------------- */
 .calendar-container {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     touch-action: pan-y pinch-zoom;
     user-select: none;
 }
 
-/* Weekdays Grid */
 .weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    gap: 6px;
     margin-bottom: 12px;
 }
 
 .weekday {
     background: var(--primary-color);
     color: white;
-    padding: 8px 4px;
+    padding: 10px 4px;
     text-align: center;
-    border-radius: 6px;
+    border-radius: 8px;
     font-weight: 500;
     font-size: 14px;
 }
 
-/* Calendar Grid */
 .calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    gap: 6px;
 }
 
-/* Calendar Days */
 .day, .empty-day {
     aspect-ratio: 1;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 4px;
+    border-radius: 10px;
+    padding: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
-    transition: transform var(--transition-speed);
+    transition: all var(--transition-speed);
 }
 
 .day:hover {
-    transform: scale(1.05);
+    transform: var(--hover-transform);
+    box-shadow: var(--shadow-sm);
 }
 
 .day.today {
@@ -287,7 +279,9 @@ body {
     font-weight: bold;
 }
 
-/* Duty Styles */
+/* -----------------------------
+   Dienst-Styles & Markierungen
+----------------------------- */
 .day.regular-duty { 
     background-color: var(--regular-duty); 
     color: var(--text-color);
@@ -306,7 +300,33 @@ body {
     border: none;
 }
 
-/* Legend */
+.day.continuation {
+    opacity: 0.8;
+    position: relative;
+    border: 2px dashed !important;
+}
+
+.day.regular-duty.continuation {
+    border-color: var(--regular-duty) !important;
+    background-color: transparent !important;
+    color: var(--regular-duty) !important;
+}
+
+.day.full-duty.continuation {
+    border-color: var(--full-duty) !important;
+    background-color: transparent !important;
+    color: var(--full-duty) !important;
+}
+
+.day.night-duty.continuation {
+    border-color: var(--night-duty) !important;
+    background-color: transparent !important;
+    color: var(--night-duty) !important;
+}
+
+/* -----------------------------
+   Legende
+----------------------------- */
 .legend {
     display: flex;
     justify-content: center;
@@ -315,13 +335,14 @@ body {
     margin-top: 20px;
     padding: 12px;
     background: var(--secondary-color);
-    border-radius: 8px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
 }
 
 .legend-item {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     font-size: 14px;
 }
 
@@ -335,7 +356,9 @@ body {
 .legend-dot.full { background-color: var(--full-duty); }
 .legend-dot.night { background-color: var(--night-duty); }
 
-/* Modal */
+/* -----------------------------
+   Modal & Zeit-Slots
+----------------------------- */
 .modal {
     display: none;
     position: fixed;
@@ -348,22 +371,29 @@ body {
     justify-content: center;
     padding: 16px;
     z-index: 1000;
+    backdrop-filter: blur(3px);
 }
 
 .modal-content {
     background: white;
-    padding: 20px;
-    border-radius: 16px;
+    padding: 25px;
+    border-radius: 20px;
     width: 100%;
     max-width: 400px;
     box-shadow: var(--shadow-lg);
+    transform: scale(0.95);
+    transition: transform var(--transition-speed);
+}
+
+.modal.modal-open .modal-content {
+    transform: scale(1);
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .close-button {
@@ -373,9 +403,13 @@ body {
     cursor: pointer;
     color: var(--text-color);
     padding: 4px;
+    transition: transform var(--transition-speed);
 }
 
-/* Time Slots */
+.close-button:hover {
+    transform: rotate(90deg);
+}
+
 .time-slots {
     display: grid;
     gap: 12px;
@@ -383,7 +417,7 @@ body {
 
 .time-slot {
     padding: 16px;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -392,7 +426,7 @@ body {
 }
 
 .time-slot:hover {
-    transform: translateX(4px);
+    transform: translateX(8px);
     filter: brightness(var(--hover-brightness));
 }
 
@@ -427,19 +461,31 @@ body {
     color: white;
 }
 
-/* Mobile Optimierungen */
+/* -----------------------------
+   Mobile & Responsive Styles
+----------------------------- */
 @media (max-width: 480px) {
     body {
         padding: 8px;
     }
 
     .container {
-        padding: 12px;
-        padding-bottom: 100px;
+        padding: 15px;
+        padding-bottom: 90px;
     }
 
     .title {
         font-size: 20px;
+    }
+
+    .month-navigation {
+        margin: 10px 0;
+    }
+
+    .current-month {
+        font-size: 16px;
+        min-width: 180px;
+        padding: 6px 15px;
     }
 
     .nav-buttons {
@@ -448,7 +494,7 @@ body {
 
     .weekday {
         font-size: 12px;
-        padding: 6px 2px;
+        padding: 8px 2px;
     }
 
     .day {
@@ -460,26 +506,44 @@ body {
         bottom: 0;
         left: 0;
         right: 0;
+        height: 80px; /* Fixe Höhe */
         background: white;
         box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         margin: 0;
-        padding: 16px;
+        padding: 12px;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        justify-content: space-around;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
         border-top-left-radius: 16px;
         border-top-right-radius: 16px;
+        backdrop-filter: blur(10px);
+        z-index: 100;
     }
 
     .legend-item {
+        flex: 1;
         justify-content: center;
-        width: 100%;
-        max-width: 200px;
+        font-size: 12px;
+        text-align: center;
+        white-space: nowrap; /* Verhindert Umbrüche */
+    }
+
+    .modal-content {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-width: none;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
     }
 
     .time-slot {
-        padding: 12px;
+        padding: 14px;
     }
 
     .time-slot .time {
@@ -489,16 +553,17 @@ body {
     .time-slot .label {
         font-size: 12px;
     }
+
+    .logout-button {
+        top: -10px;
+        right: -10px;
+    }
 }
 
 /* Tablet Optimierungen */
 @media (min-width: 481px) and (max-width: 768px) {
     .container {
-        padding: 16px;
-    }
-
-    .title {
-        font-size: 22px;
+        padding: 20px;
     }
 
     .weekday {
@@ -510,7 +575,7 @@ body {
     }
 }
 
-/* Landscape Mode Optimierungen */
+/* Landscape Mode */
 @media (max-height: 480px) and (orientation: landscape) {
     .container {
         max-height: 95vh;
@@ -521,44 +586,29 @@ body {
         aspect-ratio: auto;
         height: 40px;
     }
-
-    .legend {
-        position: static;
-        flex-direction: row;
-        padding: 8px;
-    }
 }
 
-.day.continuation {
-    opacity: 0.7;  /* Macht den Tag etwas transparenter */
-    position: relative;
-    border: 2px dashed !important; /* Gestrichelte Umrandung */
+/* Delete Option für Desktop */
+.delete-option {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
 }
 
-/* Spezifische Styles für jeden Diensttyp */
-.day.regular-duty.continuation {
-    border-color: var(--regular-duty) !important;
-    background-color: transparent !important;
-    color: var(--regular-duty) !important;
+.delete-button {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all var(--transition-speed);
 }
 
-.day.full-duty.continuation {
-    border-color: var(--full-duty) !important;
-    background-color: transparent !important;
-    color: var(--full-duty) !important;
+.delete-button:hover {
+    background: #c82333;
+    transform: translateY(-2px);
 }
 
-.day.night-duty.continuation {
-    border-color: var(--night-duty) !important;
-    background-color: transparent !important;
-    color: var(--night-duty) !important;
-}
-
-/* Optional: Kleiner Pfeil der nach oben zeigt um auf den Vortag zu verweisen */
-.day.continuation::after {
-    position: absolute;
-    bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 10px;
-}

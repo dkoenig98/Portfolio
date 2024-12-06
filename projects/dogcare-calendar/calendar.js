@@ -58,7 +58,7 @@ class Calendar {
         const header = document.querySelector('.header');
         const logoutButton = document.createElement('button');
         logoutButton.className = 'logout-button';
-        logoutButton.textContent = 'Abmelden';
+        logoutButton.textContent = 'x';
         logoutButton.onclick = () => {
             this.auth.logout();
             this.showLogin();
