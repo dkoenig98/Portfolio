@@ -56,6 +56,9 @@ class Calendar {
     }
 
     setupCustomTimeSlot() {
+        // Diese Methode nur einmal aufrufen
+        if (document.querySelector('.time-slot.custom')) return;
+    
         const customTimeSlot = document.createElement('div');
         customTimeSlot.className = 'time-slot custom';
         customTimeSlot.dataset.type = 'custom';
@@ -70,7 +73,7 @@ class Calendar {
         const customTimeSelect = document.createElement('select');
         customTimeSelect.className = 'custom-time-select';
     
-        // Add predefined time slot options
+        // Voreingestellte Zeitoptionen
         const timeslots = ['08:00 - 13:00', '08:00 - 18:30', '10:00 - 18:30'];
         timeslots.forEach(timeslot => {
             const option = document.createElement('option');
@@ -79,15 +82,10 @@ class Calendar {
             customTimeSelect.appendChild(option);
         });
     
-        customTimeSlotInfo.appendChild(customTimeLabel);
         customTimeSlotInfo.appendChild(customTimeSelect);
-    
-        const customTimeSlotIcon = document.createElement('div');
-        customTimeSlotIcon.className = 'time-slot-icon';
-        customTimeSlotIcon.textContent = '→';
+        customTimeSlotInfo.appendChild(customTimeLabel);
     
         customTimeSlot.appendChild(customTimeSlotInfo);
-        customTimeSlot.appendChild(customTimeSlotIcon);
     
         const timeSlots = document.querySelector('.time-slots');
         timeSlots.appendChild(customTimeSlot);
@@ -333,49 +331,42 @@ class Calendar {
     }
 
     previousMonth() {
-        this.currentDate = new Date(
-            this.currentDate.getFullYear(),
-            this.currentDate.getMonth() - 1
-        );
+        const newDate = new Date(this.currentDate);
+        newDate.setMonth(newDate.getMonth() - 1);
+        this.currentDate = newDate;
         this.renderCalendar();
     }
-
+    
     nextMonth() {
-        this.currentDate = new Date(
-            this.currentDate.getFullYear(),
-            this.currentDate.getMonth() + 1
-        );
+        const newDate = new Date(this.currentDate);
+        newDate.setMonth(newDate.getMonth() + 1);
+        this.currentDate = newDate;
         this.renderCalendar();
     }
 
-selectDate(day) {
-    const dateStr = this.formatDateString(
-        this.currentDate.getFullYear(),
-        this.currentDate.getMonth() + 1,
-        day
-    );
-    this.selectedDate = dateStr;
-
-    const displayDate = new Date(
-        this.currentDate.getFullYear(),
-        this.currentDate.getMonth(),
-        day
-    ).toLocaleDateString('de-DE', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long'
-    });
-
-    document.getElementById('selectedDate').textContent = displayDate;
-
-    const modal = document.getElementById('appointmentModal');
-    const customTimeSlot = modal.querySelector('.time-slot.custom');
-    const customTimeInput = customTimeSlot.querySelector('.custom-time-input');
-    customTimeInput.value = ''; // Clear the custom time input
-    customTimeSlot.style.display = 'flex'; // Show the custom time slot
-
-    this.openModal();
-}
+    selectDate(day) {
+        if (!this.auth.canModifyAppointments()) return;
+    
+        const dateStr = this.formatDateString(
+            this.currentDate.getFullYear(),
+            this.currentDate.getMonth() + 1,
+            day
+        );
+        this.selectedDate = dateStr;
+    
+        const displayDate = new Date(
+            this.currentDate.getFullYear(),
+            this.currentDate.getMonth(),
+            day
+        ).toLocaleDateString('de-DE', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long'
+        });
+    
+        document.getElementById('selectedDate').textContent = displayDate;
+        this.openModal();
+    }
 
     openModal() {
         const modal = document.getElementById('appointmentModal');
@@ -389,23 +380,41 @@ selectDate(day) {
         modal.style.display = 'none';
     }
 
-async saveAppointment(type, time) {
-    if (!this.selectedDate) return;
-
-    let appointmentType = type;
-    let appointmentTime = time;
-
-    if (type === 'custom') {
-        appointmentType = 'custom';
+    async saveAppointment(type, time) {
+        if (!this.selectedDate) return;
+    
+        let appointmentData = {
+            date: this.selectedDate,
+            type,
+            time
+        };
+    
+        if (type === 'custom') {
+            const startTime = document.getElementById('customStartTime').value;
+            const endTime = document.getElementById('customEndTime').value;
+            
+            if (!startTime || !endTime) {
+                alert('Bitte Start- und Endzeit eingeben');
+                return;
+            }
+    
+            appointmentData = {
+                ...appointmentData,
+                time: `${startTime} - ${endTime}`,
+                customTime: {
+                    start: startTime,
+                    end: endTime
+                }
+            };
+        }
+    
+        const appointment = await this.api.saveAppointment(this.selectedDate, appointmentData);
+        if (appointment) {
+            this.appointments = await this.api.fetchAppointments();
+            this.renderCalendar();
+            this.closeModal();
+        }
     }
-
-    const appointment = await this.api.saveAppointment(this.selectedDate, appointmentType, appointmentTime);
-    if (appointment) {
-        this.appointments = await this.api.fetchAppointments();
-        this.renderCalendar();
-        this.closeModal();
-    }
-}
 
     attachEventListeners() {
         document.getElementById('prevMonth')?.addEventListener('click', () => this.previousMonth());

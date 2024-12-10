@@ -7,7 +7,6 @@
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Login Section -->
     <div id="loginSection" class="login-section">
         <div class="login-container">
             <img src="shanti.jpg" alt="Shanti" class="login-image">
@@ -20,17 +19,16 @@
         </div>
     </div>
 
-    <!-- Calendar Section (wird nach Login angezeigt) -->
     <div id="calendarSection" class="calendar-section" style="display: none;">
         <div class="container">
             <div class="header">
                 <h1>Shanti's Kindergartenplan</h1>
             </div>
-            
+
             <div class="month-navigation">
-                <button class="nav-button" id="prevMonth">❮</button>
+                <button id="prevMonth" class="nav-button">❮</button>
                 <div id="currentMonth" class="current-month"></div>
-                <button class="nav-button" id="nextMonth">❯</button>
+                <button id="nextMonth" class="nav-button">❯</button>
             </div>
 
             <div class="calendar-container">
@@ -43,7 +41,7 @@
                     <div class="weekday">Sa</div>
                     <div class="weekday">So</div>
                 </div>
-                <div class="calendar" id="calendar"></div>
+                <div id="calendar" class="calendar"></div>
             </div>
 
             <div class="legend">
@@ -56,19 +54,18 @@
                     <span>24h (07:00 - 09:00)</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-dot night"></div>
-                    <span>Nacht (21:00 - 09:00)</span>
+                    <div class="legend-dot custom"></div>
+                    <span>Benutzerdefiniert</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal" id="appointmentModal">
+    <div id="appointmentModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Termin für <span id="selectedDate"></span></h3>
-                <button class="close-button" id="closeModal">&times;</button>
+                <button class="close-button">&times;</button>
             </div>
             <div class="time-slots">
                 <div class="time-slot regular" data-type="regular">
@@ -78,25 +75,12 @@
                     </div>
                     <div class="time-slot-icon">→</div>
                 </div>
-            
                 <div class="time-slot full" data-type="full">
                     <div class="time-slot-info">
                         <span class="time">07:00 - 09:00 (+1)</span>
                         <span class="label">24h Dienst</span>
                     </div>
                     <div class="time-slot-icon">→</div>
-                </div>
-            
-                <div class="time-slot custom" data-type="custom">
-                    <div class="time-slot-info">
-                        <div class="custom-time-inputs">
-                            <input type="time" id="customStartTime" required>
-                            <span>bis</span>
-                            <input type="time" id="customEndTime" required>
-                        </div>
-                        <span class="label">Benutzerdefiniert</span>
-                    </div>
-                    <button class="save-custom-time">Speichern</button>
                 </div>
             </div>
         </div>
