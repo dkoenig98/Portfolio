@@ -10,7 +10,7 @@
     
     --regular-duty: #0EA5E9;       /* Elektrisches Blau für Tag */
     --full-duty: #A855F7;          /* Helles Violett für 24h */
-    --night-duty: #334155;         /* Navy Slate für Nacht */
+    --custom-duty: #14B8A6;        /* Navy Slate für Nacht */
     
     --hover-brightness: 0.95;
     --transition-speed: 0.3s;    
@@ -458,6 +458,41 @@ body {
 
 .time-slot.night { 
     background: var(--night-duty); 
+    color: white;
+}
+
+.time-slot.custom {
+    background: var(--primary-color);
+    color: white;
+}
+
+.custom-time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.custom-time-inputs input[type="time"] {
+    padding: 4px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.save-custom-time {
+    background: white;
+    color: var(--primary-color);
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.save-custom-time:hover {
+    background: var(--primary-color-dark);
     color: white;
 }
 

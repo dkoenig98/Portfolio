@@ -52,6 +52,50 @@ class Calendar {
         this.attachEventListeners();
         this.setupSwipeHandler();
         this.addLogoutButton();
+        this.setupCustomTimeSlot();
+    }
+
+    setupCustomTimeSlot() {
+        const customTimeSlot = document.createElement('div');
+        customTimeSlot.className = 'time-slot custom';
+        customTimeSlot.dataset.type = 'custom';
+    
+        const customTimeSlotInfo = document.createElement('div');
+        customTimeSlotInfo.className = 'time-slot-info';
+    
+        const customTimeLabel = document.createElement('div');
+        customTimeLabel.className = 'label';
+        customTimeLabel.textContent = 'Benutzerdefiniert';
+    
+        const customTimeSelect = document.createElement('select');
+        customTimeSelect.className = 'custom-time-select';
+    
+        // Add predefined time slot options
+        const timeslots = ['08:00 - 13:00', '08:00 - 18:30', '10:00 - 18:30'];
+        timeslots.forEach(timeslot => {
+            const option = document.createElement('option');
+            option.value = timeslot;
+            option.textContent = timeslot;
+            customTimeSelect.appendChild(option);
+        });
+    
+        customTimeSlotInfo.appendChild(customTimeLabel);
+        customTimeSlotInfo.appendChild(customTimeSelect);
+    
+        const customTimeSlotIcon = document.createElement('div');
+        customTimeSlotIcon.className = 'time-slot-icon';
+        customTimeSlotIcon.textContent = '→';
+    
+        customTimeSlot.appendChild(customTimeSlotInfo);
+        customTimeSlot.appendChild(customTimeSlotIcon);
+    
+        const timeSlots = document.querySelector('.time-slots');
+        timeSlots.appendChild(customTimeSlot);
+    
+        customTimeSelect.addEventListener('change', () => {
+            const selectedTime = customTimeSelect.value;
+            this.saveAppointment('custom', selectedTime);
+        });
     }
 
     addLogoutButton() {
@@ -304,27 +348,34 @@ class Calendar {
         this.renderCalendar();
     }
 
-    selectDate(day) {
-        const dateStr = this.formatDateString(
-            this.currentDate.getFullYear(),
-            this.currentDate.getMonth() + 1,
-            day
-        );
-        this.selectedDate = dateStr;
+selectDate(day) {
+    const dateStr = this.formatDateString(
+        this.currentDate.getFullYear(),
+        this.currentDate.getMonth() + 1,
+        day
+    );
+    this.selectedDate = dateStr;
 
-        const displayDate = new Date(
-            this.currentDate.getFullYear(),
-            this.currentDate.getMonth(),
-            day
-        ).toLocaleDateString('de-DE', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long'
-        });
+    const displayDate = new Date(
+        this.currentDate.getFullYear(),
+        this.currentDate.getMonth(),
+        day
+    ).toLocaleDateString('de-DE', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long'
+    });
 
-        document.getElementById('selectedDate').textContent = displayDate;
-        this.openModal();
-    }
+    document.getElementById('selectedDate').textContent = displayDate;
+
+    const modal = document.getElementById('appointmentModal');
+    const customTimeSlot = modal.querySelector('.time-slot.custom');
+    const customTimeInput = customTimeSlot.querySelector('.custom-time-input');
+    customTimeInput.value = ''; // Clear the custom time input
+    customTimeSlot.style.display = 'flex'; // Show the custom time slot
+
+    this.openModal();
+}
 
     openModal() {
         const modal = document.getElementById('appointmentModal');
@@ -338,16 +389,41 @@ class Calendar {
         modal.style.display = 'none';
     }
 
-    async saveAppointment(type, time) {
-        if (!this.selectedDate) return;
+async saveAppointment(type, time) {
+    if (!this.selectedDate) return;
 
-        const appointment = await this.api.saveAppointment(this.selectedDate, type, time);
-        if (appointment) {
-            this.appointments = await this.api.fetchAppointments();
-            this.renderCalendar();
-            this.closeModal();
+    let appointmentData = {
+        date: this.selectedDate,
+        type,
+        time
+    };
+
+    if (type === 'custom') {
+        const startTime = document.getElementById('customStartTime').value;
+        const endTime = document.getElementById('customEndTime').value;
+        
+        if (!startTime || !endTime) {
+            alert('Bitte Start- und Endzeit eingeben');
+            return;
         }
+
+        appointmentData = {
+            ...appointmentData,
+            time: `${startTime} - ${endTime}`,
+            customTime: {
+                start: startTime,
+                end: endTime
+            }
+        };
     }
+
+    const appointment = await this.api.saveAppointment(this.selectedDate, appointmentData);
+    if (appointment) {
+        this.appointments = await this.api.fetchAppointments();
+        this.renderCalendar();
+        this.closeModal();
+    }
+}
 
     attachEventListeners() {
         document.getElementById('prevMonth')?.addEventListener('click', () => this.previousMonth());

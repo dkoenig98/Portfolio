@@ -78,6 +78,7 @@
                     </div>
                     <div class="time-slot-icon">→</div>
                 </div>
+            
                 <div class="time-slot full" data-type="full">
                     <div class="time-slot-info">
                         <span class="time">07:00 - 09:00 (+1)</span>
@@ -85,12 +86,17 @@
                     </div>
                     <div class="time-slot-icon">→</div>
                 </div>
-                <div class="time-slot night" data-type="night">
+            
+                <div class="time-slot custom" data-type="custom">
                     <div class="time-slot-info">
-                        <span class="time">21:00 - 09:00</span>
-                        <span class="label">Nachtdienst</span>
+                        <div class="custom-time-inputs">
+                            <input type="time" id="customStartTime" required>
+                            <span>bis</span>
+                            <input type="time" id="customEndTime" required>
+                        </div>
+                        <span class="label">Benutzerdefiniert</span>
                     </div>
-                    <div class="time-slot-icon">→</div>
+                    <button class="save-custom-time">Speichern</button>
                 </div>
             </div>
         </div>

@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-
+// Appointment.js
 const AppointmentSchema = new mongoose.Schema({
     date: {
         type: String,
@@ -7,7 +6,7 @@ const AppointmentSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['regular', 'full', 'night'],
+        enum: ['regular', 'full', 'custom'],  // 'night' zu 'custom' geändert
         required: true
     },
     time: {
@@ -22,7 +21,9 @@ const AppointmentSchema = new mongoose.Schema({
     parentDate: {
         type: String,
         default: null
+    },
+    customTime: {                   // Neu für benutzerdefinierte Zeiten
+        start: String,
+        end: String
     }
 }, { timestamps: true });
-
-module.exports = mongoose.model('Appointment', AppointmentSchema);
