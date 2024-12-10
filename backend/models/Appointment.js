@@ -7,7 +7,7 @@ const AppointmentSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['regular', 'full', 'custom'],
+        enum: ['regular', 'full', 'night'],
         required: true
     },
     time: {
@@ -22,10 +22,6 @@ const AppointmentSchema = new mongoose.Schema({
     parentDate: {
         type: String,
         default: null
-    },
-    customTime: {
-        start: String,
-        end: String
     }
 }, { timestamps: true });
 

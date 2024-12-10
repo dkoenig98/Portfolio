@@ -7,6 +7,7 @@
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Login Section -->
     <div id="loginSection" class="login-section">
         <div class="login-container">
             <img src="shanti.jpg" alt="Shanti" class="login-image">
@@ -19,16 +20,17 @@
         </div>
     </div>
 
+    <!-- Calendar Section (wird nach Login angezeigt) -->
     <div id="calendarSection" class="calendar-section" style="display: none;">
         <div class="container">
             <div class="header">
                 <h1>Shanti's Kindergartenplan</h1>
             </div>
-
+            
             <div class="month-navigation">
-                <button id="prevMonth" class="nav-button">❮</button>
+                <button class="nav-button" id="prevMonth">❮</button>
                 <div id="currentMonth" class="current-month"></div>
-                <button id="nextMonth" class="nav-button">❯</button>
+                <button class="nav-button" id="nextMonth">❯</button>
             </div>
 
             <div class="calendar-container">
@@ -41,7 +43,7 @@
                     <div class="weekday">Sa</div>
                     <div class="weekday">So</div>
                 </div>
-                <div id="calendar" class="calendar"></div>
+                <div class="calendar" id="calendar"></div>
             </div>
 
             <div class="legend">
@@ -54,18 +56,19 @@
                     <span>24h (07:00 - 09:00)</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-dot custom"></div>
-                    <span>Benutzerdefiniert</span>
+                    <div class="legend-dot night"></div>
+                    <span>Nacht (21:00 - 09:00)</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="appointmentModal" class="modal">
+    <!-- Modal -->
+    <div class="modal" id="appointmentModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Termin für <span id="selectedDate"></span></h3>
-                <button class="close-button">&times;</button>
+                <button class="close-button" id="closeModal">&times;</button>
             </div>
             <div class="time-slots">
                 <div class="time-slot regular" data-type="regular">
@@ -79,6 +82,13 @@
                     <div class="time-slot-info">
                         <span class="time">07:00 - 09:00 (+1)</span>
                         <span class="label">24h Dienst</span>
+                    </div>
+                    <div class="time-slot-icon">→</div>
+                </div>
+                <div class="time-slot night" data-type="night">
+                    <div class="time-slot-info">
+                        <span class="time">21:00 - 09:00</span>
+                        <span class="label">Nachtdienst</span>
                     </div>
                     <div class="time-slot-icon">→</div>
                 </div>
