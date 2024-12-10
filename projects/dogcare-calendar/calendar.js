@@ -392,32 +392,14 @@ selectDate(day) {
 async saveAppointment(type, time) {
     if (!this.selectedDate) return;
 
-    let appointmentData = {
-        date: this.selectedDate,
-        type,
-        time
-    };
+    let appointmentType = type;
+    let appointmentTime = time;
 
     if (type === 'custom') {
-        const startTime = document.getElementById('customStartTime').value;
-        const endTime = document.getElementById('customEndTime').value;
-        
-        if (!startTime || !endTime) {
-            alert('Bitte Start- und Endzeit eingeben');
-            return;
-        }
-
-        appointmentData = {
-            ...appointmentData,
-            time: `${startTime} - ${endTime}`,
-            customTime: {
-                start: startTime,
-                end: endTime
-            }
-        };
+        appointmentType = 'custom';
     }
 
-    const appointment = await this.api.saveAppointment(this.selectedDate, appointmentData);
+    const appointment = await this.api.saveAppointment(this.selectedDate, appointmentType, appointmentTime);
     if (appointment) {
         this.appointments = await this.api.fetchAppointments();
         this.renderCalendar();
