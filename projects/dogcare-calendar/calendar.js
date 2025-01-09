@@ -1,3 +1,7 @@
+window.addEventListener('load', () => {
+    window.scrollTo(0, 0);
+});
+
 class Calendar {
     constructor() {
         this.currentDate = new Date();
