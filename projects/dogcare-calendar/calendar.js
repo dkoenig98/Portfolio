@@ -345,12 +345,26 @@ class Calendar {
 
     async saveAppointment(type, time) {
         if (!this.selectedDate) return;
-
-        const appointment = await this.api.saveAppointment(this.selectedDate, type, time);
+    
+        console.log('Calendar trying to save:', {
+            date: this.selectedDate,
+            type: type,
+            time: time
+        });
+    
+        const appointment = await this.api.saveAppointment(
+            this.selectedDate,
+            type,
+            time
+        );
+    
         if (appointment) {
+            // Korrigierte Version ohne doppeltes await
             this.appointments = await this.api.fetchAppointments();
             this.renderCalendar();
             this.closeModal();
+        } else {
+            console.error('Failed to save appointment');
         }
     }
 
