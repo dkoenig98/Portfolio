@@ -102,13 +102,19 @@ router.post('/appointments', authenticateToken, async (req, res) => {
 
 router.delete('/appointments/:date', authenticateToken, async (req, res) => {
     try {
+        console.log('[DELETE] Attempting to delete appointment for date:', req.params.date);
         const { date } = req.params;
         
         // Lösche alle Termine an diesem Datum
         const appointments = await Appointment.find({ date });
+        console.log('[DELETE] Found appointments:', appointments);
         
         for (const appointment of appointments) {
+            // Füge den Termin zur Email-Digest-Liste hinzu, bevor er gelöscht wird
+            emailService.addChange(appointment, 'delete');
+            
             await Appointment.findByIdAndDelete(appointment._id);
+            console.log('[DELETE] Deleted appointment:', appointment._id);
             
             // Wenn es ein 24h-Dienst ist, lösche auch den Folgetermin
             if (appointment.type === 'full') {
@@ -116,16 +122,24 @@ router.delete('/appointments/:date', authenticateToken, async (req, res) => {
                 const nextDate = new Date(year, month - 1, parseInt(day) + 1);
                 const nextDateStr = `${nextDate.getFullYear()}-${nextDate.getMonth() + 1}-${nextDate.getDate()}`;
                 
-                await Appointment.deleteOne({ 
+                const continuationAppointment = await Appointment.findOne({ 
                     date: nextDateStr,
                     parentDate: date 
                 });
+                
+                if (continuationAppointment) {
+                    // Füge auch den Folgetermin zur Email-Digest-Liste hinzu
+                    emailService.addChange(continuationAppointment, 'delete');
+                    await Appointment.deleteOne({ _id: continuationAppointment._id });
+                }
+                
+                console.log('[DELETE] Deleted continuation appointment for:', nextDateStr);
             }
         }
 
         res.json({ message: 'Termine gelöscht', count: appointments.length });
     } catch (error) {
-        console.error('Delete error:', error);
+        console.error('[DELETE_ERROR]:', error);
         res.status(500).json({ message: 'Server Fehler', error: error.message });
     }
 });

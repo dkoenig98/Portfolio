@@ -1,5 +1,4 @@
 const nodemailer = require('nodemailer');
-const icalGenerator = require('ical-generator').default;  // Korrigierter Import
 
 class EmailService {
     constructor() {
@@ -34,7 +33,6 @@ class EmailService {
             deletedAppointments: []
         };
         this.digestTimeout = null;
-        //this.DIGEST_DELAY = 10 * 60 * 1000; // 10 Minuten
         this.DIGEST_DELAY = 30 * 1000; // 30 Sekunden für Tests
     }
 
@@ -78,37 +76,6 @@ class EmailService {
         });
     }
 
-    createICalEvent(appointment) {
-        console.log('[ICAL] Creating calendar event for appointment:', appointment);
-        
-        const calendar = icalGenerator({ name: 'Shanti Termine' });
-        
-        const [year, month, day] = appointment.date.split('-').map(num => parseInt(num));
-        const [startHour, startMinute] = appointment.time.split(' - ')[0].split(':').map(num => parseInt(num));
-        const [endHour, endMinute] = appointment.time.split(' - ')[1].split(':').map(num => parseInt(num));
-
-        const startDate = new Date(year, month - 1, day, startHour, startMinute);
-        const endDate = new Date(year, month - 1, day, endHour, endMinute);
-
-        if (appointment.type === 'full') {
-            endDate.setDate(endDate.getDate() + 1);
-        }
-
-        calendar.createEvent({
-            start: startDate,
-            end: endDate,
-            summary: `Shanti - ${this.getAppointmentTypeText(appointment.type)}`,
-            description: 'Hundesitting für Shanti',
-            location: 'Bei Shanti',
-            alarms: [
-                { type: 'display', trigger: 3600 } // 1 Stunde vorher erinnern
-            ]
-        });
-
-        console.log('[ICAL] Calendar event created successfully');
-        return calendar;
-    }
-
     async sendDigestEmail() {
         console.log('[EMAIL_SERVICE] Starting digest email process');
         console.log('[EMAIL_SERVICE] Current pending changes:', {
@@ -128,78 +95,77 @@ class EmailService {
             this.pendingChanges.newAppointments.sort(sortByDate);
             this.pendingChanges.deletedAppointments.sort(sortByDate);
 
-            // Erstelle Kalenderanhänge für neue Termine
-            const calendarAttachments = this.pendingChanges.newAppointments.map(app => {
-                const calendar = this.createICalEvent(app);
-                return {
-                    filename: `shanti-termin-${app.date}.ics`,
-                    content: calendar.toString(),
-                    contentType: 'text/calendar'
-                };
-            });
-
             const mailOptions = {
                 from: process.env.EMAIL_USER,
                 to: process.env.EMAIL_TO,
                 subject: 'Shanti Terminplan Updates',
-                attachments: calendarAttachments,
                 html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                        <h2 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">
-                            Shanti Terminplan Updates
-                        </h2>
-                        
-                        ${this.pendingChanges.newAppointments.length > 0 ? `
-                            <div style="margin-top: 20px; background-color: #f0fff4; padding: 15px; border-radius: 8px;">
-                                <h3 style="color: #059669; margin-top: 0;">Neue Termine</h3>
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <thead>
-                                        <tr style="background-color: #d1fae5;">
-                                            <th style="padding: 10px; text-align: left;">Datum</th>
-                                            <th style="padding: 10px; text-align: left;">Dienstart</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${this.pendingChanges.newAppointments.map(app => `
-                                            <tr>
-                                                <td style="padding: 10px; border-bottom: 1px solid #d1fae5;">
-                                                    ${this.formatDate(app.date)}
-                                                </td>
-                                                <td style="padding: 10px; border-bottom: 1px solid #d1fae5;">
-                                                    ${this.getAppointmentTypeText(app.type)}
-                                                </td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        ` : ''}
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; border-radius: 10px;">
+                        <div style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h1 style="color: #1a73e8; margin-top: 0; text-align: center; border-bottom: 2px solid #f1f3f4; padding-bottom: 15px;">
+                                Shanti Terminplan Updates
+                            </h1>
+                            
+                            ${this.pendingChanges.newAppointments.length > 0 ? `
+                                <div style="margin-top: 25px; background-color: #e6f4ea; padding: 20px; border-radius: 8px; border-left: 4px solid #1e8e3e;">
+                                    <h2 style="color: #1e8e3e; margin-top: 0; font-size: 18px;">🆕 Neue Termine</h2>
+                                    <div style="overflow-x: auto;">
+                                        <table style="width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px;">
+                                            <thead>
+                                                <tr style="background-color: rgba(30, 142, 62, 0.1);">
+                                                    <th style="padding: 12px; text-align: left; border-top-left-radius: 8px;">Datum</th>
+                                                    <th style="padding: 12px; text-align: left; border-top-right-radius: 8px;">Dienstart</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${this.pendingChanges.newAppointments.map(app => `
+                                                    <tr style="border-bottom: 1px solid #e0e0e0;">
+                                                        <td style="padding: 12px; font-weight: 500;">
+                                                            ${this.formatDate(app.date)}
+                                                        </td>
+                                                        <td style="padding: 12px;">
+                                                            ${this.getAppointmentTypeText(app.type)}
+                                                        </td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            ` : ''}
 
-                        ${this.pendingChanges.deletedAppointments.length > 0 ? `
-                            <div style="margin-top: 20px; background-color: #fef2f2; padding: 15px; border-radius: 8px;">
-                                <h3 style="color: #dc2626; margin-top: 0;">Gelöschte Termine</h3>
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <thead>
-                                        <tr style="background-color: #fee2e2;">
-                                            <th style="padding: 10px; text-align: left;">Datum</th>
-                                            <th style="padding: 10px; text-align: left;">Dienstart</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${this.pendingChanges.deletedAppointments.map(app => `
-                                            <tr>
-                                                <td style="padding: 10px; border-bottom: 1px solid #fee2e2;">
-                                                    ${this.formatDate(app.date)}
-                                                </td>
-                                                <td style="padding: 10px; border-bottom: 1px solid #fee2e2;">
-                                                    ${this.getAppointmentTypeText(app.type)}
-                                                </td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
+                            ${this.pendingChanges.deletedAppointments.length > 0 ? `
+                                <div style="margin-top: 25px; background-color: #fce8e8; padding: 20px; border-radius: 8px; border-left: 4px solid #d93025;">
+                                    <h2 style="color: #d93025; margin-top: 0; font-size: 18px;">❌ Gelöschte Termine</h2>
+                                    <div style="overflow-x: auto;">
+                                        <table style="width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px;">
+                                            <thead>
+                                                <tr style="background-color: rgba(217, 48, 37, 0.1);">
+                                                    <th style="padding: 12px; text-align: left; border-top-left-radius: 8px;">Datum</th>
+                                                    <th style="padding: 12px; text-align: left; border-top-right-radius: 8px;">Dienstart</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${this.pendingChanges.deletedAppointments.map(app => `
+                                                    <tr style="border-bottom: 1px solid #e0e0e0;">
+                                                        <td style="padding: 12px; font-weight: 500;">
+                                                            ${this.formatDate(app.date)}
+                                                        </td>
+                                                        <td style="padding: 12px;">
+                                                            ${this.getAppointmentTypeText(app.type)}
+                                                        </td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            <div style="margin-top: 25px; text-align: center; color: #666; font-size: 14px; padding-top: 15px; border-top: 1px solid #f1f3f4;">
+                                Dies ist eine automatisch generierte Nachricht vom Shanti Terminplan System
                             </div>
-                        ` : ''}
+                        </div>
                     </div>
                 `
             };
