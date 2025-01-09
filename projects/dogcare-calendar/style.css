@@ -560,6 +560,7 @@ body {
     }
 
     .legend {
+        margin-bottom: -25px !important;
         position: fixed;
         bottom: 0;
         left: 0;
