@@ -67,15 +67,15 @@ router.post('/appointments', authenticateToken, async (req, res) => {
         await appointment.save();
 
         // E-Mail-Benachrichtigung korrigiert
-        if (req.user.role === 'sitter') {
-            try {
-                emailService.addChange(appointment, 'new');
-                console.log('Email change added successfully');
-            } catch (emailError) {
-                console.error('Email service error:', emailError);
-                // Wir werfen den Fehler nicht weiter, damit die Appointment-Erstellung trotzdem funktioniert
-            }
+        
+        try {
+            emailService.addChange(appointment, 'new');
+            console.log('Email change added successfully');
+        } catch (emailError) {
+            console.error('Email service error:', emailError);
+            // Wir werfen den Fehler nicht weiter, damit die Appointment-Erstellung trotzdem funktioniert
         }
+        
 
         // Wenn es ein Nacht- oder 24h-Dienst ist, erstelle auch den Folgetermin
         if (type === 'night' || type === 'full') {
