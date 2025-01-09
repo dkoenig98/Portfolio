@@ -64,6 +64,19 @@ router.post('/appointments', authenticateToken, async (req, res) => {
             createdBy: req.user.id
         });
 
+        await appointment.save();
+
+        // E-Mail-Benachrichtigung korrigiert
+        if (req.user.role === 'sitter') {
+            try {
+                emailService.addChange(appointment, 'new');
+                console.log('Email change added successfully');
+            } catch (emailError) {
+                console.error('Email service error:', emailError);
+                // Wir werfen den Fehler nicht weiter, damit die Appointment-Erstellung trotzdem funktioniert
+            }
+        }
+
         // Wenn es ein Nacht- oder 24h-Dienst ist, erstelle auch den Folgetermin
         if (type === 'night' || type === 'full') {
             const [year, month, day] = date.split('-');
@@ -79,14 +92,10 @@ router.post('/appointments', authenticateToken, async (req, res) => {
             });
             await continuation.save();
         }
-
-        await appointment.save();
-        // Hier die Änderung: E-Mail wird gesendet, wenn der Owner einen Termin erstellt
-/*         if (req.user.role === 'owner') {
-            await emailService.sendAppointmentNotification(appointment);
-        } */
+        
         res.status(201).json(appointment);
     } catch (error) {
+        console.error('Appointment creation error:', error);
         res.status(400).json({ message: 'Fehler beim Erstellen', error: error.message });
     }
 });
