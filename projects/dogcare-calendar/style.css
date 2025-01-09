@@ -276,8 +276,46 @@ body {
 }
 
 .day.today {
+    position: relative;
     border: 2px solid var(--primary-color);
     font-weight: bold;
+}
+
+.day.today::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    bottom: -2px;
+    left: -2px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.day.today.regular-duty::after,
+.day.today.full-duty::after,
+.day.today.late-duty::after,
+.day.today.extended-duty::after {
+    border-color: white;
+}
+
+.day.holiday {
+    position: relative;
+}
+
+.day.holiday::before {
+    content: '🔔';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 20px;
+}
+
+/* Wenn es ein Feiertag und ein Dienst ist */
+.day.holiday.full-duty::before {
+    color: white;
 }
 
 /* -----------------------------

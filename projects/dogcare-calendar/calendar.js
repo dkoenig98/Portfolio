@@ -132,6 +132,11 @@ class Calendar {
         dayNumber.textContent = day;
         dayElement.appendChild(dayNumber);
 
+        const currentDate = new Date(year, month, day);
+        if (this.isHoliday(currentDate)) {
+            dayElement.classList.add('holiday');
+        }
+
         const dateStr = this.formatDateString(year, month + 1, day);
         const appointment = this.appointments[dateStr];
         
@@ -388,6 +393,67 @@ class Calendar {
             }
         });
     }
+
+    isHoliday(date) {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const day = date.getDate();
+    
+        // Fixe Feiertage
+        const fixedHolidays = [
+            { day: 1, month: 0 },   // Neujahr
+            { day: 6, month: 0 },   // Heilige Drei Könige
+            { day: 1, month: 4 },   // Staatsfeiertag
+            { day: 15, month: 7 },  // Mariä Himmelfahrt
+            { day: 26, month: 9 },  // Nationalfeiertag
+            { day: 1, month: 10 },  // Allerheiligen
+            { day: 8, month: 11 },  // Mariä Empfängnis
+            { day: 25, month: 11 }, // Christtag
+            { day: 26, month: 11 }  // Stefanitag
+        ];
+    
+        // Prüfe fixe Feiertage
+        if (fixedHolidays.some(h => h.day === day && h.month === month)) {
+            return true;
+        }
+    
+        // Berechne Ostersonntag (Gaußsche Osterformel)
+        const a = year % 19;
+        const b = Math.floor(year / 100);
+        const c = year % 100;
+        const d = Math.floor(b / 4);
+        const e = b % 4;
+        const f = Math.floor((b + 8) / 25);
+        const g = Math.floor((b - f + 1) / 3);
+        const h = (19 * a + b - d - g + 15) % 30;
+        const i = Math.floor(c / 4);
+        const k = c % 4;
+        const l = (32 + 2 * e + 2 * i - h - k) % 7;
+        const m = Math.floor((a + 11 * h + 22 * l) / 451);
+        const month_easter = Math.floor((h + l - 7 * m + 114) / 31) - 1;
+        const day_easter = ((h + l - 7 * m + 114) % 31) + 1;
+    
+        // Erstelle Ostersonntag Datum
+        const easter = new Date(year, month_easter, day_easter);
+        
+        // Berechne bewegliche Feiertage
+        const holidays = [
+            new Date(easter.getTime()),                           // Ostersonntag
+            new Date(easter.getTime() + 86400000),               // Ostermontag
+            new Date(easter.getTime() - (46 * 86400000)),        // Aschermittwoch
+            new Date(easter.getTime() + (39 * 86400000)),        // Christi Himmelfahrt
+            new Date(easter.getTime() + (49 * 86400000)),        // Pfingstsonntag
+            new Date(easter.getTime() + (50 * 86400000)),        // Pfingstmontag
+            new Date(easter.getTime() + (60 * 86400000)),        // Fronleichnam
+        ];
+    
+        // Prüfe bewegliche Feiertage
+        return holidays.some(h => 
+            h.getDate() === day && 
+            h.getMonth() === month
+        );
+    }
+    
 }
 // test
 document.addEventListener('DOMContentLoaded', () => {
