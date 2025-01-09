@@ -52,14 +52,19 @@
                     <span>Tag (07:00 - 15:30)</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-dot full"></div>
-                    <span>24h (07:00 - 09:00)</span>
+                    <div class="legend-dot late"></div>
+                    <span>Spät (10:00 - 18:30)</span>
                 </div>
                 <div class="legend-item">
-                    <div class="legend-dot night"></div>
-                    <span>Nacht (21:00 - 09:00)</span>
+                    <div class="legend-dot extended"></div>
+                    <span>Lang (08:00 - 18:30)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot full"></div>
+                    <span>24h (Mo-Fr 07:00 - 09:00, Sa 07:30 - 09:30, So 08:00 - 10:00)</span>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -85,10 +90,17 @@
                     </div>
                     <div class="time-slot-icon">→</div>
                 </div>
-                <div class="time-slot night" data-type="night">
+                <div class="time-slot late" data-type="late">
                     <div class="time-slot-info">
-                        <span class="time">21:00 - 09:00</span>
-                        <span class="label">Nachtdienst</span>
+                        <span class="time">10:00 - 18:30</span>
+                        <span class="label">Spätdienst</span>
+                    </div>
+                    <div class="time-slot-icon">→</div>
+                </div>
+                <div class="time-slot extended" data-type="extended">
+                    <div class="time-slot-info">
+                        <span class="time">08:00 - 18:30</span>
+                        <span class="label">Langdienst</span>
                     </div>
                     <div class="time-slot-icon">→</div>
                 </div>

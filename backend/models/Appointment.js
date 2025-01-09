@@ -7,7 +7,7 @@ const AppointmentSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['regular', 'full', 'night'],
+        enum: ['regular', 'full', 'late', 'extended'],
         required: true
     },
     time: {
