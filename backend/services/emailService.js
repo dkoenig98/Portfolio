@@ -9,11 +9,7 @@ class EmailService {
                 pass: process.env.EMAIL_PASS,
                 to: process.env.EMAIL_TO
             };
-            console.log('[EMAIL_CONFIG] Checking email configuration:', {
-                hasUser: !!emailConfig.user,
-                hasPass: !!emailConfig.pass,
-                hasTo: !!emailConfig.to
-            });
+            console.log('[EMAIL_CONFIG] Checking email configuration');
 
             this.transporter = nodemailer.createTransport({
                 service: 'gmail',
@@ -33,12 +29,19 @@ class EmailService {
             deletedAppointments: []
         };
         this.digestTimeout = null;
-        this.DIGEST_DELAY = 30 * 1000; // 30 Sekunden für Tests
+        this.DIGEST_DELAY = 30 * 1000; // 30 Sekunden für Tests    
+      //this.DIGEST_DELAY = 10 * 60 * 1000; // 10 Minuten
     }
 
     addChange(appointment, type = 'new') {
         console.log(`[EMAIL_SERVICE] Adding ${type} change for appointment:`, appointment);
         
+        // Filtern von Fortsetzungsterminen bei 24h-Diensten
+        if (appointment.parentDate) {
+            console.log('[EMAIL_SERVICE] Skipping continuation appointment');
+            return;
+        }
+
         if (type === 'new') {
             this.pendingChanges.newAppointments.push(appointment);
         } else if (type === 'delete') {
@@ -46,13 +49,10 @@ class EmailService {
         }
 
         if (this.digestTimeout) {
-            console.log('[EMAIL_SERVICE] Clearing existing digest timeout');
             clearTimeout(this.digestTimeout);
         }
 
-        console.log(`[EMAIL_SERVICE] Setting new digest timeout for ${this.DIGEST_DELAY/1000} seconds`);
         this.digestTimeout = setTimeout(() => {
-            console.log('[EMAIL_SERVICE] Digest timeout triggered');
             this.sendDigestEmail();
         }, this.DIGEST_DELAY);
     }
@@ -60,37 +60,42 @@ class EmailService {
     getAppointmentTypeText(type) {
         const types = {
             'regular': 'Tagdienst (07:00 - 15:30)',
-            'full': '24h Dienst (07:00 - 09:00)',
+            'full': '24h Dienst (07:00 - 07:00 nächster Tag)',
             'late': 'Spätdienst (10:00 - 18:30)',
             'extended': 'Langdienst (08:00 - 18:30)'
         };
         return types[type] || type;
     }
 
-    formatDate(date) {
-        return new Date(date).toLocaleDateString('de-DE', {
+    formatDate(date, type) {
+        const formattedDate = new Date(date).toLocaleDateString('de-DE', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
+
+        if (type === 'full') {
+            const nextDay = new Date(date);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const formattedNextDay = nextDay.toLocaleDateString('de-DE', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+            });
+            return `${formattedDate} bis ${formattedNextDay}`;
+        }
+
+        return formattedDate;
     }
 
     async sendDigestEmail() {
-        console.log('[EMAIL_SERVICE] Starting digest email process');
-        console.log('[EMAIL_SERVICE] Current pending changes:', {
-            newCount: this.pendingChanges.newAppointments.length,
-            deleteCount: this.pendingChanges.deletedAppointments.length
-        });
-        
         if (this.pendingChanges.newAppointments.length === 0 && 
             this.pendingChanges.deletedAppointments.length === 0) {
-            console.log('[EMAIL_SERVICE] No changes to send');
             return;
         }
 
         try {
-            // Sortiere nach Datum
             const sortByDate = (a, b) => new Date(a.date) - new Date(b.date);
             this.pendingChanges.newAppointments.sort(sortByDate);
             this.pendingChanges.deletedAppointments.sort(sortByDate);
@@ -100,91 +105,98 @@ class EmailService {
                 to: process.env.EMAIL_TO,
                 subject: 'Shanti Terminplan Updates',
                 html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; border-radius: 10px;">
-                        <div style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <h1 style="color: #1a73e8; margin-top: 0; text-align: center; border-bottom: 2px solid #f1f3f4; padding-bottom: 15px;">
-                                Shanti Terminplan Updates
-                            </h1>
-                            
-                            ${this.pendingChanges.newAppointments.length > 0 ? `
-                                <div style="margin-top: 25px; background-color: #e6f4ea; padding: 20px; border-radius: 8px; border-left: 4px solid #1e8e3e;">
-                                    <h2 style="color: #1e8e3e; margin-top: 0; font-size: 18px;">🆕 Neue Termine</h2>
-                                    <div style="overflow-x: auto;">
-                                        <table style="width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px;">
-                                            <thead>
-                                                <tr style="background-color: rgba(30, 142, 62, 0.1);">
-                                                    <th style="padding: 12px; text-align: left; border-top-left-radius: 8px;">Datum</th>
-                                                    <th style="padding: 12px; text-align: left; border-top-right-radius: 8px;">Dienstart</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                ${this.pendingChanges.newAppointments.map(app => `
-                                                    <tr style="border-bottom: 1px solid #e0e0e0;">
-                                                        <td style="padding: 12px; font-weight: 500;">
-                                                            ${this.formatDate(app.date)}
-                                                        </td>
-                                                        <td style="padding: 12px;">
-                                                            ${this.getAppointmentTypeText(app.type)}
-                                                        </td>
-                                                    </tr>
-                                                `).join('')}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="utf-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Shanti´s Kindergarten</title>
+                    </head>
+                    <body style="margin: 0; padding: 0; background-color: #f8f9fa;">
+                        <div style="width: 100%; max-width: 600px; margin: 20px auto; padding: 10px;">
+                            <div style="background-color: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;">
+                                <!-- Header -->
+                                <div style="background-color: #1a73e8; padding: 25px 20px;">
+                                    <h1 style="color: white; margin: 0; text-align: center; font-family: Arial, sans-serif; font-size: 24px;">
+                                        Änderungen bei Shanti's Kindergarten
+                                    </h1>
                                 </div>
-                            ` : ''}
 
-                            ${this.pendingChanges.deletedAppointments.length > 0 ? `
-                                <div style="margin-top: 25px; background-color: #fce8e8; padding: 20px; border-radius: 8px; border-left: 4px solid #d93025;">
-                                    <h2 style="color: #d93025; margin-top: 0; font-size: 18px;">❌ Gelöschte Termine</h2>
-                                    <div style="overflow-x: auto;">
-                                        <table style="width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px;">
-                                            <thead>
-                                                <tr style="background-color: rgba(217, 48, 37, 0.1);">
-                                                    <th style="padding: 12px; text-align: left; border-top-left-radius: 8px;">Datum</th>
-                                                    <th style="padding: 12px; text-align: left; border-top-right-radius: 8px;">Dienstart</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                ${this.pendingChanges.deletedAppointments.map(app => `
-                                                    <tr style="border-bottom: 1px solid #e0e0e0;">
-                                                        <td style="padding: 12px; font-weight: 500;">
-                                                            ${this.formatDate(app.date)}
-                                                        </td>
-                                                        <td style="padding: 12px;">
-                                                            ${this.getAppointmentTypeText(app.type)}
-                                                        </td>
-                                                    </tr>
-                                                `).join('')}
-                                            </tbody>
-                                        </table>
+                                <!-- Content Container -->
+                                <div style="padding: 20px;">
+                                    ${this.pendingChanges.newAppointments.length > 0 ? `
+                                        <div style="margin-bottom: 30px;">
+                                            <div style="background-color: #e6f4ea; border-radius: 8px; padding: 16px; margin-bottom: 10px;">
+                                                <h2 style="color: #1e8e3e; margin: 0; font-family: Arial, sans-serif; font-size: 18px;">
+                                                    🆕 Neue Termine
+                                                </h2>
+                                            </div>
+                                            <div style="overflow-x: auto;">
+                                                <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+                                                    ${this.pendingChanges.newAppointments.map(app => `
+                                                        <tr style="background-color: #ffffff;">
+                                                            <td style="padding: 16px; border-bottom: 1px solid #e0e0e0; font-family: Arial, sans-serif;">
+                                                                <div style="font-weight: 600; color: #202124; margin-bottom: 4px;">
+                                                                    ${this.formatDate(app.date, app.type)}
+                                                                </div>
+                                                                <div style="color: #5f6368; font-size: 14px;">
+                                                                    ${this.getAppointmentTypeText(app.type)}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    `).join('')}
+                                                </table>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+
+                                    ${this.pendingChanges.deletedAppointments.length > 0 ? `
+                                        <div>
+                                            <div style="background-color: #fce8e8; border-radius: 8px; padding: 16px; margin-bottom: 10px;">
+                                                <h2 style="color: #d93025; margin: 0; font-family: Arial, sans-serif; font-size: 18px;">
+                                                    ❌ Gelöschte Termine
+                                                </h2>
+                                            </div>
+                                            <div style="overflow-x: auto;">
+                                                <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+                                                    ${this.pendingChanges.deletedAppointments.map(app => `
+                                                        <tr style="background-color: #ffffff;">
+                                                            <td style="padding: 16px; border-bottom: 1px solid #e0e0e0; font-family: Arial, sans-serif;">
+                                                                <div style="font-weight: 600; color: #202124; margin-bottom: 4px;">
+                                                                    ${this.formatDate(app.date, app.type)}
+                                                                </div>
+                                                                <div style="color: #5f6368; font-size: 14px;">
+                                                                    ${this.getAppointmentTypeText(app.type)}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    `).join('')}
+                                                </table>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+
+                                    <!-- Footer -->
+                                    <div style="margin-top: 30px; text-align: center; color: #5f6368; font-size: 13px; font-family: Arial, sans-serif; padding-top: 20px; border-top: 1px solid #f1f3f4;">
+                                        Automatische Benachrichtigung von Shanti´s Kindergarten
                                     </div>
                                 </div>
-                            ` : ''}
-                            
-                            <div style="margin-top: 25px; text-align: center; color: #666; font-size: 14px; padding-top: 15px; border-top: 1px solid #f1f3f4;">
-                                Dies ist eine automatisch generierte Nachricht vom Shanti Terminplan System
                             </div>
                         </div>
-                    </div>
+                    </body>
+                    </html>
                 `
             };
 
-            console.log('[EMAIL_SERVICE] Attempting to send email');
             await this.transporter.sendMail(mailOptions);
             console.log('[EMAIL_SERVICE] Email sent successfully');
             
-            // Liste leeren nach erfolgreichem Versand
             this.pendingChanges = {
                 newAppointments: [],
                 deletedAppointments: []
             };
         } catch (error) {
-            console.error('[EMAIL_ERROR] Failed to send digest email:', {
-                message: error.message,
-                stack: error.stack,
-                code: error.code
-            });
+            console.error('[EMAIL_ERROR] Failed to send digest email:', error);
             throw error;
         }
     }
