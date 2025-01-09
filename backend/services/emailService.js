@@ -29,8 +29,7 @@ class EmailService {
             deletedAppointments: []
         };
         this.digestTimeout = null;
-        this.DIGEST_DELAY = 30 * 1000; // 30 Sekunden für Tests    
-      //this.DIGEST_DELAY = 10 * 60 * 1000; // 10 Minuten
+        this.DIGEST_DELAY = 5 * 60 * 1000; // 5 Minuten
     }
 
     addChange(appointment, type = 'new') {
@@ -103,7 +102,7 @@ class EmailService {
             const mailOptions = {
                 from: process.env.EMAIL_USER,
                 to: process.env.EMAIL_TO,
-                subject: 'Shanti Terminplan Updates',
+                subject: 'Shanti´s Kindergarten',
                 html: `
                     <!DOCTYPE html>
                     <html>
@@ -116,7 +115,7 @@ class EmailService {
                         <div style="width: 100%; max-width: 600px; margin: 20px auto; padding: 10px;">
                             <div style="background-color: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;">
                                 <!-- Header -->
-                                <div style="background-color: #1a73e8; padding: 25px 20px;">
+                                <div style="background-color: #14B8A6; padding: 25px 20px;">
                                     <h1 style="color: white; margin: 0; text-align: center; font-family: Arial, sans-serif; font-size: 24px;">
                                         Änderungen bei Shanti's Kindergarten
                                     </h1>
