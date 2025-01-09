@@ -55,6 +55,7 @@ router.get('/appointments', authenticateToken, async (req, res) => {
 
 router.post('/appointments', authenticateToken, async (req, res) => {
     try {
+        console.log('Received appointment data:', req.body);
         const { date, type, time } = req.body;
         const appointment = new Appointment({
             date,
