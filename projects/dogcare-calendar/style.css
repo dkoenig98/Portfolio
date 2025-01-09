@@ -306,11 +306,16 @@ body {
 }
 
 .day.holiday::before {
-    content: '🔔';
+    content: '';
     position: absolute;
-    top: 2px;
-    right: 2px;
-    font-size: 20px;
+    top: -2px;
+    right: -2px;
+    bottom: -2px;
+    left: -2px;
+    border: 4px solid #dc3545 !important;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 2;
 }
 
 @media (max-width: 480px) {
