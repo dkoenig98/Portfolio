@@ -82,9 +82,9 @@ router.post('/appointments', authenticateToken, async (req, res) => {
 
         await appointment.save();
         // Hier die Änderung: E-Mail wird gesendet, wenn der Owner einen Termin erstellt
-        if (req.user.role === 'owner') {
+/*         if (req.user.role === 'owner') {
             await emailService.sendAppointmentNotification(appointment);
-        }
+        } */
         res.status(201).json(appointment);
     } catch (error) {
         res.status(400).json({ message: 'Fehler beim Erstellen', error: error.message });
