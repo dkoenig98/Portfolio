@@ -95,20 +95,28 @@ router.delete('/appointments/:date', authenticateToken, async (req, res) => {
     try {
         const { date } = req.params;
         
-        // Lösche den Haupttermin
-        const appointment = await Appointment.findOneAndDelete({ date });
+        // Lösche alle Termine an diesem Datum
+        const appointments = await Appointment.find({ date });
         
-        if (!appointment) {
-            return res.status(404).json({ message: 'Termin nicht gefunden' });
+        for (const appointment of appointments) {
+            await Appointment.findByIdAndDelete(appointment._id);
+            
+            // Wenn es ein 24h-Dienst ist, lösche auch den Folgetermin
+            if (appointment.type === 'full') {
+                const [year, month, day] = date.split('-');
+                const nextDate = new Date(year, month - 1, parseInt(day) + 1);
+                const nextDateStr = `${nextDate.getFullYear()}-${nextDate.getMonth() + 1}-${nextDate.getDate()}`;
+                
+                await Appointment.deleteOne({ 
+                    date: nextDateStr,
+                    parentDate: date 
+                });
+            }
         }
 
-        // Wenn es ein Nacht- oder 24h-Dienst war, lösche auch den Folgetermin
-        if (appointment.type === 'night' || appointment.type === 'full') {
-            await Appointment.findOneAndDelete({ parentDate: date });
-        }
-
-        res.json({ message: 'Termin gelöscht' });
+        res.json({ message: 'Termine gelöscht', count: appointments.length });
     } catch (error) {
+        console.error('Delete error:', error);
         res.status(500).json({ message: 'Server Fehler', error: error.message });
     }
 });

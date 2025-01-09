@@ -256,10 +256,20 @@ class Calendar {
     }
 
     async deleteAppointment(dateStr) {
+        console.log('Trying to delete appointment for date:', dateStr);
+        
         if (await this.api.deleteAppointment(dateStr)) {
             delete this.appointments[dateStr];
-            const nextDateStr = this.getNextDay(dateStr);
-            delete this.appointments[nextDateStr];
+            
+            // Wenn es ein 24h Dienst war, auch den Folgetermin aus dem lokalen State entfernen
+            const appointment = this.appointments[dateStr];
+            if (appointment && appointment.type === 'full') {
+                const nextDateStr = this.getNextDay(dateStr);
+                delete this.appointments[nextDateStr];
+            }
+            
+            // Aktualisiere die Termine vom Server
+            this.appointments = await this.api.fetchAppointments();
             this.renderCalendar();
         }
     }
