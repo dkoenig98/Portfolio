@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Fitness Tracker</title>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+   <link rel="stylesheet" href="styles.css">
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+   <div class="app">
+       <div class="view active" id="today-view">
+           <div class="today-workout">
+               <div class="workout-header">
+                   <h1>Heute</h1>
+                   <span class="date"></span>
+                   <div class="muscle-focus"></div>
+                   <div class="progress-bar">
+                       <div class="progress-fill"></div>
+                   </div>
+                   <span class="progress-text">0/0 Übungen</span>
+               </div>
+           </div>
+           <div class="exercise-list"></div>
+       </div>
+
+       <div class="view" id="week-view">
+           <h2>Wochenübersicht</h2>
+           <div class="week-grid">
+               <!-- Wird dynamisch gefüllt -->
+           </div>
+       </div>
+
+       <div class="view" id="stats-view">
+            <h2>Statistiken</h2>
+            
+            <!-- Hauptstatistiken -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="stat-value workouts-done">0</div>
+                    <div class="stat-label">Workouts diese Woche</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-value exercises-done">0</div>
+                    <div class="stat-label">Übungen abgeschlossen</div>
+                </div>
+        
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-value completion-rate">0%</div>
+                    <div class="stat-label">Abschlussrate</div>
+                </div>
+        
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-stopwatch"></i>
+                    </div>
+                    <div class="stat-value deadhang-best">0s</div>
+                    <div class="stat-label">Deadhang Bestzeit</div>
+                </div>
+            </div>
+        
+            <!-- Fortschrittsgraph -->
+            <div class="stats-section">
+                <h3>Wöchentlicher Fortschritt</h3>
+                <div class="progress-chart-container">
+                    <div id="weeklyProgressChart"></div>
+                </div>
+            </div>
+        
+            <!-- Muskelgruppen-Übersicht -->
+            <div class="stats-section">
+                <h3>Muskelgruppen-Training</h3>
+                <div class="muscle-groups-grid">
+                    <!-- Wird dynamisch gefüllt -->
+                </div>
+            </div>
+        
+            <!-- Deadhang Fortschritt -->
+            <div class="stats-section">
+                <h3>Deadhang Entwicklung</h3>
+                <div class="deadhang-chart-container">
+                    <div id="deadhangProgressChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="view" id="settings-view">
+            <h2>Einstellungen</h2>
+            <div class="settings-grid">
+                <div class="setting-card">
+                    <h3>Trainingstage pro Woche</h3>
+                    <select id="training-days" class="setting-select">
+                        <option value="4">4 Tage</option>
+                        <option value="5">5 Tage</option>
+                        <option value="6" selected>6 Tage</option>
+                    </select>
+                </div>
+        
+                <div class="setting-card">
+                    <h3>Übungen pro Training</h3>
+                    <select id="exercise-count" class="setting-select">
+                        <option value="4">4 Übungen</option>
+                        <option value="5">5 Übungen</option>
+                        <option value="6">6 Übungen</option>
+                        <option value="7" selected>7 Übungen</option>
+                        <option value="8">8 Übungen</option>
+                    </select>
+                    <div class="setting-hint">
+                        Gesamt: 6-7 Übungen
+                        <span class="hint-detail">(4 Basis + 1-2 Core + Deadhang)</span>
+                    </div>
+                </div>
+
+                <div class="setting-card deadhang-setting">
+                    <h3>Deadhang</h3>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="include-deadhang">
+                        <span class="toggle-text">Zu jedem Workout hinzufügen</span>
+                    </label>
+                </div>
+        
+                <div class="setting-card setting-in-development">
+                    <h3>Verfügbare Zeit</h3>
+                    <select id="available-time" class="setting-select" disabled>
+                        <option value="30">30 Minuten</option>
+                        <option value="45" selected>45 Minuten</option>
+                        <option value="60">60 Minuten</option>
+                        <option value="90">90 Minuten</option>
+                    </select>
+                    <div class="development-badge">In Entwicklung</div>
+                </div>
+            </div>
+        </div>
+
+       
+    </div>
+       <nav class="bottom-nav">
+           <button class="nav-btn active" data-view="today">
+               <i class="fas fa-dumbbell"></i>
+               <span>Heute</span>
+           </button>
+           <button class="nav-btn" data-view="week">
+               <i class="fas fa-calendar-week"></i>
+               <span>Woche</span>
+           </button>
+           <button class="nav-btn" data-view="stats">
+               <i class="fas fa-chart-line"></i>
+               <span>Stats</span>
+           </button>
+           <button class="nav-btn" data-view="settings">
+               <i class="fas fa-cog"></i>
+               <span>Settings</span>
+           </button>
+       </nav>
+   </div>
+   <script type="module" src="main.js"></script>
+</body>
+</html>

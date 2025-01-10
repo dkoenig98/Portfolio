@@ -46,6 +46,13 @@ document.addEventListener('DOMContentLoaded', () => {
             link: '/projects/dogcare-calendar/index.html',
             passwordProtected: false
         },
+        {
+            title: 'Fitness Tracker',
+            description: 'Ein Fitness Tracker für alle Fitnessbegeisterten.',
+            image: '/projects/fitness/images/logo.jpg',
+            link: '/projects/fitness/index.html',
+            passwordProtected: true
+        },
     ];
 
     // Setze das initiale Bild

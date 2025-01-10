@@ -1,0 +1,284 @@
+{
+    "exercises": [
+      {
+        "id": "back1",
+        "name": "Lat Pulldown (weiter Griff)",
+        "description": "Stange über Kopf greifen, breiter Griff. Kontrolliert herunterziehen.",
+        "sets": 3,
+        "reps": "10-12", 
+        "muscleGroups": ["back", "lats"],
+        "equipment": ["cable_machine"]
+      },
+      {
+        "id": "back2",
+        "name": "Lat Pulldown (enger Griff)",
+        "description": "Wie Lat Pulldown, aber mit engem Griff für andere Muskelbetonung",
+        "sets": 3,
+        "reps": "10-12",
+        "muscleGroups": ["back", "lats"],
+        "equipment": ["cable_machine"]
+      },
+      {
+        "id": "back3", 
+        "name": "Einarmiges Rudern mit Kurzhantel",
+        "description": "Ein Knie und Hand auf Bank, Kurzhantel ziehen",
+        "sets": 3,
+        "reps": "10",
+        "muscleGroups": ["back"],
+        "equipment": ["dumbbell", "bench"]
+      },
+      {
+        "id": "back4",
+        "name": "Superman-Rows",
+        "description": "Bodyweight-Übung für oberen Rücken",
+        "sets": 3, 
+        "reps": "12",
+        "muscleGroups": ["back"],
+        "equipment": ["none"]
+      },
+      {
+        "id": "back5",
+        "name": "Superman-Holds",
+        "description": "Statische Halteübung für unteren Rücken",
+        "sets": 3,
+        "duration": "30",
+        "muscleGroups": ["back"],
+        "equipment": ["none"]
+      },
+      {
+        "id": "chest1",
+        "name": "Kurzhantel-Bankdrücken",
+        "description": "Klassische Brustübung mit Kurzhanteln",
+        "sets": 3,
+        "reps": "10", 
+        "muscleGroups": ["chest", "triceps"],
+        "equipment": ["dumbbells", "bench"]
+      },
+      {
+        "id": "chest2",
+        "name": "Liegestütze",
+        "description": "Bodyweight-Übung für die Brust",
+        "sets": 3,
+        "reps": "10-12",
+        "muscleGroups": ["chest", "triceps"],
+        "equipment": ["none"]
+      },
+      {
+        "id": "chest3",
+        "name": "Fliegende mit Kurzhanteln",
+        "description": "Isolationsübung für die Brustmuskulatur",
+        "sets": 3,
+        "reps": "12",
+        "muscleGroups": ["chest"],
+        "equipment": ["dumbbells", "bench"]
+      },
+      {
+        "id": "shoulders1",
+        "name": "Schulterdrücken mit Kurzhanteln",
+        "description": "Grundübung für die Schultern",
+        "sets": 3,
+        "reps": "10",
+        "muscleGroups": ["shoulders", "triceps"],
+        "equipment": ["dumbbells"]
+      },
+      {
+        "id": "shoulders2",
+        "name": "Seitheben",
+        "description": "Isolation der seitlichen Schulterköpfe",
+        "sets": 3,
+        "reps": "12",
+        "muscleGroups": ["shoulders"],
+        "equipment": ["dumbbells"]
+      },
+      {
+        "id": "shoulders3",
+        "name": "Frontheben",
+        "description": "Isolation der vorderen Schulterköpfe",
+        "sets": 3,
+        "reps": "12",
+        "muscleGroups": ["shoulders"],
+        "equipment": ["dumbbells"]
+      },
+      {
+        "id": "shoulders4",
+        "name": "Reverse Flys",
+        "description": "Isolation der hinteren Schultern/oberer Rücken",
+        "sets": 3,
+        "reps": "12",
+        "muscleGroups": ["shoulders", "back"],
+        "equipment": ["dumbbells"]
+      },
+      {
+        "id": "biceps1",
+        "name": "Bizeps-Curls",
+        "description": "Isolationsübung für den Bizeps",
+        "sets": 3,
+        "reps": "12",
+        "muscleGroups": ["biceps"],
+        "equipment": ["dumbbells"]
+      },
+      {
+        "id": "biceps2",
+        "name": "Hammer Curls",
+        "description": "Bizepsübung mit neutralem Griff",
+        "sets": 3,
+        "reps": "12",
+        "muscleGroups": ["biceps", "forearms"],
+        "equipment": ["dumbbells"]
+      },
+      {
+        "id": "biceps3",
+        "name": "SZ-Curls",
+        "description": "Bizepsübung mit SZ-Stange",
+        "sets": 3,
+        "reps": "10",
+        "muscleGroups": ["biceps"],
+        "equipment": ["ez_bar"]
+      },
+      {
+        "id": "triceps1",
+        "name": "Dips",
+        "description": "Komplexe Übung für Trizeps und Brust",
+        "sets": 3,
+        "reps": "6-8",
+        "muscleGroups": ["triceps", "chest"],
+        "equipment": ["dip_bars"]
+      },
+      {
+        "id": "triceps2",
+        "name": "Trizeps Pushdowns",
+        "description": "Isolation am Kabelzug",
+        "sets": 3,
+        "reps": "10-12",
+        "muscleGroups": ["triceps"],
+        "equipment": ["cable_machine"]
+      },
+      {
+        "id": "triceps3",
+        "name": "Trizeps-Extensions",
+        "description": "Überkopf-Extension mit Kurzhantel",
+        "sets": 3,
+        "reps": "12",
+        "muscleGroups": ["triceps"],
+        "equipment": ["dumbbells"]
+      },
+      {
+        "id": "core1",
+        "name": "Plank",
+        "description": "Statische Halteübung für den Core",
+        "sets": 3,
+        "duration": "20-30",
+        "muscleGroups": ["core"],
+        "equipment": ["none"]
+      },
+      {
+        "id": "core2",
+        "name": "Russian Twists",
+        "description": "Rotation für die schrägen Bauchmuskeln",
+        "sets": 3,
+        "reps": "20",
+        "muscleGroups": ["core"],
+        "equipment": ["none"]
+      },
+      {
+        "id": "core3",
+        "name": "L-Sit Hold",
+        "description": "Statische Halteübung an den Dip-Barren",
+        "sets": 3,
+        "duration": "20-30",
+        "muscleGroups": ["core", "shoulders"],
+        "equipment": ["dip_bars"]
+      },
+      {
+        "id": "core4",
+        "name": "Hollow Body Hold",
+        "description": "Statische Bodyweight-Übung für den Core",
+        "sets": 3,
+        "duration": "20-30",
+        "muscleGroups": ["core"],
+        "equipment": ["none"]
+      },
+      {
+        "id": "shoulders5",
+        "name": "Pike Push-Ups",
+        "description": "Liegestütze in Pike-Position für Schultern",
+        "sets": 3,
+        "reps": "8-12",
+        "muscleGroups": ["shoulders", "triceps"],
+        "equipment": ["none"]
+      },
+      {
+        "id": "chest4",
+        "name": "Decline Liegestütze",
+        "description": "Liegestütze mit erhöhten Füßen",
+        "sets": 3,
+        "reps": "10-12",
+        "muscleGroups": ["chest", "shoulders"],
+        "equipment": ["bench"]
+      },
+      {
+        "id": "back6",
+        "name": "Inverted Rows",
+        "description": "Umgekehrtes Rudern unter Tisch/Stange",
+        "sets": 3,
+        "reps": "8-12",
+        "muscleGroups": ["back", "biceps"],
+        "equipment": ["bench"]
+      },
+      {
+        "id": "core5",
+        "name": "Dragon Flag Progression",
+        "description": "Core-Übung auf Bank",
+        "sets": 3,
+        "reps": "5-8",
+        "muscleGroups": ["core"],
+        "equipment": ["bench"]
+      },
+      {
+        "id": "triceps4",
+        "name": "Diamond Push-Ups",
+        "description": "Enge Liegestütze für Trizeps",
+        "sets": 3,
+        "reps": "8-12",
+        "muscleGroups": ["triceps", "chest"],
+        "equipment": ["none"]
+      },
+      {
+        "id": "core6",
+        "name": "Copenhagen Plank",
+        "description": "Seitliche Plank mit Bank",
+        "sets": 3,
+        "duration": "20-30",
+        "muscleGroups": ["core", "hips"],
+        "equipment": ["bench"]
+      },
+      {
+        "id": "shoulders6",
+        "name": "Y-Raises",
+        "description": "Y-Form Heben mit Kurzhanteln",
+        "sets": 3,
+        "reps": "12-15",
+        "muscleGroups": ["shoulders", "traps"],
+        "equipment": ["dumbbells"]
+      },
+      {
+        "id": "biceps4",
+        "name": "Waiter Curls",
+        "description": "Einarmige Bizepscurls, Handfläche nach oben",
+        "sets": 3,
+        "reps": "10-12",
+        "muscleGroups": ["biceps", "forearms"],
+        "equipment": ["dumbbells"]
+      }
+    ],
+    "muscleGroups": {
+      "chest": "Brust",
+      "back": "Rücken", 
+      "shoulders": "Schultern",
+      "biceps": "Bizeps",
+      "triceps": "Trizeps",
+      "lats": "Latissimus",
+      "core": "Rumpf",
+      "forearms": "Unterarme"
+    }
+   }

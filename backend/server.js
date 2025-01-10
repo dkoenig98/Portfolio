@@ -31,6 +31,11 @@ app.use(express.json());
 connectDB();
 
 // Routes
+
+// Fitness Routes
+const fitnessRoutes = require('./routes/fitness');
+app.use('/projects/fitness', fitnessRoutes);
+
 // DogCare Calendar Routes
 const dogcareRoutes = require('./routes/dogcare-calendar');
 app.use('/projects/dogcare-calendar', dogcareRoutes);
