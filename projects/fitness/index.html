@@ -6,7 +6,8 @@
    <title>Fitness Tracker</title>
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
    <link rel="stylesheet" href="styles.css">
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script> <!-- Für Zeitachse -->
 </head>
 <body>
    <div class="app">
@@ -32,7 +33,7 @@
            </div>
        </div>
 
-       <div class="view" id="stats-view">
+        <div class="view" id="stats-view">
             <h2>Statistiken</h2>
             
             <!-- Hauptstatistiken -->
@@ -70,15 +71,15 @@
                 </div>
             </div>
         
-            <!-- Fortschrittsgraph -->
+            <!-- Wöchentlicher Fortschritt -->
             <div class="stats-section">
                 <h3>Wöchentlicher Fortschritt</h3>
                 <div class="progress-chart-container">
-                    <div id="weeklyProgressChart"></div>
+                    <canvas id="weeklyProgressChart"></canvas>
                 </div>
             </div>
         
-            <!-- Muskelgruppen-Übersicht -->
+            <!-- Muskelgruppen-Status -->
             <div class="stats-section">
                 <h3>Muskelgruppen-Training</h3>
                 <div class="muscle-groups-grid">
@@ -86,11 +87,11 @@
                 </div>
             </div>
         
-            <!-- Deadhang Fortschritt -->
+            <!-- Deadhang Entwicklung -->
             <div class="stats-section">
                 <h3>Deadhang Entwicklung</h3>
                 <div class="deadhang-chart-container">
-                    <div id="deadhangProgressChart"></div>
+                    <canvas id="deadhangProgressChart"></canvas>
                 </div>
             </div>
         </div>

@@ -27,7 +27,6 @@ export class ProgressTracker {
             }
         } catch (error) {
             console.error('Error saving to database:', error);
-            // Wir behalten die lokale Speicherung auch bei Datenbankfehler
         }
     }
 
@@ -42,7 +41,7 @@ export class ProgressTracker {
             }
 
             // Wenn nicht lokal vorhanden, von der Datenbank laden
-            const response = await fetch(`/projects/fitness/progress?startDate=${today}&endDate=${today}`);
+            const response = await fetch(`/projects/fitness/progress/history?startDate=${today}&endDate=${today}`);
             if (!response.ok) {
                 throw new Error('Failed to load workout from database');
             }
@@ -60,10 +59,9 @@ export class ProgressTracker {
         startDate.setDate(startDate.getDate() - 6); // 7 Tage zurück
         const endDate = new Date();
         
-        // Versuche vom Server zu laden
         try {
             const response = await fetch(
-                `/projects/fitness/workout/history?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
+                `/projects/fitness/progress/history?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
             );
             
             if (!response.ok) {
@@ -73,95 +71,72 @@ export class ProgressTracker {
             return await response.json();
         } catch (error) {
             console.warn('Verwende lokale Workout-Historie:', error);
-            
-            // Fallback: Lade aus localStorage
-            const weekProgress = [];
-            for (let i = 0; i < 7; i++) {
-                const date = new Date(endDate);
-                date.setDate(date.getDate() - i);
-                const dateStr = date.toISOString().split('T')[0];
-                
-                const saved = localStorage.getItem(`${this.storageKey}_${dateStr}`);
-                if (saved) {
-                    weekProgress.push(JSON.parse(saved));
-                }
-            }
-            return weekProgress;
+            return this.getLocalWeeklyProgress();
         }
     }
 
-    analyzeProgress() {
-        return this.getWeeklyProgress().then(weekProgress => ({
-            totalWorkouts: weekProgress.length,
-            totalExercises: weekProgress.reduce((sum, day) => 
-                sum + (day.workout?.exercises?.length || 0), 0),
-            completedExercises: weekProgress.reduce((sum, day) => 
-                sum + (day.completed?.filter(e => e.completed)?.length || 0), 0),
-            muscleGroupFrequency: this.analyzeMuscleGroupFrequency(weekProgress)
-        }));
+    getLocalWeeklyProgress() {
+        const weekProgress = [];
+        const endDate = new Date();
+        
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(endDate);
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            
+            const saved = localStorage.getItem(`${this.storageKey}_${dateStr}`);
+            if (saved) {
+                weekProgress.push(JSON.parse(saved));
+            }
+        }
+        return weekProgress;
+    }
+
+    async analyzeProgress() {
+        try {
+            const weekProgress = await this.getWeeklyProgress();
+            let totalExercises = 0;
+            let completedExercises = 0;
+        
+            weekProgress.forEach(day => {
+                if (day.workout?.exercises) {
+                    totalExercises += day.workout.exercises.length;
+                    completedExercises += day.completed?.filter(e => e.completed)?.length || 0;
+                }
+            });
+        
+            return {
+                totalWorkouts: weekProgress.length,
+                totalExercises,
+                completedExercises,
+                completionRate: totalExercises ? Math.round((completedExercises / totalExercises) * 100) : 0,
+                muscleGroupFrequency: this.analyzeMuscleGroupFrequency(weekProgress)
+            };
+        } catch (error) {
+            console.error('Error analyzing progress:', error);
+            return {
+                totalWorkouts: 0,
+                totalExercises: 0,
+                completedExercises: 0,
+                completionRate: 0,
+                muscleGroupFrequency: {}
+            };
+        }
     }
 
     analyzeMuscleGroupFrequency(weekProgress) {
         const frequency = {};
         weekProgress.forEach(day => {
-            day.workout?.exercises?.forEach(exercise => {
-                exercise.muscleGroups?.forEach(group => {
-                    frequency[group] = (frequency[group] || 0) + 1;
-                });
-            });
-        });
-        return frequency;
-    }
-
-    // Neue Methode für detaillierte Statistiken
-    async getDetailedStats() {
-        const weekProgress = await this.getWeeklyProgress();
-        const stats = {
-            workoutCount: weekProgress.length,
-            totalDuration: 0,
-            muscleGroupWork: {},
-            completionRate: 0,
-            averageExercisesPerWorkout: 0
-        };
-
-        let totalExercises = 0;
-        let completedExercises = 0;
-
-        weekProgress.forEach(day => {
-            if (day.workout?.exercises) {
-                totalExercises += day.workout.exercises.length;
-                completedExercises += day.completed?.filter(e => e.completed)?.length || 0;
-                stats.totalDuration += day.workout.estimatedDuration || 0;
-
-                day.workout.exercises.forEach(exercise => {
-                    exercise.muscleGroups?.forEach(group => {
-                        if (!stats.muscleGroupWork[group]) {
-                            stats.muscleGroupWork[group] = {
-                                totalSets: 0,
-                                totalReps: 0,
-                                exercises: new Set()
-                            };
-                        }
-                        stats.muscleGroupWork[group].exercises.add(exercise.id);
-                        stats.muscleGroupWork[group].totalSets += exercise.sets;
-                        // Berücksichtige Bereiche wie "10-12" bei Wiederholungen
-                        const reps = exercise.reps.toString().split('-');
-                        const avgReps = (parseInt(reps[0]) + (parseInt(reps[1]) || parseInt(reps[0]))) / 2;
-                        stats.muscleGroupWork[group].totalReps += exercise.sets * avgReps;
-                    });
+            if (day.completed) {
+                day.completed.forEach(exercise => {
+                    if (exercise.completed && exercise.muscleGroups) {
+                        exercise.muscleGroups.forEach(group => {
+                            frequency[group] = (frequency[group] || 0) + 1;
+                        });
+                    }
                 });
             }
         });
-
-        stats.completionRate = totalExercises ? (completedExercises / totalExercises) * 100 : 0;
-        stats.averageExercisesPerWorkout = weekProgress.length ? totalExercises / weekProgress.length : 0;
-
-        // Konvertiere Sets zu Array für einfachere Verarbeitung im Frontend
-        Object.keys(stats.muscleGroupWork).forEach(group => {
-            stats.muscleGroupWork[group].exercises = 
-                Array.from(stats.muscleGroupWork[group].exercises);
-        });
-
-        return stats;
+        return frequency;
     }
 }

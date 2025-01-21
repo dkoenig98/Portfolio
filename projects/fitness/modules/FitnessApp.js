@@ -17,7 +17,7 @@ export class FitnessApp {
             'thursday': ['back', 'core'],
             'friday': ['chest', 'arms'],
             'saturday': ['shoulders', 'core'],
-            'sunday': 'rest'
+            'sunday': ['shoulders', 'core']
         };
     }
 
@@ -368,12 +368,21 @@ export class FitnessApp {
                 workout: this.currentWorkout,
                 completed: Array.from(document.querySelectorAll('.exercise-card')).map(card => ({
                     id: card.dataset.id,
-                    completed: card.querySelector('.exercise-check').classList.contains('completed')
+                    completed: card.querySelector('.exercise-check').classList.contains('completed'),
+                    muscleGroups: this.exercises.find(e => e.id === card.dataset.id)?.muscleGroups || []
                 }))
             };
     
+            // Speichere lokal und in der Datenbank
             await this.progressTracker.saveWorkout(progress);
+            
+            // Sortiere die Übungen neu
             this.reorderExercises();
+            
+            // Update Stats wenn wir in der Stats-View sind
+            if (document.querySelector('#stats-view').classList.contains('active')) {
+                this.updateStatsView();
+            }
         } catch (error) {
             console.error('Error saving progress:', error);
         }
@@ -445,8 +454,13 @@ export class FitnessApp {
         const ctx = document.getElementById('weeklyProgressChart');
         if (!ctx) return;
     
+        // Zerstöre existierenden Chart falls vorhanden
+        if (this.weeklyChart) {
+            this.weeklyChart.destroy();
+        }
+
         // Verwende Chart.js für den Graphen
-        new Chart(ctx, {
+        this.weeklyChart = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
@@ -513,12 +527,17 @@ export class FitnessApp {
         const ctx = document.getElementById('deadhangProgressChart');
         if (!ctx) return;
     
+        // Zerstöre existierenden Chart falls vorhanden
+        if (this.deadhangChart) {
+            this.deadhangChart.destroy();
+        }
+    
         const data = times.map(entry => ({
             x: new Date(entry.date),
             y: entry.time
-        })).slice(-10); // Zeige nur die letzten 10 Einträge
+        })).slice(-10); // Letzte 10 Einträge
     
-        new Chart(ctx, {
+        this.deadhangChart = new Chart(ctx, {
             type: 'line',
             data: {
                 datasets: [{
@@ -539,7 +558,8 @@ export class FitnessApp {
                 },
                 scales: {
                     y: {
-                        beginAtZero: true,
+                        min: 30, // Start bei 30 Sekunden
+                        beginAtZero: false,
                         grid: {
                             color: this.getCssVariable('--gray-800')
                         }
@@ -593,30 +613,64 @@ export class FitnessApp {
         });
     }
 
-    saveDeadhangTime(time) {
+    async saveDeadhangTime(time) {
         const stats = this.loadDeadhangStats() || {
             times: [],
             bestTime: 0
         };
-
-        stats.times.push({
+    
+        const entry = {
             time,
             date: new Date().toISOString()
-        });
-
+        };
+    
+        // Update lokale Stats
+        stats.times.push(entry);
         if (time > stats.bestTime) {
             stats.bestTime = time;
         }
-
         localStorage.setItem('deadhangStats', JSON.stringify(stats));
+    
+        // Speichere in Datenbank
+        try {
+            const response = await fetch('/projects/fitness/deadhang', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(entry)
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to save deadhang stats to database');
+            }
+        } catch (error) {
+            console.error('Error saving deadhang to database:', error);
+        }
     }
 
-    loadDeadhangStats(card = null) {
-        const stats = JSON.parse(localStorage.getItem('deadhangStats')) || {
-            times: [],
-            bestTime: 0
-        };
-
+    async loadDeadhangStats(card = null) {
+        let stats;
+    
+        try {
+            // Versuche von der Datenbank zu laden
+            const response = await fetch('/projects/fitness/deadhang');
+            if (response.ok) {
+                stats = await response.json();
+            }
+        } catch (error) {
+            console.warn('Could not load deadhang stats from server:', error);
+        }
+    
+        // Fallback auf lokale Stats
+        if (!stats) {
+            stats = JSON.parse(localStorage.getItem('deadhangStats')) || {
+                times: [],
+                bestTime: 0
+            };
+        }
+    
+        // Update UI wenn Card vorhanden
         if (card) {
             const lastTime = stats.times[stats.times.length - 1]?.time || '-';
             const statsDiv = card.querySelector('.deadhang-stats');
@@ -624,7 +678,40 @@ export class FitnessApp {
             statsDiv.querySelector('.last-time').textContent = lastTime;
             statsDiv.querySelector('.best-time').textContent = stats.bestTime || '-';
         }
-
+    
         return stats;
     }
+
+    async setupDeadhangListeners() {
+        const deadhangCard = document.querySelector('.deadhang-exercise');
+        if (!deadhangCard) return;
+    
+        const saveButton = deadhangCard.querySelector('.save-deadhang');
+        const timeInput = deadhangCard.querySelector('.deadhang-time');
+    
+        // Lade und zeige gespeicherte Zeiten
+        await this.loadDeadhangStats(deadhangCard);
+    
+        saveButton?.addEventListener('click', async () => {
+            const time = parseInt(timeInput.value);
+            if (!time || time < 30 || time > 300) {  // Minimum von 30 Sekunden
+                alert('Bitte gib eine gültige Zeit zwischen 30 und 300 Sekunden ein.');
+                return;
+            }
+    
+            await this.saveDeadhangTime(time);
+            await this.loadDeadhangStats(deadhangCard);
+            
+            // Markiere Übung als abgeschlossen
+            deadhangCard.querySelector('.exercise-check').classList.add('completed');
+            this.updateProgress();
+            await this.saveProgress();
+            
+            // Aktualisiere Stats wenn in Stats-View
+            if (document.querySelector('#stats-view').classList.contains('active')) {
+                await this.updateStatsView();
+            }
+        });
+    }
+    
 }
