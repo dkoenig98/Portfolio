@@ -4,6 +4,7 @@ const express = require('express');
 const connectDB = require('./config/database');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs'); // Füge fs hinzu
 
 // Initialisiere Express App
 const app = express();
@@ -72,9 +73,17 @@ app.post('/api/projects', async (req, res) => {
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/projects', express.static(path.join(__dirname, '../projects')));
 
-// Catch-all Route für Single Page Application
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
+// Download Route - HIER EINGEFÜGT
+app.get('/api/download/:filename', (req, res) => {
+    const file = path.join(__dirname, '../frontend/downloads', req.params.filename);
+    console.log('Attempting to download:', file); // Debugging
+    
+    if (!fs.existsSync(file)) {
+        console.log('File not found:', file); // Debugging
+        return res.status(404).send('Datei nicht gefunden');
+    }
+    
+    res.download(file);
 });
 
 app.post('/api/verify-password', (req, res) => {
@@ -89,14 +98,11 @@ app.post('/api/verify-password', (req, res) => {
   }
 });
 
-// Download Route
-app.get('/api/download/:filename', (req, res) => {
-    const file = `${__dirname}/../frontend/downloads/${req.params.filename}`;
-    if (!fs.existsSync(file)) {
-        return res.status(404).send('Datei nicht gefunden');
-    }
-    res.download(file);
+// Catch-all Route NACH der Download Route
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
+
 
 // Server starten
 app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
