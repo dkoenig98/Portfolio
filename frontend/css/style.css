@@ -291,9 +291,7 @@ footer {
 .downloads-section {
     padding: 2rem;
     margin: 2rem 0;
-    background-color: rgba(255, 255, 255, 0.05);
     border-radius: 15px;
-    backdrop-filter: blur(10px);
 }
 
 .downloads-grid {
@@ -378,6 +376,7 @@ footer {
     border-radius: 8px;
     font-weight: 500;
     transition: all 0.3s ease;
+    cursor: pointer;  /* Füge dies hinzu */
 }
 
 .download-button:hover {
@@ -387,6 +386,15 @@ footer {
 
 .download-button i {
     font-size: 1.2rem;
+}
+
+.download-description code {
+    display: block;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 0.5rem 0;
+    font-family: monospace;
 }
 
 /* Animation für den Download-Button */
