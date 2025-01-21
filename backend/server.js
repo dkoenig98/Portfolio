@@ -89,5 +89,14 @@ app.post('/api/verify-password', (req, res) => {
   }
 });
 
+// Download Route
+app.get('/api/download/:filename', (req, res) => {
+    const file = `${__dirname}/../frontend/downloads/${req.params.filename}`;
+    if (!fs.existsSync(file)) {
+        return res.status(404).send('Datei nicht gefunden');
+    }
+    res.download(file);
+});
+
 // Server starten
 app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
