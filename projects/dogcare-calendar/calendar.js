@@ -400,8 +400,12 @@ class Calendar {
         document.querySelectorAll('.time-slot').forEach(slot => {
             slot.addEventListener('click', () => {
                 const type = slot.dataset.type;
-                const time = slot.querySelector('.time').textContent;
-                this.saveAppointment(type, time);
+                if (type === 'custom') {
+                    this.handleCustomTimeSlot();
+                } else {
+                    const time = slot.querySelector('.time').textContent;
+                    this.saveAppointment(type, time);
+                }
             });
         });
 
@@ -481,6 +485,21 @@ class Calendar {
             h.getMonth() === month
         );
     }
+
+    handleCustomTimeSlot() {
+        const startTime = document.getElementById('startTime').value;
+        const endTime = document.getElementById('endTime').value;
+        
+        if (!startTime || !endTime) {
+            alert('Bitte Start- und Endzeit auswählen');
+            return;
+        }
+        
+        // Formatiere die Zeit für die Anzeige
+        const timeString = `${startTime} - ${endTime}`;
+        this.saveAppointment('custom', timeString);
+    }
+    
     
 }
 // test

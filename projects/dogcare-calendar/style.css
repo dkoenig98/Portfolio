@@ -524,6 +524,36 @@ body {
     color: white;
 }
 
+.time-slot.custom {
+    background: #64748b;  /* Ein neutrales Blaugrau */
+    color: white;
+}
+
+.custom-time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.time-input {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: white;
+    padding: 4px;
+    font-size: 14px;
+}
+
+.time-input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+/* Legende für Custom Slot */
+.legend-dot.custom { 
+    background-color: #64748b; 
+}
+
 /* -----------------------------
    Mobile & Responsive Styles
 ----------------------------- */
