@@ -554,6 +554,18 @@ body {
     background-color: #64748b; 
 }
 
+.day.custom-duty { 
+    background-color: #64748b;
+    color: white;
+    border: none;
+}
+
+.day.custom-duty.continuation {
+    border-color: #64748b !important;
+    background-color: transparent !important;
+    color: #64748b !important;
+}
+
 /* -----------------------------
    Mobile & Responsive Styles
 ----------------------------- */
