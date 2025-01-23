@@ -56,14 +56,15 @@ class EmailService {
         }, this.DIGEST_DELAY);
     }
 
-    getAppointmentTypeText(type) {
+    getAppointmentTypeText(type, time) {
         const types = {
             'regular': 'Tagdienst (07:00 - 15:30)',
             'full': '24h Dienst (07:00 - 07:00 nächster Tag)',
             'late': 'Spätdienst (10:00 - 18:30)',
-            'extended': 'Langdienst (08:00 - 18:30)'
+            'extended': 'Langdienst (08:00 - 18:30)',
+            'custom': `Benutzerdefiniert (${time})`
         };
-        return types[type] || type;
+        return type === 'custom' ? types.custom : types[type] || type;
     }
 
     formatDate(date, type) {
@@ -139,7 +140,7 @@ class EmailService {
                                                                     ${this.formatDate(app.date, app.type)}
                                                                 </div>
                                                                 <div style="color: #5f6368; font-size: 14px;">
-                                                                    ${this.getAppointmentTypeText(app.type)}
+                                                                    ${this.getAppointmentTypeText(app.type, app.time)}
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -165,7 +166,7 @@ class EmailService {
                                                                     ${this.formatDate(app.date, app.type)}
                                                                 </div>
                                                                 <div style="color: #5f6368; font-size: 14px;">
-                                                                    ${this.getAppointmentTypeText(app.type)}
+                                                                    ${this.getAppointmentTypeText(app.type, app.time)}
                                                                 </div>
                                                             </td>
                                                         </tr>
