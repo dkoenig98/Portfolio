@@ -173,6 +173,7 @@ class Calendar {
      
         this.setupDayTouchEvents(dayElement, dateStr);
      
+        // Desktop
         if (window.innerWidth >= 768) {
             dayElement.addEventListener('click', (e) => {
                 if (!this.isLongPress) {
@@ -180,27 +181,25 @@ class Calendar {
                         this.showDeleteOption(dateStr);
                     } else if (this.auth.canModifyAppointments()) {
                         this.selectDate(day);
+                    } else if (appointment) {
+                        // Für Sitter: Zeit anzeigen
+                        this.showTimeInfo(dateStr, appointment);
                     }
                 }
             });
         } else {
+            // Mobile
             dayElement.addEventListener('click', (e) => {
                 if (!this.isLongPress && this.auth.canModifyAppointments()) {
                     this.selectDate(day);
+                } else if (appointment) {
+                    this.showTimeInfo(dateStr, appointment);
                 }
             });
         }
-     
-        // Custom Zeit für Sitter anzeigen
-        if (appointment && appointment.type === 'custom' && !this.auth.canModifyAppointments()) {
-            const timeDisplay = document.createElement('div');
-            timeDisplay.className = 'day-time';
-            timeDisplay.textContent = appointment.time;
-            dayElement.appendChild(timeDisplay);
-        }
-     
+
         calendar.appendChild(dayElement);
-     }
+    }
 
     setupDayTouchEvents(element, dateStr) {
         let longPressTimer;
@@ -228,6 +227,29 @@ class Calendar {
             clearTimeout(longPressTimer);
             element.style.transform = 'scale(1)';
         });
+    }
+
+    showTimeInfo(dateStr, appointment) {
+        const modal = document.getElementById('appointmentModal');
+        const modalContent = modal.querySelector('.modal-content');
+        
+        // Modal vereinfachen für Sitter
+        modalContent.innerHTML = `
+            <div class="modal-header">
+                <h3>${new Date(dateStr).toLocaleDateString('de-DE', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })}</h3>
+                <button class="close-button" onclick="window.calendar.closeModal()">&times;</button>
+            </div>
+            <div class="time-info">
+                <p class="time-display">${appointment.time}</p>
+            </div>
+        `;
+        
+        this.openModal();
     }
 
     handleLongPress(dateStr) {
