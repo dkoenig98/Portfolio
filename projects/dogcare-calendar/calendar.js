@@ -491,6 +491,7 @@ class Calendar {
         const endTime = document.getElementById('endTime').value;
         
         if (!startTime || !endTime) {
+            alert('Bitte Start- und Endzeit auswählen');
             return;
         }
         

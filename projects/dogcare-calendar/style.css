@@ -549,6 +549,20 @@ body {
     filter: invert(1);
 }
 
+.custom-time-save {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.custom-time-save:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
 /* Legende für Custom Slot */
 .legend-dot.custom { 
     background-color: #64748b; 
