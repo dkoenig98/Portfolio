@@ -355,6 +355,14 @@ class Calendar {
         const modal = document.getElementById('appointmentModal');
         modal.classList.remove('modal-open');
         modal.style.display = 'none';
+        
+        // Reset custom time inputs
+        document.getElementById('startTime').value = '';
+        document.getElementById('endTime').value = '';
+        
+        // Reset validation styles
+        document.getElementById('startTime').classList.remove('invalid');
+        document.getElementById('endTime').classList.remove('invalid');
     }
 
     async saveAppointment(type, time) {
@@ -487,17 +495,28 @@ class Calendar {
     }
 
     handleCustomTimeSlot() {
-        const startTime = document.getElementById('startTime').value;
-        const endTime = document.getElementById('endTime').value;
+        const startTime = document.getElementById('startTime');
+        const endTime = document.getElementById('endTime');
         
-        if (!startTime || !endTime) {
-            alert('Bitte Start- und Endzeit auswählen');
-            return;
+        // Reset validation styles
+        startTime.classList.remove('invalid');
+        endTime.classList.remove('invalid');
+        
+        let isValid = true;
+        
+        if (!startTime.value) {
+            startTime.classList.add('invalid');
+            isValid = false;
+        }
+        if (!endTime.value) {
+            endTime.classList.add('invalid');
+            isValid = false;
         }
         
-        // Formatiere die Zeit für die Anzeige
-        const timeString = `${startTime} - ${endTime}`;
-        this.saveAppointment('custom', timeString);
+        if (isValid) {
+            const timeString = `${startTime.value} - ${endTime.value}`;
+            this.saveAppointment('custom', timeString);
+        }
     }
     
     

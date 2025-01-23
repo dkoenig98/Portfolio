@@ -563,6 +563,18 @@ body {
     background: rgba(255, 255, 255, 0.3);
 }
 
+.time-input.invalid {
+    border-color: #ff4444;
+    box-shadow: 0 0 0 1px #ff4444;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
 /* Legende für Custom Slot */
 .legend-dot.custom { 
     background-color: #64748b; 
