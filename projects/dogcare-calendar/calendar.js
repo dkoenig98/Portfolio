@@ -330,7 +330,7 @@ class Calendar {
             day
         );
         this.selectedDate = dateStr;
-
+    
         const displayDate = new Date(
             this.currentDate.getFullYear(),
             this.currentDate.getMonth(),
@@ -340,8 +340,17 @@ class Calendar {
             day: 'numeric',
             month: 'long'
         });
-
+    
         document.getElementById('selectedDate').textContent = displayDate;
+    
+        // Vorausfüllen der Zeiten wenn es ein Custom-Termin ist
+        const appointment = this.appointments[dateStr];
+        if (appointment && appointment.type === 'custom') {
+            const [start, end] = appointment.time.split(' - ');
+            document.getElementById('startTime').value = start;
+            document.getElementById('endTime').value = end;
+        }
+    
         this.openModal();
     }
 
@@ -498,7 +507,6 @@ class Calendar {
         const startTime = document.getElementById('startTime');
         const endTime = document.getElementById('endTime');
         
-        // Reset validation styles
         startTime.classList.remove('invalid');
         endTime.classList.remove('invalid');
         
@@ -511,6 +519,18 @@ class Calendar {
         if (!endTime.value) {
             endTime.classList.add('invalid');
             isValid = false;
+        }
+        
+        // Prüfe ob Endzeit nach Startzeit liegt
+        if (startTime.value && endTime.value) {
+            const start = new Date(`2000-01-01T${startTime.value}`);
+            const end = new Date(`2000-01-01T${endTime.value}`);
+            
+            if (end <= start) {
+                endTime.classList.add('invalid');
+                startTime.classList.add('invalid');
+                isValid = false;
+            }
         }
         
         if (isValid) {
