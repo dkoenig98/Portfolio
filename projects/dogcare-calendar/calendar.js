@@ -560,8 +560,9 @@ class Calendar {
                 endTime.classList.add('invalid');
                 startTime.classList.add('invalid');
                 isValid = false;
+                alert('Endzeit muss nach Startzeit liegen');
             }
-            alert('Endzeit muss nach Startzeit liegen');
+            
         }
         
         if (isValid) {
