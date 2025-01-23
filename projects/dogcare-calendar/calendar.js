@@ -490,6 +490,10 @@ class Calendar {
         const startTime = document.getElementById('startTime').value;
         const endTime = document.getElementById('endTime').value;
         
+        if (!startTime || !endTime) {
+            return;
+        }
+        
         // Formatiere die Zeit für die Anzeige
         const timeString = `${startTime} - ${endTime}`;
         this.saveAppointment('custom', timeString);
