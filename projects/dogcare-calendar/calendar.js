@@ -490,11 +490,6 @@ class Calendar {
         const startTime = document.getElementById('startTime').value;
         const endTime = document.getElementById('endTime').value;
         
-        if (!startTime || !endTime) {
-            alert('Bitte Start- und Endzeit auswählen');
-            return;
-        }
-        
         // Formatiere die Zeit für die Anzeige
         const timeString = `${startTime} - ${endTime}`;
         this.saveAppointment('custom', timeString);
