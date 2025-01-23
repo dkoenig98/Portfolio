@@ -135,12 +135,12 @@ class Calendar {
         dayNumber.className = 'day-number';
         dayNumber.textContent = day;
         dayElement.appendChild(dayNumber);
-
+     
         const currentDate = new Date(year, month, day);
         if (this.isHoliday(currentDate)) {
             dayElement.classList.add('holiday');
         }
-
+     
         const dateStr = this.formatDateString(year, month + 1, day);
         const appointment = this.appointments[dateStr];
         
@@ -149,7 +149,7 @@ class Calendar {
         if (appointment && !isContinuation) {
             dayElement.classList.add(`${appointment.type}-duty`);
             dayElement.title = `${appointment.time}`;
-
+     
             if (appointment.type === 'night' || appointment.type === 'full') {
                 const nextDateStr = this.getNextDay(dateStr);
                 this.appointments[nextDateStr] = {
@@ -163,16 +163,16 @@ class Calendar {
             dayElement.classList.add('continuation');
             dayElement.title = appointment.time;
         }
-
+     
         const today = new Date();
         if (day === today.getDate() && 
             month === today.getMonth() && 
             year === today.getFullYear()) {
             dayElement.classList.add('today');
         }
-
+     
         this.setupDayTouchEvents(dayElement, dateStr);
-
+     
         if (window.innerWidth >= 768) {
             dayElement.addEventListener('click', (e) => {
                 if (!this.isLongPress) {
@@ -190,9 +190,17 @@ class Calendar {
                 }
             });
         }
-
+     
+        // Custom Zeit für Sitter anzeigen
+        if (appointment && appointment.type === 'custom' && !this.auth.canModifyAppointments()) {
+            const timeDisplay = document.createElement('div');
+            timeDisplay.className = 'day-time';
+            timeDisplay.textContent = appointment.time;
+            dayElement.appendChild(timeDisplay);
+        }
+     
         calendar.appendChild(dayElement);
-    }
+     }
 
     setupDayTouchEvents(element, dateStr) {
         let longPressTimer;
@@ -531,6 +539,7 @@ class Calendar {
                 startTime.classList.add('invalid');
                 isValid = false;
             }
+            alert('Endzeit muss nach Startzeit liegen');
         }
         
         if (isValid) {
