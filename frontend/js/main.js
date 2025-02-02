@@ -1,8 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const profileImage = document.querySelector('.profile-image');
-    let currentImageIndex = 1;
-    const totalImages = 3;
+        // Profilbild-Logik
+        const profileImage = document.querySelector('.profile-image');
+        let currentImageIndex = 1;
+        const totalImages = 3;
+    
+        // Setze das initiale Bild
+        profileImage.src = `/images/thatsme${currentImageIndex}.webp`;
+    
+        // Lade-Handler für das Bild
+        profileImage.addEventListener('load', () => {
+            profileImage.classList.add('loaded');
+        });
+    
+        // Fallback, falls das Bild bereits im Cache ist
+        if (profileImage.complete) {
+            profileImage.classList.add('loaded');
+        }
+    
+        // Click-Event für Bildwechsel
+        profileImage.addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex % totalImages) + 1;
+            profileImage.classList.remove('loaded');
+            profileImage.src = `/images/thatsme${currentImageIndex}.webp`;
+            profileImage.classList.add('image-change');
+            setTimeout(() => profileImage.classList.remove('image-change'), 500);
+        });
+        
     // Projekte-Daten
     const projects = [
         {
@@ -217,6 +241,18 @@ document.addEventListener('DOMContentLoaded', () => {
             nav.classList.remove('active');
         }
     });
+
+    // Hover-Effekt für Projekt-Karten
+    document.querySelectorAll('.project-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.querySelector('.project-link')?.classList.add('pulse');
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.querySelector('.project-link')?.classList.remove('pulse');
+        });
+    });
+
 
         // Ripple-Effekt für Projekt-Links
     document.querySelectorAll('.project-link').forEach(button => {

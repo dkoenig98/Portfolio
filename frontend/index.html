@@ -27,6 +27,7 @@
                     <li><a href="#home">Home</a></li>
                     <li><a href="#about">Über mich</a></li>
                     <li><a href="#projects">Projekte</a></li>
+                    <li><a href="#downloads">Downloads</a></li>
                     <li><a href="#contact">Kontakt</a></li>
                 </ul>
             </nav>
@@ -35,7 +36,9 @@
 
     <main>
         <section id="home" class="hero">
-            <img src="/images/thatsme.webp" alt="Dominic König" class="profile-image">
+            <div class="profile-image-container">
+                <img src="/images/thatsme.webp" alt="Dominic König" class="profile-image" loading="lazy">
+            </div>
             <h1 class="glow-text">Dominic König</h1>
             <p><span id="typed-text"></span></p>
         </section>
@@ -69,32 +72,26 @@
             </div>
         </section>
 
-        <section class="downloads-section">
+        <section class="downloads-section" id="downloads">
             <h2 class="glow-text-secondary">Downloads</h2>
-            <div class="downloads-grid">
-                <!-- <div class="download-card">
-                    <h3 class="download-title">Spamassasian</h3>
-                    <p class="download-description">
-                        Download via Linux Terminal:
-                        <code>curl -O https://www.domkoenig.com/api/download/spamassassin.zip</code>
-                    </p>
-                    <div class="download-info">
-                        <span class="download-size">849 KB</span>
-                        <span class="download-date">21.01.2025</span>
-                    </div>
-                    <a href="https://www.domkoenig.com/api/download/spamassassin.zip">Download</a>
-                </div> -->
+            <p class="downloads-intro">
+                In diesem Bereich findest du eine sorgfältig kuratierte Sammlung meiner Entwicklungen und Tools. 
+                Von Automatisierungsskripten bis hin zu komplexeren Anwendungen - alle diese Projekte sind 
+                das Ergebnis meiner Leidenschaft für effiziente und innovative Softwarelösungen.
+            </p>
+            <div class="downloads-grid" id="downloads-container">
+                <!-- Downloads werden dynamisch eingefügt -->
             </div>
         </section>
 
         <section id="contact">
             <h2 class="glow-text-secondary">Kontakt</h2>
-        <!--
+        
             <p>Gefallen dir meine kleinen aber feinen Projekte und bist du an einer möglichen Zusammenarbeit interessiert?</p>
             <p>Dann schreib mir doch einfach!</p>
             <br>
-        -->
-            <a href="info.domkoenig@gmail.com" class="cta-button pulsate">Schreib mir</a>
+        
+            <a href="mailto:mail@domkoenig.com" class="cta-button pulsate">Schreib mir</a>
         </section>
 
     </main>
@@ -104,6 +101,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="js/downloads.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

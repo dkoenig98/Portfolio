@@ -101,14 +101,41 @@ h2 {
     padding: 8rem 0 4rem;
 }
 
-.profile-image {
+.profile-image-container {
     width: 200px;
     height: 200px;
+    margin: 0 auto 2rem;
+    position: relative;
+    border-radius: 50%;
+    background: linear-gradient(110deg, var(--bg-color-start) 8%, var(--bg-color-end) 18%, var(--bg-color-start) 33%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+}
+
+.profile-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     object-fit: cover;
     border: 4px solid var(--accent-color);
-    margin-bottom: 2rem;
-    transition: transform 0.5s ease;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.profile-image.loaded {
+    opacity: 1;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
 }
 
 .image-change {
@@ -146,13 +173,20 @@ h2 {
 .project-card {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
+    border: 1px solid transparent; /* Fügen wir einen transparenten Rahmen hinzu */
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .project-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2),
+                0 0 15px rgba(255, 127, 80, 0.3); /* Äußerer Glow */
+    border-color: var(--accent-color); /* Rahmen wird farbig */
+}
+
+.project-card:hover .project-title {
+    text-shadow: 0 0 8px var(--accent-color);
 }
 
 .project-image {
@@ -184,15 +218,31 @@ h2 {
     text-decoration: none;
     border-radius: 5px;
     font-weight: bold;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .cta-button:hover, .project-link:hover {
-    background-color: var(--secondary-color);
+    background-color: var(--accent-color);
+}
+
+.project-link.pulse {
+    animation: projectButtonPulse 1.5s infinite;
 }
 
 .pulsate {
     animation: pulsate 2s infinite;
+}
+
+@keyframes projectButtonPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 127, 80, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 127, 80, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 127, 80, 0);
+    }
 }
 
 @keyframes pulsate {
@@ -289,84 +339,25 @@ footer {
     }
 }
 
-.downloads-section {
-    margin: 2rem 0;
-    border-radius: 15px;
-    position: relative;
-    z-index: 5;        
-}
-
-.downloads-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
+.downloads-intro {
+    max-width: px;
+    color: var(--text-color);
+    opacity: 0.9;
+    margin-bottom: 2rem;
 }
 
 .download-card {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(64, 224, 208, 0.05) 0%, rgba(64, 224, 208, 0.02) 100%);
+    border: 1px solid rgba(64, 224, 208, 0.1);
     padding: 1.5rem;
+    border-radius: 12px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative;
-    overflow: hidden;
 }
 
-.download-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-.download-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, transparent, rgba(255, 127, 80, 0.1));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 1;    
-    pointer-events: none; 
-}
-
-.download-card:hover::before {
-    opacity: 1;
-}
-
-.download-title {
-    color: var(--accent-color);
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-}
-
-.download-description {
-    color: var(--text-color);
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-    opacity: 0.8;
-}
-
-.download-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    font-size: 0.8rem;
-    color: var(--secondary-color);
-}
-
-.download-size {
-    padding: 0.2rem 0.5rem;
-    background-color: rgba(64, 224, 208, 0.1);
-    border-radius: 4px;
-}
-
-.download-date {
-    opacity: 0.7;
+.download-card.no-downloads {
+    grid-column: 1 / -1;
+    text-align: center;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
 }
 
 .download-button {
@@ -374,64 +365,22 @@ footer {
     align-items: center;
     gap: 0.5rem;
     padding: 0.8rem 1.5rem;
-    background-color: var(--accent-color);
+    background-color: var(--secondary-color);
     color: var(--bg-color-start);
     text-decoration: none;
     border-radius: 8px;
     font-weight: 500;
     transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;  
-    z-index: 10;
+    position: relative;
+    overflow: hidden;
 }
 
 .download-button:hover {
-    background-color: var(--secondary-color);
+    background-color: var(--accent-color);
     transform: translateY(-2px);
 }
 
 .download-button i {
     font-size: 1.2rem;
-}
-
-.download-description code {
-    display: block;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 0.5rem;
-    border-radius: 4px;
-    margin: 0.5rem 0;
-    font-family: monospace;
-}
-
-/* Animation für den Download-Button */
-@keyframes downloadPulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 127, 80, 0.4);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(255, 127, 80, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 127, 80, 0);
-    }
-}
-
-.download-button:active {
-    animation: downloadPulse 0.8s;
-}
-
-/* Responsives Design */
-@media (max-width: 768px) {
-    .downloads-section {
-        margin: 1.5rem 0;
-    }
-    
-    .downloads-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .download-title {
-        font-size: 1.1rem;
-    }
 }
 
