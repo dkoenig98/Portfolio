@@ -150,23 +150,101 @@ h2 {
 .skills-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 1.5rem;
     list-style-type: none;
-    margin-top: 1rem;
+    margin-top: 2rem;
+    perspective: 1000px;
 }
 
 .skills-list li {
-    background-color: var(--skill-bg-color);
+    background: linear-gradient(
+        135deg, 
+        rgba(255, 127, 80, 0.1) 0%,
+        rgba(64, 224, 208, 0.1) 100%
+    );
     color: var(--text-color);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+    padding: 1rem 2rem;
+    border-radius: 15px;
+    font-size: 1rem;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+    backdrop-filter: blur(5px);
+    transform-style: preserve-3d;
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+}
+
+.skills-list li::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(255, 255, 255, 0.1) 0%,
+        transparent 50%
+    );
+    border-radius: inherit;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    opacity: 0;
 }
 
 .skills-list li:hover {
-    transform: translateY(-5px);
-    background-color: var(--accent-color);
+    transform: perspective(1000px) rotateX(10deg) rotateY(10deg) translateZ(20px);
+    border-color: rgba(255, 127, 80, 0.3);
+    box-shadow: 
+        0 5px 15px rgba(255, 127, 80, 0.2),
+        0 0 30px rgba(64, 224, 208, 0.1),
+        inset 0 0 15px rgba(255, 255, 255, 0.05);
+}
+
+.skills-list li:hover::before {
+    opacity: 1;
+}
+
+.skills-list li::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(
+        45deg,
+        var(--accent-color),
+        var(--secondary-color)
+    );
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.skills-list li:hover::after {
+    opacity: 0.3;
+}
+
+/* Hinzufügen einer schwebenden Animation für jedes zweite Element */
+.skills-list li:nth-child(even) {
+    animation: float 6s ease-in-out infinite;
+}
+
+.skills-list li:nth-child(odd) {
+    animation: float 8s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotateZ(0deg);
+    }
+    25% {
+        transform: translateY(-8px) rotateZ(2deg);
+    }
+    75% {
+        transform: translateY(8px) rotateZ(-2deg);
+    }
+}
+
+/* Hover stoppt die Animation */
+.skills-list li:hover {
+    animation-play-state: paused;
 }
 
 .project-grid {

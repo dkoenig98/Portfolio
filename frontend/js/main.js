@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
             profileImage.classList.add('image-change');
             setTimeout(() => profileImage.classList.remove('image-change'), 500);
         });
-        
+
     // Projekte-Daten
     const projects = [
         {
@@ -81,6 +81,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Setze das initiale Bild
     profileImage.src = `/images/thatsme${currentImageIndex}.webp`;
+
+    document.querySelectorAll('.skills-list li').forEach(skill => {
+        skill.addEventListener('mousemove', (e) => {
+            const rect = skill.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            // Update der CSS-Variablen für den Glanz-Effekt
+            skill.style.setProperty('--mouse-x', `${x}%`);
+            skill.style.setProperty('--mouse-y', `${y}%`);
+            
+            // 3D-Rotation basierend auf der Mausposition
+            const rotateY = ((x - 50) / 50) * 10;
+            const rotateX = ((y - 50) / 50) * -10;
+            
+            skill.style.transform = `
+                perspective(1000px) 
+                rotateX(${rotateX}deg) 
+                rotateY(${rotateY}deg)
+                translateZ(20px)
+            `;
+        });
+        
+        skill.addEventListener('mouseleave', () => {
+            skill.style.transform = `
+                perspective(1000px)
+                rotateX(0deg)
+                rotateY(0deg)
+                translateZ(0px)
+            `;
+        });
+    });
 
     profileImage.addEventListener('click', () => {
         currentImageIndex = (currentImageIndex % totalImages) + 1;
