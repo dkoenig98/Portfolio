@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             link: '/projects/luki-portfolio/index.html',
             passwordProtected: false
         },
+            /*
         {
             title: 'Awareness Dashboard',
             description: 'Ein Awarness Dashboard für Mitarbeiter.',
@@ -63,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             link: '/projects/muki/index.html',
             passwordProtected: true
         },
+            */
         {
             title: 'Shanty Kindergarten',
             description: 'Ein Kalendar der unsere Arbeit wesentlich erleichtert.',
