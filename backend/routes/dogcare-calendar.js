@@ -53,93 +53,85 @@ router.get('/appointments', authenticateToken, async (req, res) => {
     }
 });
 
+// POST-Route zum Erstellen von Urlaubseinträgen
 router.post('/appointments', authenticateToken, async (req, res) => {
     try {
         console.log('Received appointment data:', req.body);
-        const { date, type, time } = req.body;
-        const appointment = new Appointment({
-            date,
-            type,
-            time,
-            createdBy: req.user.id
-        });
-
-        await appointment.save();
-
-        // E-Mail-Benachrichtigung korrigiert
+        const { date, type, time, startDate, endDate } = req.body;
         
-        try {
-            emailService.addChange(appointment, 'new');
-            console.log('Email change added successfully');
-        } catch (emailError) {
-            console.error('Email service error:', emailError);
-            // Wir werfen den Fehler nicht weiter, damit die Appointment-Erstellung trotzdem funktioniert
-        }
-        
+        // Für Urlaub: Mehrere Einträge erstellen
+        if (type === 'vacation') {
+            const vacationAppointments = [];
+            const currentDate = new Date(startDate);
+            const endDateObj = new Date(endDate);
 
-        // Wenn es ein Nacht- oder 24h-Dienst ist, erstelle auch den Folgetermin
-        if (type === 'night' || type === 'full') {
-            const [year, month, day] = date.split('-');
-            const nextDate = new Date(year, month - 1, parseInt(day) + 1);
-            const nextDateStr = `${nextDate.getFullYear()}-${nextDate.getMonth() + 1}-${nextDate.getDate()}`;
-            
-            const continuation = new Appointment({
-                date: nextDateStr,
+            while (currentDate <= endDateObj) {
+                const dateString = currentDate.toISOString().split('T')[0];
+                
+                const vacationAppointment = new Appointment({
+                    date: dateString,
+                    type: 'vacation',
+                    time: 'Urlaub',
+                    startDate,
+                    endDate,
+                    createdBy: req.user.id
+                });
+
+                await vacationAppointment.save();
+                vacationAppointments.push(vacationAppointment);
+
+                // Nächster Tag
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            res.status(201).json(vacationAppointments);
+        } else {
+            // Bestehende Logik für andere Termintypen
+            const appointment = new Appointment({
+                date,
                 type,
-                time: 'Fortsetzung vom Vortag',
-                createdBy: req.user.id,
-                parentDate: date
+                time,
+                createdBy: req.user.id
             });
-            await continuation.save();
+
+            await appointment.save();
+            res.status(201).json(appointment);
         }
-        
-        res.status(201).json(appointment);
     } catch (error) {
         console.error('Appointment creation error:', error);
         res.status(400).json({ message: 'Fehler beim Erstellen', error: error.message });
     }
 });
 
+// DELETE-Route zum Löschen von Urlaubseinträgen
 router.delete('/appointments/:date', authenticateToken, async (req, res) => {
     try {
-        console.log('[DELETE] Attempting to delete appointment for date:', req.params.date);
         const { date } = req.params;
         
-        // Lösche alle Termine an diesem Datum
         const appointments = await Appointment.find({ date });
-        console.log('[DELETE] Found appointments:', appointments);
         
         for (const appointment of appointments) {
-            // Füge den Termin zur Email-Digest-Liste hinzu, bevor er gelöscht wird
-            emailService.addChange(appointment, 'delete');
-            
-            await Appointment.findByIdAndDelete(appointment._id);
-            console.log('[DELETE] Deleted appointment:', appointment._id);
-            
-            // Wenn es ein 24h-Dienst ist, lösche auch den Folgetermin
-            if (appointment.type === 'full') {
-                const [year, month, day] = date.split('-');
-                const nextDate = new Date(year, month - 1, parseInt(day) + 1);
-                const nextDateStr = `${nextDate.getFullYear()}-${nextDate.getMonth() + 1}-${nextDate.getDate()}`;
-                
-                const continuationAppointment = await Appointment.findOne({ 
-                    date: nextDateStr,
-                    parentDate: date 
+            // Wenn es ein Urlaubstermin ist, lösche alle verbundenen Urlaubstermine
+            if (appointment.type === 'vacation') {
+                const deletedCount = await Appointment.deleteMany({ 
+                    type: 'vacation', 
+                    startDate: appointment.startDate, 
+                    endDate: appointment.endDate 
                 });
                 
-                if (continuationAppointment) {
-                    // Füge auch den Folgetermin zur Email-Digest-Liste hinzu
-                    emailService.addChange(continuationAppointment, 'delete');
-                    await Appointment.deleteOne({ _id: continuationAppointment._id });
-                }
+                // Logging für Debugging
+                console.log(`Deleted ${deletedCount.deletedCount} vacation appointments`);
                 
-                console.log('[DELETE] Deleted continuation appointment for:', nextDateStr);
+                break; // Nur einmal löschen
+            } else {
+                // Bestehende Lösch-Logik für andere Termintypen
+                await Appointment.findByIdAndDelete(appointment._id);
             }
         }
 
-        res.json({ message: 'Termine gelöscht', count: appointments.length });
+        res.json({ message: 'Termine gelöscht' });
     } catch (error) {
-        console.error('[DELETE_ERROR]:', error);
+        console.error('Delete error:', error);
         res.status(500).json({ message: 'Server Fehler', error: error.message });
     }
 });

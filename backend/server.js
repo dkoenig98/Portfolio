@@ -33,6 +33,14 @@ connectDB();
 
 // Routes
 
+const triathlonRoutes = require('./routes/triathlon-tracker');
+
+// ... andere Imports und Middleware ...
+
+// Add Triathlon Tracker routes (füge diese Zeile nach den anderen Routen hinzu)
+app.use('/projects/triathlon-tracker', triathlonRoutes);
+
+
 // Fitness Routes
 const fitnessRoutes = require('./routes/fitness');
 app.use('/projects/fitness', fitnessRoutes);
@@ -72,6 +80,21 @@ app.post('/api/projects', async (req, res) => {
 // Statische Dateien
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/projects', express.static(path.join(__dirname, '../projects')));
+
+app.use('/projects/triathlon-tracker', express.static(path.join(__dirname, '../projects/triathlon-tracker')));
+
+app.use((req, res, next) => {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    next();
+});
+
+// Für HTML-Dateien speziell
+app.use('/projects/triathlon-tracker', (req, res, next) => {
+    if (req.path.endsWith('.html') || req.path === '/') {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    }
+    next();
+});
 
 // Download Route - HIER EINGEFÜGT
 app.get('/api/download/:filename', (req, res) => {

@@ -7,12 +7,20 @@ const AppointmentSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['regular', 'full', 'late', 'extended', 'custom'], // Added 'custom' type
+        enum: ['regular', 'full', 'late', 'extended', 'custom', 'vacation'], 
         required: true
     },
     time: {
         type: String,
         required: true
+    },
+    startDate: { 
+        type: String,
+        default: null
+    },
+    endDate: { 
+        type: String,
+        default: null
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,

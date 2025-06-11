@@ -30,6 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Projekte-Daten
     const projects = [
         {
+            title: 'Mission Triathlon',
+            description: 'Triathlon Trainingsplan für Hornet.',
+            image: '/projects/triathlon-tracker/tri.jpg',
+            link: '/projects/triathlon-tracker/index.html',
+            passwordProtected: false
+        },
+        {
             title: 'Strondbodbuam',
             description: 'Ein innovativer Counter für Hallstättersee-Sprünge mit kreativen CSS-Animationen.',
             image: '/projects/strondbodbuam/see.webp',
