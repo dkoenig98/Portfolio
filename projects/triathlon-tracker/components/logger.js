@@ -104,6 +104,8 @@ function updateZoneTotal() {
     }, 0);
     
     document.getElementById('zoneTotal').textContent = total;
+    // Automatisch die Dauer setzen
+    document.getElementById('duration').value = total;
 }
 
 async function handleSubmit(e) {

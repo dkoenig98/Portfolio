@@ -184,7 +184,7 @@ export function calculateWeeklyTotals(trainings) {
 // Get rating emoji
 export function getRatingEmoji(rating) {
     if (!rating) return '';
-    const emojis = ['😫', '😕', '😊', '😃', '🚀'];
+    const emojis = ['😐', '😀', '💪', '⚡', '💥'];
     return emojis[rating - 1] || '';
 }
 

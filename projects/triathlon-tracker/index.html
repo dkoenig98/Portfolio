@@ -12,7 +12,7 @@
     <div class="app-container">
         <!-- Header -->
         <header class="app-header">
-            <h1>Triathlon Training Tracker</h1>
+            <h1>Triathlon Training</h1>
             <div class="race-countdown" id="raceCountdown">
                 <i class="fas fa-flag-checkered"></i>
                 <span id="countdownText">Loading...</span>
@@ -197,17 +197,6 @@
                 </div>
                 
                 <div id="completedFields" style="display:none;">
-                    <div class="form-group">
-                        <label for="duration">Dauer (Minuten)</label>
-                        <input type="number" id="duration" min="0">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="rating">Bewertung (1-5)</label>
-                        <input type="range" id="rating" min="1" max="5" value="3">
-                        <span id="ratingValue">3</span>
-                    </div>
-                    
                     <div class="zones-input">
                         <h4>Herzfrequenzzonen (Minuten)</h4>
                         <div class="zone-grid">
@@ -232,7 +221,15 @@
                                 <input type="number" id="zone5" min="0" value="0">
                             </div>
                         </div>
-                        <p class="zone-total">Gesamt: <span id="zoneTotal">0</span> min</p>
+                        <p class="zone-total">Gesamtdauer: <span id="zoneTotal">0</span> Minuten</p>
+                    </div>
+                    
+                    <input type="hidden" id="duration" value="0">
+                    
+                    <div class="form-group">
+                        <label for="rating">Bewertung (1-5)</label>
+                        <input type="range" id="rating" min="1" max="5" value="3">
+                        <span id="ratingValue">3</span>
                     </div>
                     
                     <div class="form-group">
