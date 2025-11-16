@@ -9,18 +9,17 @@ const fs = require('fs'); // Füge fs hinzu
 // Initialisiere Express App
 const app = express();
 
-app.enable('trust proxy');
-
 // Aktiviere Vertrauen in Proxy (wichtig für Heroku)
 app.enable('trust proxy');
 
 // HTTPS Redirect Middleware für Produktion
 app.use((req, res, next) => {
-    if (req.header('x-forwarded-proto') !== 'https' && process.env.NODE_ENV === 'production') {
-        res.redirect(`https://${req.header('host')}${req.url}`);
-    } else {
-        next();
-    }
+    // 'req.secure' ist 'true', wenn 'trust proxy' an ist UND x-forwarded-proto 'https' war.
+    if (!req.secure && process.env.NODE_ENV === 'production') {
+        res.redirect(`https://${req.get('host')}${req.url}`);
+    } else {
+        next();
+    }
 });
 
 // Port Konfiguration
