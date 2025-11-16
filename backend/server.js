@@ -12,10 +12,9 @@ const app = express();
 // Aktiviere Vertrauen in Proxy (wichtig für Heroku)
 app.enable('trust proxy');
 
-// HTTPS Redirect Middleware für Produktion
 app.use((req, res, next) => {
-    // 'req.secure' ist 'true', wenn 'trust proxy' an ist UND x-forwarded-proto 'https' war.
     if (!req.secure && process.env.NODE_ENV === 'production') {
+        // Benutze req.get('host') statt req.header('host')
         res.redirect(`https://${req.get('host')}${req.url}`);
     } else {
         next();
