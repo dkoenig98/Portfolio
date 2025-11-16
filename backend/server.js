@@ -30,13 +30,14 @@ app.use((req, res, next) => {
     // Die Umgebungs-Variable
     console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
 
-    if (!req.secure && process.env.NODE_ENV === 'production') {
-        console.log('>>> ERGEBNIS: Unsicher! Leite um auf HTTPS... <<<');
-        res.redirect(`https://${req.get('host')}${req.url}`);
-    } else {
-        console.log('>>> ERGEBNIS: Sicher. Fahre fort. <<<');
-        next();
-    }
+    if (!req.secure && process.env.NODE_ENV === 'production') {
+        console.log('Ergebniss: Unsicher');
+        res.redirect(`https://://${req.get('host')}${req.url}`);
+    } else {
+        console.log('Unwerwarteter Fehler');
+        next();
+    }
+    
 });
 
 // Port Konfiguration
