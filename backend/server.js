@@ -4,7 +4,7 @@ const express = require('express');
 const connectDB = require('./config/database');
 const cors = require('cors');
 const path = require('path');
-const fs = require('fs'); // Füge fs hinzu
+const fs = require('fs');
 
 // Initialisiere Express App
 const app = express();
@@ -12,11 +12,29 @@ const app = express();
 // Aktiviere Vertrauen in Proxy (wichtig für Heroku)
 app.enable('trust proxy');
 
+// DEBUGGING REDIRECT LOOP
 app.use((req, res, next) => {
+
+    // Wir loggen jetzt alles, was Cloudflare uns schickt
+    console.log('--- NEUE ANFRAGE ---');
+    console.log(`Zeit: ${new Date().toISOString()}`);
+    console.log(`req.protocol: ${req.protocol}`); // Was 'express' denkt
+    console.log(`req.secure: ${req.secure}`); // Was 'trust proxy' daraus macht
+    console.log(`req.get('host'): ${req.get('host')}`);
+    console.log(`req.url: ${req.url}`);
+    
+    // Die rohen Header von Cloudflare
+    console.log(`Header 'x-forwarded-proto': ${req.header('x-forwarded-proto')}`);
+    console.log(`Header 'x-forwarded-for': ${req.header('x-forwarded-for')}`);
+
+    // Die Umgebungs-Variable
+    console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+
     if (!req.secure && process.env.NODE_ENV === 'production') {
-        // Benutze req.get('host') statt req.header('host')
+        console.log('>>> ERGEBNIS: Unsicher! Leite um auf HTTPS... <<<');
         res.redirect(`https://${req.get('host')}${req.url}`);
     } else {
+        console.log('>>> ERGEBNIS: Sicher. Fahre fort. <<<');
         next();
     }
 });
@@ -32,14 +50,6 @@ app.use(express.json());
 connectDB();
 
 // Routes
-
-const triathlonRoutes = require('./routes/triathlon-tracker');
-
-// ... andere Imports und Middleware ...
-
-// Add Triathlon Tracker routes (füge diese Zeile nach den anderen Routen hinzu)
-app.use('/projects/triathlon-tracker', triathlonRoutes);
-
 
 // Fitness Routes
 const fitnessRoutes = require('./routes/fitness');
