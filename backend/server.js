@@ -12,34 +12,6 @@ const app = express();
 // Aktiviere Vertrauen in Proxy (wichtig für Heroku)
 app.enable('trust proxy');
 
-// DEBUGGING REDIRECT LOOP
-app.use((req, res, next) => {
-
-    // Wir loggen jetzt alles, was Cloudflare uns schickt
-    console.log('--- NEUE ANFRAGE ---');
-    console.log(`Zeit: ${new Date().toISOString()}`);
-    console.log(`req.protocol: ${req.protocol}`); // Was 'express' denkt
-    console.log(`req.secure: ${req.secure}`); // Was 'trust proxy' daraus macht
-    console.log(`req.get('host'): ${req.get('host')}`);
-    console.log(`req.url: ${req.url}`);
-    
-    // Die rohen Header von Cloudflare
-    console.log(`Header 'x-forwarded-proto': ${req.header('x-forwarded-proto')}`);
-    console.log(`Header 'x-forwarded-for': ${req.header('x-forwarded-for')}`);
-
-    // Die Umgebungs-Variable
-    console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
-
-    if (!req.secure && process.env.NODE_ENV === 'production') {
-        console.log('Ergebniss: Unsicher');
-        res.redirect(`https://://${req.get('host')}${req.url}`);
-    } else {
-        console.log('Unwerwarteter Fehler');
-        next();
-    }
-    
-});
-
 // Port Konfiguration
 const PORT = process.env.PORT || 5000;
 
