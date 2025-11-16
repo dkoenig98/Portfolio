@@ -9,6 +9,8 @@ const fs = require('fs'); // Füge fs hinzu
 // Initialisiere Express App
 const app = express();
 
+app.enable('trust proxy');
+
 // Aktiviere Vertrauen in Proxy (wichtig für Heroku)
 app.enable('trust proxy');
 
