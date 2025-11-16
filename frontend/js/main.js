@@ -30,10 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Projekte-Daten
     const projects = [
         {
-            title: 'Mission Triathlon',
-            description: 'Triathlon Trainingsplan für Hornet.',
-            image: '/projects/triathlon-tracker/tri.jpg',
-            link: '/projects/triathlon-tracker/index.html',
+            title: 'Shanty Kindergarten',
+            description: 'Ein Kalendar der unsere Arbeit wesentlich erleichtert.',
+            image: '/projects/dogcare-calendar/shanti.jpg',
+            link: '/projects/dogcare-calendar/index.html',
             passwordProtected: false
         },
         {
@@ -72,20 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
             passwordProtected: true
         },
             */
-        {
-            title: 'Shanty Kindergarten',
-            description: 'Ein Kalendar der unsere Arbeit wesentlich erleichtert.',
-            image: '/projects/dogcare-calendar/shanti.jpg',
-            link: '/projects/dogcare-calendar/index.html',
-            passwordProtected: false
-        },
-        {
-            title: 'Fitness Tracker',
-            description: 'Ein Fitness Tracker für alle Fitnessbegeisterten.',
-            image: '/projects/fitness/images/logo.jpg',
-            link: '/projects/fitness/index.html',
-            passwordProtected: true
-        },
+        // {
+        //     title: 'Fitness Tracker',
+        //     description: 'Ein Fitness Tracker für alle Fitnessbegeisterten.',
+        //     image: '/projects/fitness/images/logo.jpg',
+        //     link: '/projects/fitness/index.html',
+        //     passwordProtected: true
+        // },
     ];
 
     // Setze das initiale Bild
