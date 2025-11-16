@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Ein innovativer Counter für Hallstättersee-Sprünge mit kreativen CSS-Animationen.',
             image: '/projects/strondbodbuam/see.webp',
             link: '/projects/strondbodbuam/index.html',
-            passwordProtected: false
+            passwordProtected: true
         },
         {
             title: 'Rinnerhütte',
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'Eine Website für einen unglaublich talentierten Fotografen mit dynamischem Bildladen.',
             image: '/projects/luki-portfolio/images/profile.webp',
             link: '/projects/luki-portfolio/index.html',
-            passwordProtected: false
+            passwordProtected: true
         },
             /*
         {
