@@ -63,6 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
             link: '/projects/luki-portfolio/index.html',
             passwordProtected: true
         },
+        {   title: 'Soizkommaguad Events',
+            description: 'Projekt in Arbeit....',
+            image: '/projects/salzi-events/images/logo.png',
+            link: '/projects/salzi-events/index.html',
+            passwordProtected: false
+        },
             /*
         {
             title: 'Awareness Dashboard',

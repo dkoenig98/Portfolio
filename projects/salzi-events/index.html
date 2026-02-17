@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salzkammergut Events 2026 – Was geht?</title>
+  <meta name="description" content="Alle Veranstaltungen im inneren Salzkammergut 2026 – übersichtlich, aktuell, mobil.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ── HERO ────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="hero-eyebrow">Inneres Salzkammergut · 2026</span>
+      <h1>Wos geht im<br><em>Soizkommerguad?</em></h1>
+      <p class="hero-sub">
+        Oi Vaonstoitungen. Oi Festln. Ois auf oan Blick.<br>
+        Nema long umanond suachn.
+      </p>
+      <span class="hero-claim">„So vapss ma nix mehr" ✦</span>
+    </div>
+    <svg class="hero-wave" viewBox="0 0 1440 52" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0 52L1440 52L1440 16C1200 52 880 4 720 16C560 28 240 52 0 16L0 52Z" fill="#F4F8FA"/>
+    </svg>
+  </section>
+
+  <!-- ── FILTER ──────────────────────────────────── -->
+  <div class="filter-wrap">
+    <div class="filter-card">
+      <div class="filter-group">
+        <label>📍 Ort</label>
+        <select id="filter-ort">
+          <option value="">Alle Orte</option>
+          <!-- populated by JS -->
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>🎉 Kategorie</label>
+        <select id="filter-kat">
+          <option value="">Alle Kategorien</option>
+          <!-- populated by JS -->
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>📅 Von</label>
+        <input type="date" id="filter-von" min="2026-01-01" max="2026-12-31">
+      </div>
+      <div class="filter-group">
+        <label>📅 Bis</label>
+        <input type="date" id="filter-bis" min="2026-01-01" max="2026-12-31">
+      </div>
+      <div class="filter-actions">
+        <button class="filter-btn" onclick="applyFilters()">Filtern</button>
+        <button class="filter-reset" onclick="resetFilters()">✕</button>
+      </div>
+    </div>
+    <div class="filter-active-bar" id="filter-active-bar">
+      <span>🔍</span>
+      <span>Filter aktiv – nicht alle Events werden angezeigt.</span>
+      <button onclick="resetFilters()" style="background:none;border:none;color:inherit;cursor:pointer;font-weight:700;margin-left:auto;">Zurücksetzen</button>
+    </div>
+  </div>
+
+  <!-- ── MAIN CONTENT ────────────────────────────── -->
+  <main class="main">
+
+    <!-- Highlights -->
+    <div class="section-label">
+      <div class="pulse-dot"></div>
+      <h2>Sommer-Highlights</h2>
+    </div>
+    <div class="highlights-grid" id="highlights-grid">
+      <!-- rendered by JS -->
+    </div>
+
+    <!-- All Events -->
+    <div class="events-header">
+      <div class="section-label" style="margin-bottom:0">
+        <h2>Alle Events</h2>
+      </div>
+      <span class="event-count" id="event-count"></span>
+    </div>
+
+    <div class="event-list" id="event-list">
+      <!-- rendered by JS -->
+    </div>
+
+    <div class="empty-state" id="empty-state">
+      <div class="icon">🔍</div>
+      <p>Keine Events für diese Filter gefunden.<br>Versuch einen anderen Zeitraum oder Ort.</p>
+    </div>
+
+    <div class="load-more-wrap" id="load-more-wrap" style="display:none">
+      <button class="load-more" onclick="showMore()">Mehr Events laden</button>
+    </div>
+  </main>
+
+  <!-- ── EVENT DETAIL MODAL ──────────────────────── -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-handle"></div>
+
+      <div class="modal-header">
+        <button class="modal-close" onclick="closeModal()" aria-label="Schließen">✕</button>
+        <span id="modal-highlight-badge">★ Highlight</span>
+        <span id="modal-tag" class="tag"></span>
+        <h2 id="modal-title"></h2>
+      </div>
+
+      <div class="modal-body">
+        <div id="modal-img-wrap" class="modal-img-wrap"></div>
+
+        <div class="modal-info-row">
+          <span>📅</span>
+          <strong id="modal-dates"></strong>
+        </div>
+        <div class="modal-info-row">
+          <span>📍</span>
+          <span id="modal-ort"></span>
+        </div>
+
+        <div class="modal-divider"></div>
+
+        <p class="modal-desc" id="modal-desc"></p>
+
+        <a class="modal-website-btn" id="modal-website-btn" href="#" target="_blank" rel="noopener">
+          🔗 Zur offiziellen Website
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ──────────────────────────────────── -->
+  <footer>
+    <strong>Salzkammergut Events 2026</strong><br>
+    A Projekt für die Region · Koa Verein, koa Werbung<br>
+    Ongoben vom C.Lichtenegger & erstöd vom D.König<br>
+    ohne Gewähr · Stand: Jänner 2026
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
