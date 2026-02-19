@@ -689,3 +689,62 @@ footer strong { color: rgba(255,255,255,0.8); }
   .modal-overlay { align-items: center; }
   .modal { border-radius: 20px; max-height: 85vh; }
 }
+
+/* ── SEARCH BAR (in filter-card) ─────────────────────
+   Paste this block at the end of your styles.css
+──────────────────────────────────────────────────── */
+
+.filter-group--search {
+  flex: 100%;          /* full width row above the other filters */
+  min-width: 100%;
+}
+
+.search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-wrap input[type="text"] {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 40px 10px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-input-wrap input[type="text"]::placeholder {
+  color: #aab5bc;
+  font-weight: 300;
+}
+
+.search-input-wrap input[type="text"]:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(91,164,164,0.15);
+  background: #fff;
+}
+
+.search-clear {
+  position: absolute;
+  right: 10px;
+  display: none;       /* shown via JS when input has value */
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--muted);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+.search-clear:hover { background: var(--deep); }

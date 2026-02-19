@@ -32,9 +32,9 @@ const events = [
   {
     id: 5, title: "EWU Weltrekord",
     dateStart: "2026-05-30", dateEnd: "2026-05-30",
-    ort: "Bad Goisern", kategorie: "Pary",
+    ort: "Bad Goisern", kategorie: "Kultur",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.facebook.com/people/Ewu-Weltrekord-Bad-Goisern/61586949272277/", img: ""
   },
   {
     id: 6, title: "Weindorf Bad Ischl",
@@ -450,28 +450,44 @@ function showMore() {
 
 // ── FILTER ────────────────────────────────────────
 function applyFilters() {
-  const ort = document.getElementById('filter-ort').value;
-  const kat = document.getElementById('filter-kat').value;
-  const von = document.getElementById('filter-von').value;
-  const bis = document.getElementById('filter-bis').value;
+  const ort    = document.getElementById('filter-ort').value;
+  const kat    = document.getElementById('filter-kat').value;
+  const von    = document.getElementById('filter-von').value;
+  const bis    = document.getElementById('filter-bis').value;
+  const search = document.getElementById('filter-search').value.trim().toLowerCase();
+
+  // Show/hide clear button on search field
+  document.getElementById('search-clear').style.display = search ? 'flex' : 'none';
 
   filtered = events.filter(e => {
     if (ort && e.ort !== ort) return false;
     if (kat && e.kategorie !== kat) return false;
     if (von && e.dateEnd < von) return false;
     if (bis && e.dateStart > bis) return false;
+    if (search) {
+      const haystack = [e.title, e.ort, e.kategorie, e.desc].join(' ').toLowerCase();
+      if (!haystack.includes(search)) return false;
+    }
     return true;
   });
 
   renderEvents(true);
   document.getElementById('filter-active-bar').style.display =
-    (ort || kat || von || bis) ? 'flex' : 'none';
+    (ort || kat || von || bis || search) ? 'flex' : 'none';
+}
+
+function clearSearch() {
+  document.getElementById('filter-search').value = '';
+  document.getElementById('search-clear').style.display = 'none';
+  applyFilters();
+  document.getElementById('filter-search').focus();
 }
 
 function resetFilters() {
-  ['filter-ort','filter-kat','filter-von','filter-bis'].forEach(id => {
+  ['filter-ort','filter-kat','filter-von','filter-bis','filter-search'].forEach(id => {
     document.getElementById(id).value = '';
   });
+  document.getElementById('search-clear').style.display = 'none';
   filtered = [...events];
   renderEvents(true);
   document.getElementById('filter-active-bar').style.display = 'none';

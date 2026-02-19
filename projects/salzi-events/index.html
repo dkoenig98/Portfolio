@@ -31,6 +31,13 @@
   <!-- ── FILTER ──────────────────────────────────── -->
   <div class="filter-wrap">
     <div class="filter-card">
+      <div class="filter-group filter-group--search">
+        <label>🔎 Suche</label>
+        <div class="search-input-wrap">
+          <input type="text" id="filter-search" placeholder="z.B. Bierzelt, Goisern, Trophy …" oninput="applyFilters()" autocomplete="off">
+          <button class="search-clear" id="search-clear" onclick="clearSearch()" aria-label="Suche löschen">✕</button>
+        </div>
+      </div>
       <div class="filter-group">
         <label>📍 Ort</label>
         <select id="filter-ort">
@@ -139,7 +146,7 @@
     <strong>Salzkammergut Events 2026</strong><br>
     A Projekt für die Region · Koa Verein, koa Werbung<br>
     Ongoben vom C.Lichtenegger & erstöd vom D.König<br>
-    ohne Gewähr · Stand: Jänner 2026
+    ohne Gewähr · Stand: Februar 2026
   </footer>
 
   <script src="script.js"></script>
