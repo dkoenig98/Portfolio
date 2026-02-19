@@ -329,6 +329,13 @@ const events = [
     ort: "Bad Goisern", kategorie: "Tradition",
     desc: "",
     highlight: false, website: "", img: ""
+  },
+  {
+    id: 48, title: "Blaulichtparty FF Goisan",
+    dateStart: "2026-05-09", dateEnd: "2026-05-09",
+    ort: "Bad Goisern", kategorie: "Party",
+    desc: "",
+    highlight: false, website: "", img: ""
   }
 ];
 
