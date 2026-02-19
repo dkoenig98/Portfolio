@@ -2,7 +2,7 @@
 // Kategorien: Bierzelt | Festival | Tradition | Sport | Konzert | Markt | Party | Kultur | Motorsport
 const events = [
   {
-    id: 1, title: "Ramsauer Bierzelt Bad Goisern",
+    id: 1, title: "Ramsauer Bierzelt",
     dateStart: "2026-05-15", dateEnd: "2026-05-17",
     ort: "Bad Goisern", kategorie: "Bierzelt",
     desc: "",
@@ -30,18 +30,18 @@ const events = [
     highlight: false, website: "", img: ""
   },
   {
-    id: 5, title: "EWU Weltrekord Bad Goisern",
+    id: 5, title: "EWU Weltrekord",
     dateStart: "2026-05-30", dateEnd: "2026-05-30",
-    ort: "Bad Goisern", kategorie: "Sport",
+    ort: "Bad Goisern", kategorie: "Pary",
     desc: "",
     highlight: false, website: "", img: ""
   },
   {
     id: 6, title: "Weindorf Bad Ischl",
     dateStart: "2026-06-03", dateEnd: "2026-06-06",
-    ort: "Bad Ischl", kategorie: "Markt",
+    ort: "Bad Ischl", kategorie: "Bierzelt",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://badischl.salzkammergut.at/oesterreich-veranstaltung/detail/430021921/25-weindorf.html", img: ""
   },
   {
     id: 7, title: "Untersee'r Zeltfest",
@@ -60,14 +60,14 @@ const events = [
   {
     id: 9, title: "Weinfest Bad Goisern",
     dateStart: "2026-06-18", dateEnd: "2026-06-20",
-    ort: "Bad Goisern", kategorie: "Markt",
+    ort: "Bad Goisern", kategorie: "Bierzelt",
     desc: "",
     highlight: false, website: "", img: ""
   },
   {
     id: 10, title: "Sulzbacher Straßenfest",
     dateStart: "2026-06-19", dateEnd: "2026-06-21",
-    ort: "Bad Goisern", kategorie: "Bierzelt",
+    ort: "Bad Ischl", kategorie: "Bierzelt",
     desc: "",
     highlight: false, website: "", img: ""
   },
@@ -76,28 +76,28 @@ const events = [
     dateStart: "2026-06-22", dateEnd: "2026-06-22",
     ort: "St. Wolfgang", kategorie: "Kultur",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://wolfgangsee.salzkammergut.at/veranstaltungen/veranstaltungshighlights/sommernacht.html", img: ""
   },
   {
     id: 12, title: "Wirlinger Bierzelt",
     dateStart: "2026-06-26", dateEnd: "2026-06-28",
-    ort: "Bad Goisern", kategorie: "Bierzelt",
+    ort: "Wirling", kategorie: "Bierzelt",
     desc: "",
     highlight: false, website: "", img: ""
   },
   {
     id: 13, title: "Salzkammergut Nostalgia",
     dateStart: "2026-06-27", dateEnd: "2026-06-27",
-    ort: "Salzkammergut", kategorie: "Motorsport",
+    ort: "Bad Goisern", kategorie: "Motorsport",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.skgt-nostalgia.at/nostalgia-2026.html", img: ""
   },
   {
     id: 14, title: "Woodstock der Blasmusik",
     dateStart: "2026-07-02", dateEnd: "2026-07-05",
     ort: "Ort im Innkreis", kategorie: "Konzert",
     desc: "",
-    highlight: false, website: "https://www.woodstock-der-blasmusik.at", img: ""
+    highlight: false, website: "https://www.woodstockderblasmusik.at/", img: ""
   },
   {
     id: 15, title: "Donauinselfest",
@@ -111,28 +111,28 @@ const events = [
     dateStart: "2026-07-03", dateEnd: "2026-07-05",
     ort: "Bad Ischl", kategorie: "Bierzelt",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://badischl.salzkammergut.at/stadtfest.html", img: ""
   },
   {
     id: 17, title: "Sommernacht St. Wolfgang",
     dateStart: "2026-07-06", dateEnd: "2026-07-06",
     ort: "St. Wolfgang", kategorie: "Kultur",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://wolfgangsee.salzkammergut.at/veranstaltungen/veranstaltungshighlights/sommernacht.html", img: ""
   },
   {
     id: 18, title: "Sommernacht Bad Aussee",
     dateStart: "2026-07-07", dateEnd: "2026-07-07",
     ort: "Bad Aussee", kategorie: "Kultur",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.stadtmarketing-badaussee.at/ausseer-sommern%C3%A4chte", img: ""
   },
   {
     id: 19, title: "Quattrolegende St. Gilgen",
     dateStart: "2026-07-08", dateEnd: "2026-07-11",
     ort: "St. Gilgen", kategorie: "Motorsport",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.quattrolegende.com/quattrolegende/", img: ""
   },
   {
     id: 20, title: "Electric Love Festival",
@@ -146,20 +146,20 @@ const events = [
     dateStart: "2026-07-11", dateEnd: "2026-07-11",
     ort: "Obertraun", kategorie: "Party",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.ff-obertraun.at/aktuelles/news/artikel/5-firefighter-caribbean-party", img: ""
   },
   {
     id: 22, title: "Strobler Wiesn",
     dateStart: "2026-07-16", dateEnd: "2026-07-19",
     ort: "Strobl", kategorie: "Bierzelt",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.salzburgerland.com/de/events/veranstaltungen/SBG/7b8485bf-0433-44e1-b120-8e24dff5625b/53--strobler-wies-n", img: ""
   },
   {
     id: 23, title: "Salzkammergut Trophy",
     dateStart: "2026-07-17", dateEnd: "2026-07-19",
     ort: "Bad Goisern", kategorie: "Sport",
-    desc: "",
+    desc: "Die legendäre Salzkammergut Trophy ruft und verspricht auch dieses Jahr wieder Gänsehaut-Feeling pur. Freut euch auf spektakuläre Trails, grandioses Panorama und eine Stimmung, die Bad Goisern zum Beben bringt. Ein Pflichttermin für alle Bike-Fans!",
     highlight: true, website: "https://www.salzkammergut-trophy.at", img: "/projects/salzi-events/images/23.jpg"
   },
   {
@@ -167,56 +167,56 @@ const events = [
     dateStart: "2026-07-20", dateEnd: "2026-07-20",
     ort: "St. Wolfgang", kategorie: "Kultur",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://wolfgangsee.salzkammergut.at/veranstaltungen/veranstaltungshighlights/sommernacht.html", img: ""
   },
   {
     id: 25, title: "Sommernacht Bad Aussee",
     dateStart: "2026-07-21", dateEnd: "2026-07-21",
     ort: "Bad Aussee", kategorie: "Kultur",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.stadtmarketing-badaussee.at/ausseer-sommern%C3%A4chte", img: ""
   },
   {
     id: 26, title: "Kunstmue Festival",
     dateStart: "2026-07-24", dateEnd: "2026-07-25",
-    ort: "Salzkammergut", kategorie: "Kultur",
+    ort: "Bad Goisern", kategorie: "Festival",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.kunstmue.at/", img: ""
   },
   {
     id: 27, title: "Abersee'r Zeltfest",
     dateStart: "2026-07-24", dateEnd: "2026-07-26",
-    ort: "St. Wolfgang", kategorie: "Bierzelt",
+    ort: "Abersee", kategorie: "Bierzelt",
     desc: "",
     highlight: false, website: "", img: ""
   },
   {
     id: 28, title: "Pernecker Kellerfest",
     dateStart: "2026-07-31", dateEnd: "2026-08-02",
-    ort: "Bad Goisern", kategorie: "Bierzelt",
+    ort: "Bad Ischl", kategorie: "Bierzelt",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.ff-badischl.at/aktuelle-beitraege/veranstaltungen/eventdetail/4/-/pernecker-kellerfest.html", img: ""
   },
   {
     id: 29, title: "Beach Party Rußbach",
     dateStart: "2026-08-01", dateEnd: "2026-08-01",
     ort: "Rußbach", kategorie: "Party",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://wolfgangsee.salzkammergut.at/oesterreich-veranstaltung/detail/430048883/beach-party-in-russach.html", img: ""
   },
   {
     id: 30, title: "Sommernacht St. Wolfgang",
     dateStart: "2026-08-03", dateEnd: "2026-08-03",
     ort: "St. Wolfgang", kategorie: "Kultur",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://wolfgangsee.salzkammergut.at/veranstaltungen/veranstaltungshighlights/sommernacht.html", img: ""
   },
   {
     id: 31, title: "Sommernacht Bad Aussee",
     dateStart: "2026-08-04", dateEnd: "2026-08-04",
     ort: "Bad Aussee", kategorie: "Kultur",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.stadtmarketing-badaussee.at/ausseer-sommern%C3%A4chte", img: ""
   },
   {
     id: 32, title: "Wolfganger Bierfest",
@@ -237,35 +237,35 @@ const events = [
     dateStart: "2026-08-15", dateEnd: "2026-08-15",
     ort: "Bad Goisern", kategorie: "Sport",
     desc: "",
-    highlight: true, website: "", img: "/projects/salzi-events/images/34.jpg"
+    highlight: true, website: "https://bad-goisern.naturfreunde.at/events/angebot/3-naturfreunde-volleyballturnier-fuer-jedermann/", img: "/projects/salzi-events/images/34.jpg"
   },
   {
     id: 35, title: "Berge in Flammen Altaussee",
     dateStart: "2026-08-15", dateEnd: "2026-08-15",
     ort: "Altaussee", kategorie: "Tradition",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.steiermark.com/de/Ausseerland-Salzkammergut/Urlaub-planen/Veranstaltungen/Berge-in-Flammen_ed_73611456", img: ""
   },
   {
     id: 36, title: "Goisern Classic",
     dateStart: "2026-08-15", dateEnd: "2026-08-16",
     ort: "Bad Goisern", kategorie: "Motorsport",
     desc: "",
-    highlight: true, website: "", img: "/projects/salzi-events/images/36.jpg"
+    highlight: true, website: "https://www.goisern-classic.at/", img: "/projects/salzi-events/images/36.jpg"
   },
   {
     id: 37, title: "Sommernacht St. Wolfgang",
     dateStart: "2026-08-17", dateEnd: "2026-08-17",
     ort: "St. Wolfgang", kategorie: "Kultur",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://wolfgangsee.salzkammergut.at/veranstaltungen/veranstaltungshighlights/sommernacht.html", img: ""
   },
   {
     id: 38, title: "Sommernacht Bad Aussee",
     dateStart: "2026-08-18", dateEnd: "2026-08-18",
     ort: "Bad Aussee", kategorie: "Kultur",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.stadtmarketing-badaussee.at/ausseer-sommern%C3%A4chte", img: ""
   },
   {
     id: 39, title: "Frequency Festival",
@@ -279,7 +279,7 @@ const events = [
     dateStart: "2026-08-28", dateEnd: "2026-08-30",
     ort: "Bad Goisern", kategorie: "Tradition",
     desc: "",
-    highlight: false, website: "", img: ""
+    highlight: false, website: "https://www.gamsjagatage.goisara.at/", img: ""
   },
   {
     id: 41, title: "Pfandler Bierzelt",
@@ -317,16 +317,16 @@ const events = [
     highlight: false, website: "", img: ""
   },
   {
-    id: 46, title: "Wolfgangi Kirtag",
+    id: 46, title: "St. Wolfgang Kirtag",
     dateStart: "2026-10-31", dateEnd: "2026-10-31",
-    ort: "St. Wolfgang", kategorie: "Tradition",
+    ort: "St. Wolfgang", kategorie: "Bierzelt",
     desc: "",
     highlight: false, website: "", img: ""
   },
   {
     id: 47, title: "Krampuslauf Goisan",
     dateStart: "2026-12-07", dateEnd: "2026-12-07",
-    ort: "Salzkammergut", kategorie: "Tradition",
+    ort: "Bad Goisern", kategorie: "Tradition",
     desc: "",
     highlight: false, website: "", img: ""
   }
