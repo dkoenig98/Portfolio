@@ -8,20 +8,29 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Leaflet Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+  <!-- ── LANGUAGE TOGGLE ─────────────────────────── -->
+  <button class="lang-toggle" id="lang-toggle" onclick="setLang(currentLang === 'de' ? 'en' : 'de')">🇬🇧 EN</button>
+
+  <!-- ── TOAST ────────────────────────────────────── -->
+  <div class="toast" id="toast"></div>
+
+
   <!-- ── HERO ────────────────────────────────────── -->
   <section class="hero">
     <div class="hero-inner">
-      <span class="hero-eyebrow">Inneres Salzkammergut · 2026</span>
-      <h1>Wos geht im<br><em>Soizkommerguad?</em></h1>
+      <span class="hero-eyebrow" data-i18n="eyebrow">Inneres Salzkammergut · 2026</span>
+      <h1><span data-i18n="h1_main">Wos geht im</span><br><em data-i18n="h1_em">Soizkommerguad?</em></h1>
       <p class="hero-sub">
-        Oi Vaonstoitungen. Oi Festln. Ois auf oan Blick.<br>
-        Nema long umanond suachn.
+        <span data-i18n="hero_sub">Oi Vaonstoitungen. Oi Festln. Ois auf oan Blick. Nema long umanond suachn.</span>
       </p>
-      <span class="hero-claim">„So vapss ma nix mehr" ✦</span>
+      <span class="hero-claim" data-i18n="hero_claim">„So vapss ma nix mehr" ✦</span>
     </div>
     <svg class="hero-wave" viewBox="0 0 1440 52" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
       <path d="M0 52L1440 52L1440 16C1200 52 880 4 720 16C560 28 240 52 0 16L0 52Z" fill="#F4F8FA"/>
@@ -32,43 +41,43 @@
   <div class="filter-wrap">
     <div class="filter-card">
       <div class="filter-group filter-group--search">
-        <label>🔎 Suche</label>
+        <label data-i18n="label_search">🔎 Suche</label>
         <div class="search-input-wrap">
-          <input type="text" id="filter-search" placeholder="z.B. Bierzelt, Goisern, Trophy …" oninput="applyFilters()" autocomplete="off">
+          <input type="text" id="filter-search" placeholder="z.B. Bierzelt, Goisern, Trophy …" data-i18n-ph="search_ph" oninput="applyFilters()" autocomplete="off">
           <button class="search-clear" id="search-clear" onclick="clearSearch()" aria-label="Suche löschen">✕</button>
         </div>
       </div>
       <div class="filter-group">
-        <label>📍 Ort</label>
+        <label data-i18n="label_ort">📍 Ort</label>
         <select id="filter-ort">
           <option value="">Alle Orte</option>
           <!-- populated by JS -->
         </select>
       </div>
       <div class="filter-group">
-        <label>🎉 Kategorie</label>
+        <label data-i18n="label_kat">🎉 Kategorie</label>
         <select id="filter-kat">
           <option value="">Alle Kategorien</option>
           <!-- populated by JS -->
         </select>
       </div>
       <div class="filter-group">
-        <label>📅 Von</label>
+        <label data-i18n="label_von">📅 Von</label>
         <input type="date" id="filter-von" min="2026-01-01" max="2026-12-31">
       </div>
       <div class="filter-group">
-        <label>📅 Bis</label>
+        <label data-i18n="label_bis">📅 Bis</label>
         <input type="date" id="filter-bis" min="2026-01-01" max="2026-12-31">
       </div>
       <div class="filter-actions">
-        <button class="filter-btn" onclick="applyFilters()">Filtern</button>
+        <button class="filter-btn" data-i18n="btn_filter" onclick="applyFilters()">Filtern</button>
         <button class="filter-reset" onclick="resetFilters()">✕</button>
       </div>
     </div>
     <div class="filter-active-bar" id="filter-active-bar">
       <span>🔍</span>
-      <span>Filter aktiv – nicht alle Events werden angezeigt.</span>
-      <button onclick="resetFilters()" style="background:none;border:none;color:inherit;cursor:pointer;font-weight:700;margin-left:auto;">Zurücksetzen</button>
+      <span data-i18n="filter_active">Filter aktiv – nicht alle Events werden angezeigt.</span>
+      <button onclick="resetFilters()" data-i18n="btn_reset_text" style="background:none;border:none;color:inherit;cursor:pointer;font-weight:700;margin-left:auto;">Zurücksetzen</button>
     </div>
   </div>
 
@@ -78,10 +87,10 @@
     <!-- Highlights -->
     <div class="section-label">
       <div class="pulse-dot"></div>
-      <h2>Sommer-Highlights</h2>
+      <h2 data-i18n="highlights_title">Sommer-Highlights</h2>
       <button class="highlights-toggle" id="highlights-toggle" onclick="toggleHighlights()" aria-expanded="true">
         <span id="highlights-toggle-icon">▲</span>
-        <span id="highlights-toggle-label">Ausblenden</span>
+        <span id="highlights-toggle-label" data-i18n="hl_hide">Ausblenden</span>
       </button>
     </div>
     <div class="highlights-grid" id="highlights-grid">
@@ -92,9 +101,12 @@
     <div class="events-header">
       <div class="section-label" style="margin-bottom:0">
         <div class="pulse-dot pulse-dot--teal"></div>
-        <h2>Alle Events</h2>
+        <h2 data-i18n="all_events_title">Alle Events</h2>
       </div>
-      <span class="event-count" id="event-count"></span>
+      <div class="events-header-right">
+        <button class="weekend-btn" id="weekend-btn" onclick="toggleWeekend()" data-i18n="weekend_btn">🗓️ Dieses Wochenende</button>
+        <span class="event-count" id="event-count"></span>
+      </div>
     </div>
 
     <div class="event-list" id="event-list">
@@ -103,11 +115,11 @@
 
     <div class="empty-state" id="empty-state">
       <div class="icon">🔍</div>
-      <p>Keine Events für diese Filter gefunden.<br>Versuch einen anderen Zeitraum oder Ort.</p>
+      <p data-i18n="empty_p">Keine Events für diese Filter gefunden. Versuch einen anderen Zeitraum oder Ort.</p>
     </div>
 
     <div class="load-more-wrap" id="load-more-wrap" style="display:none">
-      <button class="load-more" onclick="showMore()">Mehr Events laden</button>
+      <button class="load-more" data-i18n="load_more" onclick="showMore()">Mehr Events laden</button>
     </div>
   </main>
 
@@ -118,6 +130,7 @@
 
       <div class="modal-header">
         <button class="modal-close" onclick="closeModal()" aria-label="Schließen">✕</button>
+        <button class="modal-share-btn" id="modal-share-btn" onclick="shareEvent()">↗ Teilen</button>
         <span id="modal-highlight-badge">★ Highlight</span>
         <span id="modal-tag" class="tag"></span>
         <h2 id="modal-title"></h2>
@@ -139,9 +152,20 @@
 
         <p class="modal-desc" id="modal-desc"></p>
 
-        <a class="modal-website-btn" id="modal-website-btn" href="#" target="_blank" rel="noopener">
-          🔗 Zur offiziellen Website
-        </a>
+        <!-- Map -->
+        <div id="modal-map-wrap" class="modal-map-wrap">
+          <div id="modal-map"></div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="modal-actions">
+          <a class="modal-nav-btn" id="modal-nav-btn" href="#" target="_blank" rel="noopener">
+            🧭 Navigation starten
+          </a>
+          <a class="modal-website-btn" id="modal-website-btn" href="#" target="_blank" rel="noopener">
+            🔗 Zur offiziellen Website
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -149,9 +173,9 @@
   <!-- ── FOOTER ──────────────────────────────────── -->
   <footer>
     <strong>Salzkammergut Events 2026</strong><br>
-    A Projekt für die Region · Koa Verein, koa Werbung<br>
-    Ongoben vom C.Lichtenegger & erstöd vom D.König<br>
-    ohne Gewähr · Stand: Februar 2026
+    <span data-i18n="footer_line1">A Projekt für die Region · Koa Verein, koa Werbung</span><br>
+    <span data-i18n="footer_line2">Ongoben vom C.Lichtenegger & erstöd vom D.König</span><br>
+    <span data-i18n="footer_line3">ohne Gewähr · Stand: Februar 2026</span>
   </footer>
 
   <script src="script.js"></script>
