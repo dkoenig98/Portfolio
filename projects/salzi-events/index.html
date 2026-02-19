@@ -79,6 +79,10 @@
     <div class="section-label">
       <div class="pulse-dot"></div>
       <h2>Sommer-Highlights</h2>
+      <button class="highlights-toggle" id="highlights-toggle" onclick="toggleHighlights()" aria-expanded="true">
+        <span id="highlights-toggle-icon">▲</span>
+        <span id="highlights-toggle-label">Ausblenden</span>
+      </button>
     </div>
     <div class="highlights-grid" id="highlights-grid">
       <!-- rendered by JS -->
@@ -87,6 +91,7 @@
     <!-- All Events -->
     <div class="events-header">
       <div class="section-label" style="margin-bottom:0">
+        <div class="pulse-dot pulse-dot--teal"></div>
         <h2>Alle Events</h2>
       </div>
       <span class="event-count" id="event-count"></span>

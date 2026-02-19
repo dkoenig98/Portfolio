@@ -748,3 +748,47 @@ footer strong { color: rgba(255,255,255,0.8); }
 }
 
 .search-clear:hover { background: var(--deep); }
+
+/* ── HIGHLIGHTS TOGGLE ───────────────────────────── */
+.section-label {
+  justify-content: flex-start; /* keep left-aligned */
+}
+
+.highlights-toggle {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  padding: 5px 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.highlights-toggle:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+#highlights-toggle-icon {
+  font-size: 8px;
+}
+
+/* Smooth collapse */
+#highlights-grid {
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.28s ease;
+}
+
+/* ── TEAL PULSE DOT (Alle Events) ────────────────── */
+.pulse-dot--teal {
+  background: var(--teal);
+}

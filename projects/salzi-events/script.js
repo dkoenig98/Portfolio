@@ -556,6 +556,38 @@ function populateFilters() {
   });
 }
 
+// ── HIGHLIGHTS TOGGLE ─────────────────────────────
+let highlightsVisible = true;
+
+function toggleHighlights() {
+  const grid  = document.getElementById('highlights-grid');
+  const icon  = document.getElementById('highlights-toggle-icon');
+  const label = document.getElementById('highlights-toggle-label');
+  const btn   = document.getElementById('highlights-toggle');
+
+  highlightsVisible = !highlightsVisible;
+
+  if (highlightsVisible) {
+    grid.style.maxHeight     = grid.scrollHeight + 'px';
+    grid.style.opacity       = '1';
+    grid.style.pointerEvents = '';
+    icon.textContent  = '▲';
+    label.textContent = 'Ausblenden';
+    btn.setAttribute('aria-expanded', 'true');
+    setTimeout(() => { grid.style.maxHeight = 'none'; }, 380);
+  } else {
+    grid.style.maxHeight = grid.scrollHeight + 'px';
+    requestAnimationFrame(() => {
+      grid.style.maxHeight     = '0';
+      grid.style.opacity       = '0';
+      grid.style.pointerEvents = 'none';
+    });
+    icon.textContent  = '▼';
+    label.textContent = 'Anzeigen';
+    btn.setAttribute('aria-expanded', 'false');
+  }
+}
+
 // ── INIT ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   populateFilters();
