@@ -70,9 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
             passwordProtected: false
         },
         {
-            title: 'PDF to SCORM Converter',
+            title: 'SCORM Converter',
             description: 'Projekt in Arbeit....',
-            image: '/projects/pdf-converter//logo.png',
+            image: '/projects/pdf-converter//logo_new.png',
             link: '/projects/pdf-converter/index.html',
             passwordProtected: false
         },

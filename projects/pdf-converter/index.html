@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF → SCORM 1.2 Konverter</title>
+<title>SCORM 1.2 Konverter</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
@@ -19,7 +19,10 @@
     --text: #e8eaf0;
     --muted: #6b7080;
     --danger: #ff4f6e;
+    --video-accent: #ff9f4f;
   }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     background: var(--bg);
@@ -115,6 +118,47 @@
     border-radius: 2px;
   }
 
+  /* ── File type toggle ───────────────────────────────── */
+  .type-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .type-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 14px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .type-btn:hover { border-color: var(--accent); color: var(--text); }
+
+  .type-btn.active-pdf {
+    border-color: var(--accent);
+    background: rgba(79,255,176,0.06);
+    color: var(--accent);
+  }
+
+  .type-btn.active-video {
+    border-color: var(--video-accent);
+    background: rgba(255,159,79,0.06);
+    color: var(--video-accent);
+  }
+
+  .type-btn .type-icon { font-size: 20px; }
+
   /* Drop Zone */
   .drop-zone {
     border: 2px dashed var(--border);
@@ -131,6 +175,11 @@
     background: rgba(79,255,176,0.04);
   }
 
+  .drop-zone.video-mode:hover, .drop-zone.video-mode.dragging {
+    border-color: var(--video-accent);
+    background: rgba(255,159,79,0.04);
+  }
+
   .drop-zone input[type="file"] {
     position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
   }
@@ -142,11 +191,14 @@
     display: flex; align-items: center; justify-content: center;
     margin: 0 auto 16px;
     font-size: 24px;
+    transition: background 0.2s;
   }
 
-  .drop-label {
-    font-size: 16px; font-weight: 600; margin-bottom: 6px;
+  .drop-zone.video-mode .drop-icon {
+    background: rgba(255,159,79,0.12);
   }
+
+  .drop-label { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
 
   .drop-hint {
     font-size: 13px; color: var(--muted);
@@ -156,8 +208,6 @@
   /* File info */
   .file-info {
     display: none;
-    background: rgba(79,255,176,0.08);
-    border: 1px solid rgba(79,255,176,0.2);
     border-radius: 10px;
     padding: 16px 20px;
     margin-top: 16px;
@@ -167,12 +217,19 @@
 
   .file-info.visible { display: flex; }
 
+  .file-info.pdf-info {
+    background: rgba(79,255,176,0.08);
+    border: 1px solid rgba(79,255,176,0.2);
+  }
+
+  .file-info.video-info {
+    background: rgba(255,159,79,0.08);
+    border: 1px solid rgba(255,159,79,0.2);
+  }
+
   .file-icon { font-size: 24px; }
-
   .file-meta { flex: 1; }
-
   .file-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
-
   .file-size { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); }
 
   .file-remove {
@@ -181,6 +238,20 @@
     transition: color 0.15s;
   }
   .file-remove:hover { color: var(--danger); }
+
+  /* Warning box */
+  .warn-box {
+    display: none;
+    background: rgba(255,159,79,0.08);
+    border: 1px solid rgba(255,159,79,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #ffca8a;
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+  .warn-box.visible { display: block; }
 
   /* Settings */
   .settings-grid {
@@ -192,7 +263,6 @@
   @media (max-width: 520px) { .settings-grid { grid-template-columns: 1fr; } }
 
   .field { display: flex; flex-direction: column; gap: 6px; }
-
   .field.full { grid-column: 1 / -1; }
 
   label {
@@ -220,7 +290,6 @@
   }
 
   textarea { resize: vertical; min-height: 72px; }
-
   select option { background: #161920; }
 
   /* Completion settings */
@@ -249,9 +318,7 @@
   }
 
   .radio-card input[type="radio"] { accent-color: var(--accent); margin-top: 2px; }
-
   .radio-label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-
   .radio-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
 
   /* Button */
@@ -287,11 +354,7 @@
   }
 
   /* Progress */
-  .progress-wrap {
-    display: none;
-    margin-top: 16px;
-  }
-
+  .progress-wrap { display: none; margin-top: 16px; }
   .progress-wrap.visible { display: block; }
 
   .progress-bar-bg {
@@ -342,11 +405,8 @@
   }
 
   .success-box.visible { display: block; }
-
   .success-icon { font-size: 40px; margin-bottom: 12px; }
-
   .success-title { font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
-
   .success-sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
 
   .steps-list {
@@ -397,16 +457,12 @@
     text-decoration: none;
   }
 
-  .btn-download:hover {
-    background: #6affbf;
-    transform: translateY(-1px);
-  }
+  .btn-download:hover { background: #6affbf; transform: translateY(-1px); }
 
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 20px 0;
-  }
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* Hidden section utility */
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -416,30 +472,45 @@
 <div class="container">
   <header>
     <div class="badge">SCORM 1.2</div>
-    <h1>PDF → SCORM<br>Konverter</h1>
-    <p class="subtitle">Wandle PDF-Richtlinien in trackbare SCORM 1.2 Module um – mit automatischer Completion-Bestätigung wenn User alle Seiten gesehen haben.</p>
+    <h1>SCORM<br>Konverter</h1>
+    <p class="subtitle">Wandle PDFs und Videos in trackbare SCORM 1.2 Module um.</p>
   </header>
 
-  <!-- Upload -->
+  <!-- Step 1: File type + upload -->
   <div class="card">
-    <div class="card-title">1 · PDF auswählen</div>
+    <div class="card-title">1 · Datei auswählen</div>
+
+    <div class="type-toggle">
+      <button class="type-btn active-pdf" id="btnTypePdf" onclick="switchType('pdf')">
+        <span class="type-icon">📄</span> PDF
+      </button>
+      <button class="type-btn" id="btnTypeVideo" onclick="switchType('video')">
+        <span class="type-icon">🎬</span> Video
+      </button>
+    </div>
+
     <div class="drop-zone" id="dropZone">
       <input type="file" id="fileInput" accept=".pdf">
-      <div class="drop-icon">📄</div>
-      <div class="drop-label">PDF hierher ziehen oder klicken</div>
-      <div class="drop-hint">Nur .pdf Dateien · Max. 50 MB</div>
+      <div class="drop-icon" id="dropIcon">📄</div>
+      <div class="drop-label" id="dropLabel">PDF hierher ziehen oder klicken</div>
+      <div class="drop-hint" id="dropHint">PDF · Max. 200 MB</div>
     </div>
-    <div class="file-info" id="fileInfo">
-      <div class="file-icon">📄</div>
+
+    <div class="file-info pdf-info" id="fileInfo">
+      <div class="file-icon" id="fileIconDisplay">📄</div>
       <div class="file-meta">
         <div class="file-name" id="fileName">—</div>
         <div class="file-size" id="fileSize">—</div>
       </div>
       <button class="file-remove" id="fileRemove" title="Entfernen">✕</button>
     </div>
+
+    <div class="warn-box" id="sizeWarn">
+      ⚠️ <strong>Große Datei erkannt.</strong> Videos über 100 MB werden als Base64 eingebettet – das kann den Browser kurz belasten. Das fertige ZIP kann entsprechend groß werden.
+    </div>
   </div>
 
-  <!-- Settings -->
+  <!-- Step 2: Settings -->
   <div class="card">
     <div class="card-title">2 · Modul-Einstellungen</div>
     <div class="settings-grid">
@@ -456,8 +527,6 @@
         <select id="moduleLang">
           <option value="de-DE">Deutsch</option>
           <option value="en-US">Englisch</option>
-          <option value="fr-FR">Französisch</option>
-          <option value="it-IT">Italienisch</option>
         </select>
       </div>
       <div class="field">
@@ -467,15 +536,17 @@
     </div>
   </div>
 
-  <!-- Completion -->
+  <!-- Step 3: Completion -->
   <div class="card">
     <div class="card-title">3 · Completion-Regel</div>
-    <div class="completion-options">
+
+    <!-- PDF completion options -->
+    <div id="pdfCompletionOptions" class="completion-options">
       <label class="radio-card">
         <input type="radio" name="completion" value="lastpage" checked>
         <div>
           <div class="radio-label">Letzte Seite angezeigt</div>
-          <div class="radio-desc">User muss bis zur letzten Seite des PDFs scrollen/navigieren → dann automatisch "completed"</div>
+          <div class="radio-desc">User muss bis zur letzten Seite navigieren → dann automatisch "completed"</div>
         </div>
       </label>
       <label class="radio-card">
@@ -493,22 +564,56 @@
         </div>
       </label>
     </div>
+
+    <!-- Video completion options -->
+    <div id="videoCompletionOptions" class="completion-options hidden">
+      <label class="radio-card">
+        <input type="radio" name="completion" value="videoended" checked>
+        <div>
+          <div class="radio-label">Video vollständig abgespielt</div>
+          <div class="radio-desc">Completion wird ausgelöst sobald das Video das Ende erreicht (empfohlen)</div>
+        </div>
+      </label>
+      <label class="radio-card">
+        <input type="radio" name="completion" value="videopercent">
+        <div>
+          <div class="radio-label">% des Videos angesehen</div>
+          <div class="radio-desc">Completion ab einem bestimmten Fortschritt – z.B. 80%</div>
+        </div>
+      </label>
+      <label class="radio-card">
+        <input type="radio" name="completion" value="time">
+        <div>
+          <div class="radio-label">Mindestzeit verbracht</div>
+          <div class="radio-desc">User muss eine bestimmte Anzahl Sekunden im Modul verbringen</div>
+        </div>
+      </label>
+    </div>
+
+    <!-- Extra fields -->
     <div id="timeField" style="margin-top:12px; display:none;">
       <div class="field">
         <label>Mindestzeit in Sekunden</label>
         <input type="number" id="minTime" value="60" min="10" max="3600">
       </div>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="info-box">
-      <strong>Wie funktioniert das Tracking?</strong><br>
-      Das generierte SCORM-Paket enthält einen PDF-Viewer direkt im Browser. Sobald die gewählte Completion-Bedingung erfüllt ist, sendet das Modul automatisch <code>cmi.core.lesson_status = "completed"</code> ans LMS.
+    <div id="percentField" style="margin-top:12px; display:none;">
+      <div class="field">
+        <label>Mindest-Prozentsatz (1–99)</label>
+        <input type="number" id="minPercent" value="80" min="1" max="99">
+      </div>
     </div>
   </div>
 
-  <!-- Convert Button -->
+  <!-- Info -->
+  <div class="card">
+    <div class="info-box">
+      <strong>Wie funktioniert das Tracking?</strong><br>
+      Das generierte SCORM-Paket enthält einen eingebetteten Viewer. Sobald die gewählte Completion-Bedingung erfüllt ist, sendet das Modul automatisch <code>cmi.core.lesson_status = "completed"</code> ans LMS.
+    </div>
+  </div>
+
+  <!-- Step 4: Generate -->
   <div class="card">
     <div class="card-title">4 · SCORM Paket erstellen</div>
     <button class="btn-convert" id="convertBtn" disabled>
@@ -521,42 +626,113 @@
     <div class="success-box" id="successBox">
       <div class="success-icon">✅</div>
       <div class="success-title">SCORM Paket bereit!</div>
-      <div class="success-sub">Dein SCORM 1.2 Paket wurde erfolgreich erstellt und ist SoSafe-kompatibel.</div>
+      <div class="success-sub">Dein SCORM 1.2 Paket wurde erfolgreich erstellt.</div>
       <a class="btn-download" id="downloadLink" href="#" download>⬇ ZIP herunterladen</a>
       <div class="divider"></div>
+      <div class="steps-list">
+        <div class="step"><div class="step-num">1</div><span>ZIP-Datei herunterladen</span></div>
+        <div class="step"><div class="step-num">2</div><span>In → <strong>LMS</strong> einbinden und fertig</span></div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-// ─── State ───────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
 let selectedFile = null;
+let currentType = 'pdf'; // 'pdf' | 'video'
 
-// ─── DOM ─────────────────────────────────────────────────────────────────
-const fileInput = document.getElementById('fileInput');
-const dropZone = document.getElementById('dropZone');
-const fileInfo = document.getElementById('fileInfo');
-const fileName = document.getElementById('fileName');
-const fileSize = document.getElementById('fileSize');
-const fileRemove = document.getElementById('fileRemove');
-const convertBtn = document.getElementById('convertBtn');
-const progressWrap = document.getElementById('progressWrap');
-const progressBar = document.getElementById('progressBar');
-const progressLabel = document.getElementById('progressLabel');
-const successBox = document.getElementById('successBox');
-const downloadLink = document.getElementById('downloadLink');
-const timeField = document.getElementById('timeField');
+// ═══════════════════════════════════════════════════════
+//  DOM REFS
+// ═══════════════════════════════════════════════════════
+const fileInput      = document.getElementById('fileInput');
+const dropZone       = document.getElementById('dropZone');
+const dropIcon       = document.getElementById('dropIcon');
+const dropLabel      = document.getElementById('dropLabel');
+const dropHint       = document.getElementById('dropHint');
+const fileInfo       = document.getElementById('fileInfo');
+const fileIconDisp   = document.getElementById('fileIconDisplay');
+const fileName       = document.getElementById('fileName');
+const fileSize       = document.getElementById('fileSize');
+const fileRemove     = document.getElementById('fileRemove');
+const convertBtn     = document.getElementById('convertBtn');
+const progressWrap   = document.getElementById('progressWrap');
+const progressBar    = document.getElementById('progressBar');
+const progressLabel  = document.getElementById('progressLabel');
+const successBox     = document.getElementById('successBox');
+const downloadLink   = document.getElementById('downloadLink');
+const timeField      = document.getElementById('timeField');
+const percentField   = document.getElementById('percentField');
+const sizeWarn       = document.getElementById('sizeWarn');
 
-// ─── File handling ────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════
+//  TYPE SWITCH
+// ═══════════════════════════════════════════════════════
+function switchType(type) {
+  currentType = type;
+  selectedFile = null;
+  fileInput.value = '';
+  fileInfo.classList.remove('visible');
+  convertBtn.disabled = true;
+  successBox.classList.remove('visible');
+  sizeWarn.classList.remove('visible');
+  timeField.style.display = 'none';
+  percentField.style.display = 'none';
+
+  const isPdf = type === 'pdf';
+
+  // Toggle buttons
+  document.getElementById('btnTypePdf').className   = 'type-btn' + (isPdf ? ' active-pdf' : '');
+  document.getElementById('btnTypeVideo').className = 'type-btn' + (!isPdf ? ' active-video' : '');
+
+  // Drop zone
+  dropZone.className = 'drop-zone' + (isPdf ? '' : ' video-mode');
+  fileInput.accept   = isPdf ? '.pdf' : '.mp4,.webm,.mov,.avi,.mkv';
+  dropIcon.textContent  = isPdf ? '📄' : '🎬';
+  dropLabel.textContent = isPdf ? 'PDF hierher ziehen oder klicken' : 'Video hierher ziehen oder klicken';
+  dropHint.textContent  = isPdf ? 'PDF · Max. 200 MB' : 'MP4, WebM, MOV, AVI · Max. 500 MB';
+
+  // File info style
+  fileInfo.className = 'file-info ' + (isPdf ? 'pdf-info' : 'video-info');
+  fileIconDisp.textContent = isPdf ? '📄' : '🎬';
+
+  // Completion options
+  document.getElementById('pdfCompletionOptions').classList.toggle('hidden', !isPdf);
+  document.getElementById('videoCompletionOptions').classList.toggle('hidden', isPdf);
+
+  // Reset radio selection
+  const defaultVal = isPdf ? 'lastpage' : 'videoended';
+  document.querySelectorAll('input[name="completion"]').forEach(r => {
+    r.checked = r.value === defaultVal;
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  FILE HANDLING
+// ═══════════════════════════════════════════════════════
+const PDF_TYPES  = ['application/pdf'];
+const VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska', 'video/avi'];
+
 function setFile(file) {
-  if (!file || file.type !== 'application/pdf') {
-    alert('Bitte nur PDF-Dateien auswählen.');
+  if (!file) return;
+
+  const isPdf = currentType === 'pdf';
+  const validPdf = isPdf && PDF_TYPES.includes(file.type);
+  const validVideo = !isPdf && (VIDEO_TYPES.includes(file.type) || file.name.match(/\.(mp4|webm|mov|avi|mkv)$/i));
+
+  if (!validPdf && !validVideo) {
+    alert(isPdf ? 'Bitte nur PDF-Dateien auswählen.' : 'Bitte nur Video-Dateien auswählen (MP4, WebM, MOV, AVI, MKV).');
     return;
   }
-  if (file.size > 50 * 1024 * 1024) {
-    alert('Datei zu groß (max. 50 MB).');
+
+  const maxSize = isPdf ? 200 : 500;
+  if (file.size > maxSize * 1024 * 1024) {
+    alert(`Datei zu groß (max. ${maxSize} MB für ${isPdf ? 'PDFs' : 'Videos'}).`);
     return;
   }
+
   selectedFile = file;
   fileName.textContent = file.name;
   fileSize.textContent = formatSize(file.size);
@@ -564,13 +740,15 @@ function setFile(file) {
   convertBtn.disabled = false;
   successBox.classList.remove('visible');
 
-  // Auto-fill title from filename
-  if (!document.getElementById('moduleTitle').value) {
-    document.getElementById('moduleTitle').value = file.name.replace(/\.pdf$/i, '');
-  }
-  if (!document.getElementById('moduleId').value) {
-    document.getElementById('moduleId').value = file.name.replace(/\.pdf$/i, '').toLowerCase().replace(/[^a-z0-9]/g, '-');
-  }
+  // Size warning for large videos
+  sizeWarn.classList.toggle('visible', !isPdf && file.size > 100 * 1024 * 1024);
+
+  // Auto-fill fields
+  const baseName = file.name.replace(/\.(pdf|mp4|webm|mov|avi|mkv)$/i, '');
+  if (!document.getElementById('moduleTitle').value)
+    document.getElementById('moduleTitle').value = baseName;
+  if (!document.getElementById('moduleId').value)
+    document.getElementById('moduleId').value = baseName.toLowerCase().replace(/[^a-z0-9]/g, '-');
 }
 
 fileInput.addEventListener('change', e => setFile(e.target.files[0]));
@@ -586,19 +764,26 @@ fileRemove.addEventListener('click', () => {
   fileInput.value = '';
   fileInfo.classList.remove('visible');
   convertBtn.disabled = true;
+  sizeWarn.classList.remove('visible');
 });
 
-// Completion mode toggle
+// ═══════════════════════════════════════════════════════
+//  COMPLETION RADIO TOGGLE
+// ═══════════════════════════════════════════════════════
 document.querySelectorAll('input[name="completion"]').forEach(r => {
   r.addEventListener('change', () => {
-    timeField.style.display = r.value === 'time' && r.checked ? 'block' : 'none';
+    timeField.style.display    = r.checked && r.value === 'time'         ? 'block' : 'none';
+    percentField.style.display = r.checked && r.value === 'videopercent' ? 'block' : 'none';
   });
 });
 
-function formatSize(bytes) {
-  if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+// ═══════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════
+function formatSize(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1024*1024) return (b/1024).toFixed(1) + ' KB';
+  return (b/1024/1024).toFixed(1) + ' MB';
 }
 
 function setProgress(pct, label) {
@@ -606,49 +791,81 @@ function setProgress(pct, label) {
   progressLabel.textContent = label;
 }
 
-// ─── SCORM Generation ─────────────────────────────────────────────────────
+function readFileAsArrayBuffer(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsArrayBuffer(file);
+  });
+}
+
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let bin = '';
+  const chunk = 8192;
+  for (let i = 0; i < bytes.length; i += chunk)
+    bin += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  return btoa(bin);
+}
+
+function escXml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function sleep(ms)  { return new Promise(r => setTimeout(r, ms)); }
+
+// ═══════════════════════════════════════════════════════
+//  MAIN CONVERT
+// ═══════════════════════════════════════════════════════
 convertBtn.addEventListener('click', async () => {
   if (!selectedFile) return;
 
-  const title = document.getElementById('moduleTitle').value || selectedFile.name.replace(/\.pdf$/i, '');
-  const desc = document.getElementById('moduleDesc').value || '';
-  const lang = document.getElementById('moduleLang').value;
-  const id = (document.getElementById('moduleId').value || 'module-' + Date.now()).replace(/[^a-zA-Z0-9-_]/g, '-');
+  const title          = document.getElementById('moduleTitle').value || selectedFile.name;
+  const desc           = document.getElementById('moduleDesc').value || '';
+  const lang           = document.getElementById('moduleLang').value;
+  const id             = (document.getElementById('moduleId').value || 'module-' + Date.now()).replace(/[^a-zA-Z0-9-_]/g, '-');
   const completionMode = document.querySelector('input[name="completion"]:checked').value;
-  const minTime = parseInt(document.getElementById('minTime').value) || 60;
+  const minTime        = parseInt(document.getElementById('minTime').value) || 60;
+  const minPercent     = parseInt(document.getElementById('minPercent').value) || 80;
+  const isPdf          = currentType === 'pdf';
 
   convertBtn.disabled = true;
   progressWrap.classList.add('visible');
   successBox.classList.remove('visible');
 
-  setProgress(10, 'PDF wird gelesen…');
-  await sleep(100);
+  setProgress(5, 'Datei wird gelesen…');
+  await sleep(50);
 
-  // Read PDF as ArrayBuffer
-  const pdfBytes = await readFileAsArrayBuffer(selectedFile);
-  const pdfB64 = arrayBufferToBase64(pdfBytes);
+  const fileBytes = await readFileAsArrayBuffer(selectedFile);
 
-  setProgress(35, 'SCORM Manifest wird erstellt…');
-  await sleep(100);
+  setProgress(30, 'Base64 wird kodiert…');
+  await sleep(50);
 
-  const manifest = buildManifest(id, title, desc, lang);
+  const fileB64 = arrayBufferToBase64(fileBytes);
 
-  setProgress(60, 'Viewer wird generiert…');
-  await sleep(100);
+  setProgress(55, 'SCORM Manifest wird erstellt…');
+  await sleep(50);
 
-  const viewerHtml = buildViewerHtml(title, pdfB64, completionMode, minTime);
+  const ext = isPdf ? 'pdf' : selectedFile.name.split('.').pop().toLowerCase();
+  const manifest = buildManifest(id, title, desc, lang, ext);
 
-  setProgress(80, 'ZIP wird gepackt…');
-  await sleep(100);
+  setProgress(65, 'Viewer wird generiert…');
+  await sleep(50);
+
+  const viewerHtml = isPdf
+    ? buildPdfViewer(title, fileB64, completionMode, minTime)
+    : buildVideoViewer(title, fileB64, selectedFile.type || 'video/mp4', completionMode, minTime, minPercent);
+
+  setProgress(78, 'ZIP wird gepackt…');
+  await sleep(50);
 
   const zip = new JSZip();
   zip.file('imsmanifest.xml', manifest);
   zip.file('content/index.html', viewerHtml);
-  // Also include a direct copy of the PDF (optional, viewer uses b64 embedded)
-  zip.file('content/document.pdf', pdfBytes);
+  zip.file(`content/document.${ext}`, fileBytes);
 
-  const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } },
-    (meta) => setProgress(80 + meta.percent * 0.18, `ZIP: ${Math.round(meta.percent)}%`)
+  const blob = await zip.generateAsync(
+    { type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } },
+    meta => setProgress(78 + meta.percent * 0.2, `ZIP: ${Math.round(meta.percent)}%`)
   );
 
   setProgress(100, 'Fertig!');
@@ -663,9 +880,10 @@ convertBtn.addEventListener('click', async () => {
   convertBtn.disabled = false;
 });
 
-// ─── Build imsmanifest.xml ────────────────────────────────────────────────
-function buildManifest(id, title, desc, lang) {
-  const now = new Date().toISOString().split('T')[0];
+// ═══════════════════════════════════════════════════════
+//  BUILD MANIFEST
+// ═══════════════════════════════════════════════════════
+function buildManifest(id, title, desc, lang, ext) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <manifest identifier="${id}" version="1"
   xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
@@ -693,14 +911,16 @@ function buildManifest(id, title, desc, lang) {
   <resources>
     <resource identifier="res-${id}" type="webcontent" adlcp:scormtype="sco" href="content/index.html">
       <file href="content/index.html"/>
-      <file href="content/document.pdf"/>
+      <file href="content/document.${ext}"/>
     </resource>
   </resources>
 </manifest>`;
 }
 
-// ─── Build Viewer HTML (embedded SCORM 1.2 API calls) ────────────────────
-function buildViewerHtml(title, pdfB64, completionMode, minTime) {
+// ═══════════════════════════════════════════════════════
+//  PDF VIEWER
+// ═══════════════════════════════════════════════════════
+function buildPdfViewer(title, b64, completionMode, minTime) {
   return `<!DOCTYPE html>
 <html lang="de">
 <head>
@@ -712,77 +932,68 @@ function buildViewerHtml(title, pdfB64, completionMode, minTime) {
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
   #toolbar {
-    background: #2c2c2c; color: #fff; padding: 10px 16px;
-    display: flex; align-items: center; gap: 12px; flex-shrink: 0;
-    font-size: 13px;
+    background: #1e2028; color: #fff; padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px; flex-shrink: 0; font-size: 13px;
+    border-bottom: 1px solid #2e3140;
   }
   #toolbar h1 { font-size: 14px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  #nav { display: flex; align-items: center; gap: 8px; }
+  #nav { display: flex; align-items: center; gap: 6px; }
   #nav button {
-    background: rgba(255,255,255,0.15); border: none; color: #fff;
-    width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 16px;
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.1); color: #fff;
+    width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px;
     display: flex; align-items: center; justify-content: center; transition: background 0.15s;
   }
-  #nav button:hover:not(:disabled) { background: rgba(255,255,255,0.3); }
-  #nav button:disabled { opacity: 0.35; cursor: not-allowed; }
-  #pageInfo { font-family: monospace; font-size: 12px; min-width: 80px; text-align: center; }
+  #nav button:hover:not(:disabled) { background: rgba(255,255,255,0.25); }
+  #nav button:disabled { opacity: 0.3; cursor: not-allowed; }
+  #pageInfo { font-family: monospace; font-size: 12px; min-width: 64px; text-align: center; color: #aaa; }
+  #progressOuter { flex: 1; max-width: 200px; background: rgba(255,255,255,0.1); border-radius: 100px; height: 5px; }
+  #progressInner { height: 100%; background: #4fffb0; border-radius: 100px; width: 0%; transition: width 0.4s; }
   #statusBadge {
     background: #ff6b35; color: #fff; font-size: 11px; font-weight: 700;
-    padding: 3px 10px; border-radius: 100px; letter-spacing: 0.05em;
+    padding: 3px 10px; border-radius: 100px; letter-spacing: 0.05em; white-space: nowrap;
     transition: background 0.3s;
   }
   #statusBadge.done { background: #22c55e; }
-  #viewer { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 16px; }
-  canvas { max-width: 100%; box-shadow: 0 2px 16px rgba(0,0,0,0.2); border-radius: 4px; display: block; }
-  #progressOuter { width: 100%; max-width: 700px; background: #ddd; border-radius: 100px; height: 4px; flex-shrink: 0; }
-  #progressInner { height: 100%; background: #22c55e; border-radius: 100px; width: 0%; transition: width 0.4s; }
+  #viewer { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 16px; background: #e8e8e8; }
+  canvas { max-width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border-radius: 3px; display: block; }
   #completionMsg {
-    display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
     background: #22c55e; color: #fff; padding: 14px 28px; border-radius: 12px;
-    font-weight: 700; font-size: 15px; box-shadow: 0 4px 20px rgba(34,197,94,0.4);
-    animation: pop 0.4s ease;
+    font-weight: 700; font-size: 15px; box-shadow: 0 4px 24px rgba(34,197,94,0.4);
+    animation: pop 0.4s ease; white-space: nowrap; z-index: 999;
   }
-  @keyframes pop { from { transform: translateX(-50%) scale(0.8); opacity: 0; } to { transform: translateX(-50%) scale(1); opacity: 1; } }
-  #loading { color: #666; font-size: 14px; padding: 40px; }
+  @keyframes pop { from { transform: translateX(-50%) scale(0.8); opacity:0; } to { transform: translateX(-50%) scale(1); opacity:1; } }
+  #loading { color: #888; font-size: 14px; padding: 60px; text-align: center; }
 </style>
 </head>
 <body>
 <div id="toolbar">
   <h1>${escHtml(title)}</h1>
   <div id="nav">
-    <button id="btnPrev" disabled>‹</button>
+    <button id="btnPrev" disabled title="Vorherige Seite">‹</button>
     <span id="pageInfo">— / —</span>
-    <button id="btnNext" disabled>›</button>
+    <button id="btnNext" disabled title="Nächste Seite">›</button>
   </div>
   <div id="progressOuter"><div id="progressInner"></div></div>
   <div id="statusBadge">In Bearbeitung</div>
 </div>
 <div id="viewer"><div id="loading">⏳ PDF wird geladen…</div></div>
-<div id="completionMsg">✅ Abgeschlossen! Diese Schulung wurde erfolgreich bestätigt.</div>
+<div id="completionMsg">✅ Erfolgreich abgeschlossen!</div>
 
 <script>
-// ── SCORM 1.2 API ──────────────────────────────────────────────────────────
-var API = null;
-var startTime = Date.now();
-var completed = false;
+var API = null, startTime = Date.now(), completed = false;
 
-function findAPI(win) {
-  var tries = 0;
-  while (!win.API && win.parent && win.parent !== win && tries < 10) {
-    win = win.parent; tries++;
-  }
-  return win.API || null;
+function findAPI(w) {
+  var t = 0;
+  while (!w.API && w.parent && w.parent !== w && t++ < 10) w = w.parent;
+  return w.API || null;
 }
 
 function initSCORM() {
   API = findAPI(window);
-  if (!API) { console.warn('SCORM API not found – standalone mode'); return; }
-  try {
-    API.LMSInitialize('');
-    API.LMSSetValue('cmi.core.lesson_status', 'incomplete');
-    API.LMSCommit('');
-    console.log('SCORM initialized');
-  } catch(e) { console.warn('SCORM init error:', e); }
+  if (!API) { console.warn('SCORM API not found'); return; }
+  try { API.LMSInitialize(''); API.LMSSetValue('cmi.core.lesson_status','incomplete'); API.LMSCommit(''); }
+  catch(e) { console.warn(e); }
 }
 
 function completeSCORM() {
@@ -790,125 +1001,76 @@ function completeSCORM() {
   completed = true;
   document.getElementById('statusBadge').textContent = 'Abgeschlossen ✓';
   document.getElementById('statusBadge').classList.add('done');
-  document.getElementById('completionMsg').style.display = 'block';
-  setTimeout(() => { document.getElementById('completionMsg').style.display = 'none'; }, 4000);
+  var msg = document.getElementById('completionMsg');
+  msg.style.display = 'block';
+  setTimeout(function(){ msg.style.display='none'; }, 5000);
   if (!API) return;
   try {
-    var elapsed = Math.round((Date.now() - startTime) / 1000);
-    var hh = String(Math.floor(elapsed/3600)).padStart(4,'0');
-    var mm = String(Math.floor((elapsed%3600)/60)).padStart(2,'0');
-    var ss = String(elapsed%60).padStart(2,'0');
-    API.LMSSetValue('cmi.core.lesson_status', 'completed');
-    API.LMSSetValue('cmi.core.score.raw', '100');
-    API.LMSSetValue('cmi.core.score.min', '0');
-    API.LMSSetValue('cmi.core.score.max', '100');
-    API.LMSSetValue('cmi.core.session_time', hh + ':' + mm + ':' + ss);
+    var s = Math.round((Date.now()-startTime)/1000);
+    var t = String(Math.floor(s/3600)).padStart(4,'0')+':'+String(Math.floor((s%3600)/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+    API.LMSSetValue('cmi.core.lesson_status','completed');
+    API.LMSSetValue('cmi.core.score.raw','100');
+    API.LMSSetValue('cmi.core.score.min','0');
+    API.LMSSetValue('cmi.core.score.max','100');
+    API.LMSSetValue('cmi.core.session_time',t);
     API.LMSCommit('');
-    console.log('SCORM completed');
-  } catch(e) { console.warn('SCORM complete error:', e); }
+  } catch(e) { console.warn(e); }
 }
 
-window.addEventListener('beforeunload', function() {
-  if (!API) return;
-  try { API.LMSFinish(''); } catch(e) {}
-});
+window.addEventListener('beforeunload', function(){ if(API) try{API.LMSFinish('');}catch(e){} });
 
-// ── PDF Viewer ─────────────────────────────────────────────────────────────
-var pdfDoc = null;
-var currentPage = 1;
-var totalPages = 0;
-var visitedPages = new Set();
-var completionMode = '${completionMode}';
-var minTime = ${minTime};
-var rendered = {};
+var pdfDoc=null, currentPage=1, totalPages=0, visitedPages=new Set(), rendered={};
+var completionMode='${completionMode}', minTime=${minTime};
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-var pdfB64 = '${pdfB64}';
+function b64ToUint8(b64){var bin=atob(b64),a=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
 
-function b64ToUint8(b64) {
-  var bin = atob(b64); var arr = new Uint8Array(bin.length);
-  for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-  return arr;
-}
-
-function updateProgress() {
-  var pct = totalPages ? (visitedPages.size / totalPages) * 100 : 0;
-  document.getElementById('progressInner').style.width = pct + '%';
-  document.getElementById('pageInfo').textContent = currentPage + ' / ' + totalPages;
-  document.getElementById('btnPrev').disabled = currentPage <= 1;
-  document.getElementById('btnNext').disabled = currentPage >= totalPages;
-  checkCompletion();
-}
-
-function checkCompletion() {
-  if (completed) return;
-  if (completionMode === 'lastpage' && currentPage === totalPages) { completeSCORM(); return; }
-  if (completionMode === 'allpages' && visitedPages.size === totalPages) { completeSCORM(); return; }
+function updateUI() {
+  var pct = totalPages ? (visitedPages.size/totalPages)*100 : 0;
+  document.getElementById('progressInner').style.width=pct+'%';
+  document.getElementById('pageInfo').textContent=currentPage+' / '+totalPages;
+  document.getElementById('btnPrev').disabled=currentPage<=1;
+  document.getElementById('btnNext').disabled=currentPage>=totalPages;
+  if(!completed){
+    if(completionMode==='lastpage' && currentPage===totalPages) completeSCORM();
+    if(completionMode==='allpages' && visitedPages.size===totalPages) completeSCORM();
+  }
 }
 
 async function renderPage(num) {
   visitedPages.add(num);
-  if (rendered[num]) {
-    rendered[num].scrollIntoView({ behavior: 'smooth', block: 'center' });
-    updateProgress();
-    return;
-  }
-  const page = await pdfDoc.getPage(num);
-  const scale = Math.min(window.innerWidth - 48, 900) / page.getViewport({ scale: 1 }).width;
-  const vp = page.getViewport({ scale });
-  const canvas = document.createElement('canvas');
-  canvas.width = vp.width; canvas.height = vp.height;
-  canvas.id = 'page-' + num;
-  const viewer = document.getElementById('viewer');
-  const loading = document.getElementById('loading');
-  if (loading) loading.remove();
+  if(rendered[num]){ rendered[num].scrollIntoView({behavior:'smooth',block:'center'}); updateUI(); return; }
+  var page=await pdfDoc.getPage(num);
+  var scale=Math.min(window.innerWidth-48,960)/page.getViewport({scale:1}).width;
+  var vp=page.getViewport({scale});
+  var canvas=document.createElement('canvas');
+  canvas.width=vp.width; canvas.height=vp.height;
+  var viewer=document.getElementById('viewer');
+  var loading=document.getElementById('loading');
+  if(loading) loading.remove();
   viewer.appendChild(canvas);
-  rendered[num] = canvas;
-  await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-  canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  updateProgress();
+  rendered[num]=canvas;
+  await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
+  canvas.scrollIntoView({behavior:'smooth',block:'center'});
+  updateUI();
 }
 
-async function init() {
+async function init(){
   initSCORM();
-  const data = b64ToUint8(pdfB64);
-  pdfDoc = await pdfjsLib.getDocument({ data }).promise;
-  totalPages = pdfDoc.numPages;
-  document.getElementById('btnPrev').disabled = false;
-  document.getElementById('btnNext').disabled = false;
+  pdfDoc=await pdfjsLib.getDocument({data:b64ToUint8('${b64}')}).promise;
+  totalPages=pdfDoc.numPages;
   await renderPage(1);
-
-  // Time-based completion
-  if (completionMode === 'time') {
-    var timer = setInterval(function() {
-      if (Date.now() - startTime >= minTime * 1000) {
-        clearInterval(timer);
-        completeSCORM();
-      }
-    }, 2000);
+  if(completionMode==='time'){
+    setInterval(function(){ if(Date.now()-startTime>=minTime*1000) completeSCORM(); },2000);
   }
 }
 
-document.getElementById('btnPrev').addEventListener('click', async function() {
-  if (currentPage <= 1) return;
-  currentPage--;
-  await renderPage(currentPage);
-});
-
-document.getElementById('btnNext').addEventListener('click', async function() {
-  if (currentPage >= totalPages) return;
-  currentPage++;
-  await renderPage(currentPage);
-});
-
-// Keyboard nav
-document.addEventListener('keydown', async function(e) {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-    if (currentPage < totalPages) { currentPage++; await renderPage(currentPage); }
-  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-    if (currentPage > 1) { currentPage--; await renderPage(currentPage); }
-  }
+document.getElementById('btnPrev').addEventListener('click',async function(){if(currentPage>1){currentPage--;await renderPage(currentPage);}});
+document.getElementById('btnNext').addEventListener('click',async function(){if(currentPage<totalPages){currentPage++;await renderPage(currentPage);}});
+document.addEventListener('keydown',async function(e){
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){if(currentPage<totalPages){currentPage++;await renderPage(currentPage);}}
+  else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){if(currentPage>1){currentPage--;await renderPage(currentPage);}}
 });
 
 init().catch(console.error);
@@ -917,30 +1079,192 @@ init().catch(console.error);
 </html>`;
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────
-function escXml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function readFileAsArrayBuffer(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = e => res(e.target.result);
-    r.onerror = rej;
-    r.readAsArrayBuffer(file);
-  });
-}
-
-function arrayBufferToBase64(buffer) {
-  const bytes = new Uint8Array(buffer);
-  let bin = '';
-  const chunk = 8192;
-  for (let i = 0; i < bytes.length; i += chunk) {
-    bin += String.fromCharCode(...bytes.subarray(i, i + chunk));
+// ═══════════════════════════════════════════════════════
+//  VIDEO VIEWER
+// ═══════════════════════════════════════════════════════
+function buildVideoViewer(title, b64, mimeType, completionMode, minTime, minPercent) {
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escHtml(title)}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #0a0a0a; display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: #fff; }
+  #toolbar {
+    background: #1a1a1a; padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    border-bottom: 1px solid #2a2a2a; font-size: 13px;
   }
-  return btoa(bin);
+  #toolbar h1 { font-size: 14px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #progressOuter { flex: 1; max-width: 200px; background: rgba(255,255,255,0.12); border-radius: 100px; height: 5px; }
+  #progressInner { height: 100%; background: #ff9f4f; border-radius: 100px; width: 0%; transition: width 0.5s; }
+  #statusBadge {
+    background: #ff4444; color: #fff; font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 100px; letter-spacing: 0.05em; white-space: nowrap;
+    transition: background 0.4s;
+  }
+  #statusBadge.done { background: #22c55e; }
+  #videoWrap {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    background: #000; padding: 0; overflow: hidden;
+  }
+  video {
+    max-width: 100%; max-height: 100%;
+    outline: none;
+  }
+  #completionMsg {
+    display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #22c55e; color: #fff; padding: 14px 28px; border-radius: 12px;
+    font-weight: 700; font-size: 15px; box-shadow: 0 4px 24px rgba(34,197,94,0.4);
+    animation: pop 0.4s ease; white-space: nowrap; z-index: 999;
+  }
+  #skipWarning {
+    display: none; position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+    background: rgba(255,68,68,0.9); color: #fff; padding: 10px 20px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; z-index: 999; animation: pop 0.3s ease;
+  }
+  @keyframes pop { from { opacity:0; transform: translateX(-50%) scale(0.85); } to { opacity:1; transform: translateX(-50%) scale(1); } }
+  #infoBar {
+    background: #1a1a1a; padding: 8px 16px; font-size: 12px; color: #888;
+    display: flex; gap: 20px; align-items: center; flex-shrink: 0;
+    border-top: 1px solid #2a2a2a;
+  }
+  #infoBar span { font-family: monospace; }
+  .info-item { display: flex; align-items: center; gap: 6px; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <h1>${escHtml(title)}</h1>
+  <div id="progressOuter"><div id="progressInner"></div></div>
+  <div id="statusBadge">In Bearbeitung</div>
+</div>
+
+<div id="videoWrap">
+  <video id="vid" controls controlsList="nodownload" disablePictureInPicture>
+    <source id="vidSrc" type="${mimeType}">
+    Ihr Browser unterstützt kein Video.
+  </video>
+</div>
+
+<div id="infoBar">
+  <div class="info-item">⏱ Gesehen: <span id="elapsedDisplay">0:00</span></div>
+  <div class="info-item">📊 Fortschritt: <span id="percentDisplay">0%</span></div>
+  <div class="info-item" id="completionInfo" style="color:#ff9f4f;"></div>
+</div>
+
+<div id="completionMsg">✅ Erfolgreich abgeschlossen!</div>
+<div id="skipWarning">⚠️ Bitte das Video nicht vorspulen!</div>
+
+<script>
+var API = null, startTime = Date.now(), completed = false;
+var completionMode = '${completionMode}';
+var minTime = ${minTime};
+var minPercent = ${minPercent};
+var maxReached = 0; // furthest position reached (anti-skip)
+
+function findAPI(w) {
+  var t=0;
+  while(!w.API && w.parent && w.parent!==w && t++<10) w=w.parent;
+  return w.API||null;
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function initSCORM() {
+  API=findAPI(window);
+  if(!API){ console.warn('SCORM API not found'); return; }
+  try{ API.LMSInitialize(''); API.LMSSetValue('cmi.core.lesson_status','incomplete'); API.LMSCommit(''); }
+  catch(e){ console.warn(e); }
+}
+
+function completeSCORM() {
+  if(completed) return;
+  completed=true;
+  document.getElementById('statusBadge').textContent='Abgeschlossen ✓';
+  document.getElementById('statusBadge').classList.add('done');
+  var msg=document.getElementById('completionMsg');
+  msg.style.display='block';
+  setTimeout(function(){ msg.style.display='none'; },5000);
+  if(!API) return;
+  try{
+    var s=Math.round((Date.now()-startTime)/1000);
+    var t=String(Math.floor(s/3600)).padStart(4,'0')+':'+String(Math.floor((s%3600)/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+    API.LMSSetValue('cmi.core.lesson_status','completed');
+    API.LMSSetValue('cmi.core.score.raw','100');
+    API.LMSSetValue('cmi.core.score.min','0');
+    API.LMSSetValue('cmi.core.score.max','100');
+    API.LMSSetValue('cmi.core.session_time',t);
+    API.LMSCommit('');
+  } catch(e){ console.warn(e); }
+}
+
+window.addEventListener('beforeunload',function(){ if(API) try{API.LMSFinish('');}catch(e){} });
+
+function fmtTime(s) {
+  s=Math.floor(s);
+  return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60;
+}
+
+function showSkipWarning() {
+  var el=document.getElementById('skipWarning');
+  el.style.display='block';
+  clearTimeout(el._t);
+  el._t=setTimeout(function(){ el.style.display='none'; },2500);
+}
+
+// Load video from base64
+function b64ToBlob(b64,mime) {
+  var bin=atob(b64), len=bin.length, arr=new Uint8Array(len);
+  for(var i=0;i<len;i++) arr[i]=bin.charCodeAt(i);
+  return new Blob([arr],{type:mime});
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  initSCORM();
+
+  var blob=b64ToBlob('${b64}','${mimeType}');
+  var url=URL.createObjectURL(blob);
+  var vid=document.getElementById('vid');
+  vid.src=url;
+
+  // Info bar: completion hint
+  var hints={'videoended':'Wird abgeschlossen wenn Video endet','videopercent':'Wird abgeschlossen ab ${minPercent}% gesehen','time':'Wird abgeschlossen nach ${minTime} Sekunden'};
+  document.getElementById('completionInfo').textContent=hints[completionMode]||'';
+
+  // Anti-skip: prevent seeking forward beyond maxReached + 3s buffer
+  vid.addEventListener('seeking', function() {
+    if(vid.currentTime > maxReached + 3) {
+      showSkipWarning();
+      vid.currentTime = maxReached;
+    }
+  });
+
+  vid.addEventListener('timeupdate', function() {
+    if(!vid.duration) return;
+    if(vid.currentTime > maxReached) maxReached=vid.currentTime;
+    var pct=Math.round((maxReached/vid.duration)*100);
+    document.getElementById('progressInner').style.width=pct+'%';
+    document.getElementById('percentDisplay').textContent=pct+'%';
+    var wallSec=Math.round((Date.now()-startTime)/1000);
+    document.getElementById('elapsedDisplay').textContent=fmtTime(wallSec);
+    if(!completed){
+      if(completionMode==='videopercent' && pct>=minPercent) completeSCORM();
+    }
+  });
+
+  vid.addEventListener('ended', function() {
+    if(!completed && completionMode==='videoended') completeSCORM();
+  });
+
+  if(completionMode==='time'){
+    setInterval(function(){ if(Date.now()-startTime>=minTime*1000) completeSCORM(); },2000);
+  }
+});
+<\/script>
+</body>
+</html>`;
+}
 </script>
 </body>
 </html>
