@@ -69,6 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
             link: '/projects/salzi-events/index.html',
             passwordProtected: false
         },
+        {
+            title: 'PDF to SCORM Converter',
+            description: 'Projekt in Arbeit....',
+            image: '/projects/pdf-converter//logo.png',
+            link: '/projects/pdf-converter/index.html',
+            passwordProtected: false
+        },
             /*
         {
             title: 'Awareness Dashboard',

@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF → SCORM 1.2 Konverter</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #161920;
+    --border: #252830;
+    --accent: #4fffb0;
+    --accent2: #7b61ff;
+    --text: #e8eaf0;
+    --muted: #6b7080;
+    --danger: #ff4f6e;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  .noise {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.6;
+  }
+
+  .glow {
+    position: fixed; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(79,255,176,0.06) 0%, transparent 70%);
+    top: -200px; left: 50%; transform: translateX(-50%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .container {
+    width: 100%; max-width: 760px;
+    position: relative; z-index: 1;
+  }
+
+  header {
+    margin-bottom: 48px;
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(79,255,176,0.1);
+    border: 1px solid rgba(79,255,176,0.3);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::before {
+    content: '';
+    width: 3px; height: 12px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  /* Drop Zone */
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 48px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .drop-zone:hover, .drop-zone.dragging {
+    border-color: var(--accent);
+    background: rgba(79,255,176,0.04);
+  }
+
+  .drop-zone input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+
+  .drop-icon {
+    width: 56px; height: 56px;
+    background: rgba(79,255,176,0.1);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 24px;
+  }
+
+  .drop-label {
+    font-size: 16px; font-weight: 600; margin-bottom: 6px;
+  }
+
+  .drop-hint {
+    font-size: 13px; color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* File info */
+  .file-info {
+    display: none;
+    background: rgba(79,255,176,0.08);
+    border: 1px solid rgba(79,255,176,0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 16px;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .file-info.visible { display: flex; }
+
+  .file-icon { font-size: 24px; }
+
+  .file-meta { flex: 1; }
+
+  .file-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+
+  .file-size { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); }
+
+  .file-remove {
+    background: none; border: none; color: var(--muted);
+    cursor: pointer; font-size: 18px; padding: 4px; line-height: 1;
+    transition: color 0.15s;
+  }
+  .file-remove:hover { color: var(--danger); }
+
+  /* Settings */
+  .settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 520px) { .settings-grid { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .field.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  input[type="text"], input[type="number"], select, textarea {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  textarea { resize: vertical; min-height: 72px; }
+
+  select option { background: #161920; }
+
+  /* Completion settings */
+  .completion-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .radio-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+
+  .radio-card:has(input:checked) {
+    border-color: var(--accent);
+    background: rgba(79,255,176,0.04);
+  }
+
+  .radio-card input[type="radio"] { accent-color: var(--accent); margin-top: 2px; }
+
+  .radio-label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+
+  .radio-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+  /* Button */
+  .btn-convert {
+    width: 100%;
+    background: var(--accent);
+    color: #0d0f14;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 16px 32px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-convert:hover:not(:disabled) {
+    background: #6affbf;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(79,255,176,0.25);
+  }
+
+  .btn-convert:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    display: none;
+    margin-top: 16px;
+  }
+
+  .progress-wrap.visible { display: block; }
+
+  .progress-bar-bg {
+    background: var(--border);
+    border-radius: 100px;
+    height: 6px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 100px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* Info box */
+  .info-box {
+    background: rgba(123,97,255,0.08);
+    border: 1px solid rgba(123,97,255,0.25);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #b8b0ff;
+    line-height: 1.6;
+  }
+
+  .info-box strong { color: var(--accent2); }
+
+  /* Success */
+  .success-box {
+    display: none;
+    background: rgba(79,255,176,0.08);
+    border: 1px solid rgba(79,255,176,0.3);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  .success-box.visible { display: block; }
+
+  .success-icon { font-size: 40px; margin-bottom: 12px; }
+
+  .success-title { font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+
+  .success-sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .steps-list {
+    margin-top: 20px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .step-num {
+    background: rgba(79,255,176,0.15);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #0d0f14;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 16px;
+    text-decoration: none;
+  }
+
+  .btn-download:hover {
+    background: #6affbf;
+    transform: translateY(-1px);
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="glow"></div>
+
+<div class="container">
+  <header>
+    <div class="badge">SCORM 1.2 · SoSafe kompatibel</div>
+    <h1>PDF → SCORM<br>Konverter</h1>
+    <p class="subtitle">Wandle PDF-Richtlinien in trackbare SCORM 1.2 Module um – mit automatischer Completion-Bestätigung wenn User alle Seiten gesehen haben.</p>
+  </header>
+
+  <!-- Upload -->
+  <div class="card">
+    <div class="card-title">1 · PDF auswählen</div>
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept=".pdf">
+      <div class="drop-icon">📄</div>
+      <div class="drop-label">PDF hierher ziehen oder klicken</div>
+      <div class="drop-hint">Nur .pdf Dateien · Max. 50 MB</div>
+    </div>
+    <div class="file-info" id="fileInfo">
+      <div class="file-icon">📄</div>
+      <div class="file-meta">
+        <div class="file-name" id="fileName">—</div>
+        <div class="file-size" id="fileSize">—</div>
+      </div>
+      <button class="file-remove" id="fileRemove" title="Entfernen">✕</button>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="card">
+    <div class="card-title">2 · Modul-Einstellungen</div>
+    <div class="settings-grid">
+      <div class="field full">
+        <label>Modul-Titel</label>
+        <input type="text" id="moduleTitle" placeholder="z.B. IT-Sicherheitsrichtlinie 2024">
+      </div>
+      <div class="field full">
+        <label>Beschreibung (optional)</label>
+        <textarea id="moduleDesc" placeholder="Kurzbeschreibung des Inhalts…"></textarea>
+      </div>
+      <div class="field">
+        <label>Sprache</label>
+        <select id="moduleLang">
+          <option value="de-DE">Deutsch</option>
+          <option value="en-US">Englisch</option>
+          <option value="fr-FR">Französisch</option>
+          <option value="it-IT">Italienisch</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Modul-ID (intern)</label>
+        <input type="text" id="moduleId" placeholder="z.B. richtlinie-it-2024">
+      </div>
+    </div>
+  </div>
+
+  <!-- Completion -->
+  <div class="card">
+    <div class="card-title">3 · Completion-Regel</div>
+    <div class="completion-options">
+      <label class="radio-card">
+        <input type="radio" name="completion" value="lastpage" checked>
+        <div>
+          <div class="radio-label">Letzte Seite angezeigt</div>
+          <div class="radio-desc">User muss bis zur letzten Seite des PDFs scrollen/navigieren → dann automatisch "completed"</div>
+        </div>
+      </label>
+      <label class="radio-card">
+        <input type="radio" name="completion" value="allpages">
+        <div>
+          <div class="radio-label">Alle Seiten besucht</div>
+          <div class="radio-desc">Jede einzelne Seite muss mindestens einmal angezeigt worden sein → dann "completed"</div>
+        </div>
+      </label>
+      <label class="radio-card">
+        <input type="radio" name="completion" value="time">
+        <div>
+          <div class="radio-label">Mindestzeit verbracht</div>
+          <div class="radio-desc">User muss eine bestimmte Anzahl Sekunden im Modul verbringen</div>
+        </div>
+      </label>
+    </div>
+    <div id="timeField" style="margin-top:12px; display:none;">
+      <div class="field">
+        <label>Mindestzeit in Sekunden</label>
+        <input type="number" id="minTime" value="60" min="10" max="3600">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="info-box">
+      <strong>Wie funktioniert das Tracking?</strong><br>
+      Das generierte SCORM-Paket enthält einen PDF-Viewer direkt im Browser. Sobald die gewählte Completion-Bedingung erfüllt ist, sendet das Modul automatisch <code>cmi.core.lesson_status = "completed"</code> ans LMS (SoSafe) – du siehst dann in SoSafe wer das Modul abgeschlossen hat.
+    </div>
+  </div>
+
+  <!-- Convert Button -->
+  <div class="card">
+    <div class="card-title">4 · SCORM Paket erstellen</div>
+    <button class="btn-convert" id="convertBtn" disabled>
+      <span>⚡</span> SCORM 1.2 Paket generieren
+    </button>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+      <div class="progress-label" id="progressLabel">Verarbeite…</div>
+    </div>
+    <div class="success-box" id="successBox">
+      <div class="success-icon">✅</div>
+      <div class="success-title">SCORM Paket bereit!</div>
+      <div class="success-sub">Dein SCORM 1.2 Paket wurde erfolgreich erstellt und ist SoSafe-kompatibel.</div>
+      <a class="btn-download" id="downloadLink" href="#" download>⬇ ZIP herunterladen</a>
+      <div class="divider"></div>
+      <div class="steps-list">
+        <div class="step"><div class="step-num">1</div><span>ZIP-Datei herunterladen</span></div>
+        <div class="step"><div class="step-num">2</div><span>In SoSafe → <strong>Custom Modules</strong> → <strong>Neues Modul</strong> → SCORM hochladen</span></div>
+        <div class="step"><div class="step-num">3</div><span>Modul deinen Usern zuweisen – Completion wird automatisch getrackt</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────
+let selectedFile = null;
+
+// ─── DOM ─────────────────────────────────────────────────────────────────
+const fileInput = document.getElementById('fileInput');
+const dropZone = document.getElementById('dropZone');
+const fileInfo = document.getElementById('fileInfo');
+const fileName = document.getElementById('fileName');
+const fileSize = document.getElementById('fileSize');
+const fileRemove = document.getElementById('fileRemove');
+const convertBtn = document.getElementById('convertBtn');
+const progressWrap = document.getElementById('progressWrap');
+const progressBar = document.getElementById('progressBar');
+const progressLabel = document.getElementById('progressLabel');
+const successBox = document.getElementById('successBox');
+const downloadLink = document.getElementById('downloadLink');
+const timeField = document.getElementById('timeField');
+
+// ─── File handling ────────────────────────────────────────────────────────
+function setFile(file) {
+  if (!file || file.type !== 'application/pdf') {
+    alert('Bitte nur PDF-Dateien auswählen.');
+    return;
+  }
+  if (file.size > 50 * 1024 * 1024) {
+    alert('Datei zu groß (max. 50 MB).');
+    return;
+  }
+  selectedFile = file;
+  fileName.textContent = file.name;
+  fileSize.textContent = formatSize(file.size);
+  fileInfo.classList.add('visible');
+  convertBtn.disabled = false;
+  successBox.classList.remove('visible');
+
+  // Auto-fill title from filename
+  if (!document.getElementById('moduleTitle').value) {
+    document.getElementById('moduleTitle').value = file.name.replace(/\.pdf$/i, '');
+  }
+  if (!document.getElementById('moduleId').value) {
+    document.getElementById('moduleId').value = file.name.replace(/\.pdf$/i, '').toLowerCase().replace(/[^a-z0-9]/g, '-');
+  }
+}
+
+fileInput.addEventListener('change', e => setFile(e.target.files[0]));
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragging'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragging'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragging');
+  setFile(e.dataTransfer.files[0]);
+});
+fileRemove.addEventListener('click', () => {
+  selectedFile = null;
+  fileInput.value = '';
+  fileInfo.classList.remove('visible');
+  convertBtn.disabled = true;
+});
+
+// Completion mode toggle
+document.querySelectorAll('input[name="completion"]').forEach(r => {
+  r.addEventListener('change', () => {
+    timeField.style.display = r.value === 'time' && r.checked ? 'block' : 'none';
+  });
+});
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+}
+
+function setProgress(pct, label) {
+  progressBar.style.width = pct + '%';
+  progressLabel.textContent = label;
+}
+
+// ─── SCORM Generation ─────────────────────────────────────────────────────
+convertBtn.addEventListener('click', async () => {
+  if (!selectedFile) return;
+
+  const title = document.getElementById('moduleTitle').value || selectedFile.name.replace(/\.pdf$/i, '');
+  const desc = document.getElementById('moduleDesc').value || '';
+  const lang = document.getElementById('moduleLang').value;
+  const id = (document.getElementById('moduleId').value || 'module-' + Date.now()).replace(/[^a-zA-Z0-9-_]/g, '-');
+  const completionMode = document.querySelector('input[name="completion"]:checked').value;
+  const minTime = parseInt(document.getElementById('minTime').value) || 60;
+
+  convertBtn.disabled = true;
+  progressWrap.classList.add('visible');
+  successBox.classList.remove('visible');
+
+  setProgress(10, 'PDF wird gelesen…');
+  await sleep(100);
+
+  // Read PDF as ArrayBuffer
+  const pdfBytes = await readFileAsArrayBuffer(selectedFile);
+  const pdfB64 = arrayBufferToBase64(pdfBytes);
+
+  setProgress(35, 'SCORM Manifest wird erstellt…');
+  await sleep(100);
+
+  const manifest = buildManifest(id, title, desc, lang);
+
+  setProgress(60, 'Viewer wird generiert…');
+  await sleep(100);
+
+  const viewerHtml = buildViewerHtml(title, pdfB64, completionMode, minTime);
+
+  setProgress(80, 'ZIP wird gepackt…');
+  await sleep(100);
+
+  const zip = new JSZip();
+  zip.file('imsmanifest.xml', manifest);
+  zip.file('content/index.html', viewerHtml);
+  // Also include a direct copy of the PDF (optional, viewer uses b64 embedded)
+  zip.file('content/document.pdf', pdfBytes);
+
+  const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } },
+    (meta) => setProgress(80 + meta.percent * 0.18, `ZIP: ${Math.round(meta.percent)}%`)
+  );
+
+  setProgress(100, 'Fertig!');
+  await sleep(200);
+
+  const url = URL.createObjectURL(blob);
+  downloadLink.href = url;
+  downloadLink.download = id + '_scorm12.zip';
+
+  progressWrap.classList.remove('visible');
+  successBox.classList.add('visible');
+  convertBtn.disabled = false;
+});
+
+// ─── Build imsmanifest.xml ────────────────────────────────────────────────
+function buildManifest(id, title, desc, lang) {
+  const now = new Date().toISOString().split('T')[0];
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="${id}" version="1"
+  xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd
+    http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>1.2</schemaversion>
+  </metadata>
+  <organizations default="org-${id}">
+    <organization identifier="org-${id}">
+      <title>${escXml(title)}</title>
+      <item identifier="item-${id}" identifierref="res-${id}">
+        <title>${escXml(title)}</title>
+        <adlcp:prerequisites type="aicc_script"></adlcp:prerequisites>
+        <adlcp:maxtimeallowed></adlcp:maxtimeallowed>
+        <adlcp:timelimitaction>continue,no message</adlcp:timelimitaction>
+        <adlcp:datafromlms></adlcp:datafromlms>
+        <adlcp:masteryscore>100</adlcp:masteryscore>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="res-${id}" type="webcontent" adlcp:scormtype="sco" href="content/index.html">
+      <file href="content/index.html"/>
+      <file href="content/document.pdf"/>
+    </resource>
+  </resources>
+</manifest>`;
+}
+
+// ─── Build Viewer HTML (embedded SCORM 1.2 API calls) ────────────────────
+function buildViewerHtml(title, pdfB64, completionMode, minTime) {
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escHtml(title)}</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"><\/script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  #toolbar {
+    background: #2c2c2c; color: #fff; padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    font-size: 13px;
+  }
+  #toolbar h1 { font-size: 14px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #nav { display: flex; align-items: center; gap: 8px; }
+  #nav button {
+    background: rgba(255,255,255,0.15); border: none; color: #fff;
+    width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center; transition: background 0.15s;
+  }
+  #nav button:hover:not(:disabled) { background: rgba(255,255,255,0.3); }
+  #nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+  #pageInfo { font-family: monospace; font-size: 12px; min-width: 80px; text-align: center; }
+  #statusBadge {
+    background: #ff6b35; color: #fff; font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 100px; letter-spacing: 0.05em;
+    transition: background 0.3s;
+  }
+  #statusBadge.done { background: #22c55e; }
+  #viewer { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 16px; }
+  canvas { max-width: 100%; box-shadow: 0 2px 16px rgba(0,0,0,0.2); border-radius: 4px; display: block; }
+  #progressOuter { width: 100%; max-width: 700px; background: #ddd; border-radius: 100px; height: 4px; flex-shrink: 0; }
+  #progressInner { height: 100%; background: #22c55e; border-radius: 100px; width: 0%; transition: width 0.4s; }
+  #completionMsg {
+    display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: #22c55e; color: #fff; padding: 14px 28px; border-radius: 12px;
+    font-weight: 700; font-size: 15px; box-shadow: 0 4px 20px rgba(34,197,94,0.4);
+    animation: pop 0.4s ease;
+  }
+  @keyframes pop { from { transform: translateX(-50%) scale(0.8); opacity: 0; } to { transform: translateX(-50%) scale(1); opacity: 1; } }
+  #loading { color: #666; font-size: 14px; padding: 40px; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <h1>${escHtml(title)}</h1>
+  <div id="nav">
+    <button id="btnPrev" disabled>‹</button>
+    <span id="pageInfo">— / —</span>
+    <button id="btnNext" disabled>›</button>
+  </div>
+  <div id="progressOuter"><div id="progressInner"></div></div>
+  <div id="statusBadge">In Bearbeitung</div>
+</div>
+<div id="viewer"><div id="loading">⏳ PDF wird geladen…</div></div>
+<div id="completionMsg">✅ Abgeschlossen! Diese Schulung wurde erfolgreich bestätigt.</div>
+
+<script>
+// ── SCORM 1.2 API ──────────────────────────────────────────────────────────
+var API = null;
+var startTime = Date.now();
+var completed = false;
+
+function findAPI(win) {
+  var tries = 0;
+  while (!win.API && win.parent && win.parent !== win && tries < 10) {
+    win = win.parent; tries++;
+  }
+  return win.API || null;
+}
+
+function initSCORM() {
+  API = findAPI(window);
+  if (!API) { console.warn('SCORM API not found – standalone mode'); return; }
+  try {
+    API.LMSInitialize('');
+    API.LMSSetValue('cmi.core.lesson_status', 'incomplete');
+    API.LMSCommit('');
+    console.log('SCORM initialized');
+  } catch(e) { console.warn('SCORM init error:', e); }
+}
+
+function completeSCORM() {
+  if (completed) return;
+  completed = true;
+  document.getElementById('statusBadge').textContent = 'Abgeschlossen ✓';
+  document.getElementById('statusBadge').classList.add('done');
+  document.getElementById('completionMsg').style.display = 'block';
+  setTimeout(() => { document.getElementById('completionMsg').style.display = 'none'; }, 4000);
+  if (!API) return;
+  try {
+    var elapsed = Math.round((Date.now() - startTime) / 1000);
+    var hh = String(Math.floor(elapsed/3600)).padStart(4,'0');
+    var mm = String(Math.floor((elapsed%3600)/60)).padStart(2,'0');
+    var ss = String(elapsed%60).padStart(2,'0');
+    API.LMSSetValue('cmi.core.lesson_status', 'completed');
+    API.LMSSetValue('cmi.core.score.raw', '100');
+    API.LMSSetValue('cmi.core.score.min', '0');
+    API.LMSSetValue('cmi.core.score.max', '100');
+    API.LMSSetValue('cmi.core.session_time', hh + ':' + mm + ':' + ss);
+    API.LMSCommit('');
+    console.log('SCORM completed');
+  } catch(e) { console.warn('SCORM complete error:', e); }
+}
+
+window.addEventListener('beforeunload', function() {
+  if (!API) return;
+  try { API.LMSFinish(''); } catch(e) {}
+});
+
+// ── PDF Viewer ─────────────────────────────────────────────────────────────
+var pdfDoc = null;
+var currentPage = 1;
+var totalPages = 0;
+var visitedPages = new Set();
+var completionMode = '${completionMode}';
+var minTime = ${minTime};
+var rendered = {};
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+var pdfB64 = '${pdfB64}';
+
+function b64ToUint8(b64) {
+  var bin = atob(b64); var arr = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return arr;
+}
+
+function updateProgress() {
+  var pct = totalPages ? (visitedPages.size / totalPages) * 100 : 0;
+  document.getElementById('progressInner').style.width = pct + '%';
+  document.getElementById('pageInfo').textContent = currentPage + ' / ' + totalPages;
+  document.getElementById('btnPrev').disabled = currentPage <= 1;
+  document.getElementById('btnNext').disabled = currentPage >= totalPages;
+  checkCompletion();
+}
+
+function checkCompletion() {
+  if (completed) return;
+  if (completionMode === 'lastpage' && currentPage === totalPages) { completeSCORM(); return; }
+  if (completionMode === 'allpages' && visitedPages.size === totalPages) { completeSCORM(); return; }
+}
+
+async function renderPage(num) {
+  visitedPages.add(num);
+  if (rendered[num]) {
+    rendered[num].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    updateProgress();
+    return;
+  }
+  const page = await pdfDoc.getPage(num);
+  const scale = Math.min(window.innerWidth - 48, 900) / page.getViewport({ scale: 1 }).width;
+  const vp = page.getViewport({ scale });
+  const canvas = document.createElement('canvas');
+  canvas.width = vp.width; canvas.height = vp.height;
+  canvas.id = 'page-' + num;
+  const viewer = document.getElementById('viewer');
+  const loading = document.getElementById('loading');
+  if (loading) loading.remove();
+  viewer.appendChild(canvas);
+  rendered[num] = canvas;
+  await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+  canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  updateProgress();
+}
+
+async function init() {
+  initSCORM();
+  const data = b64ToUint8(pdfB64);
+  pdfDoc = await pdfjsLib.getDocument({ data }).promise;
+  totalPages = pdfDoc.numPages;
+  document.getElementById('btnPrev').disabled = false;
+  document.getElementById('btnNext').disabled = false;
+  await renderPage(1);
+
+  // Time-based completion
+  if (completionMode === 'time') {
+    var timer = setInterval(function() {
+      if (Date.now() - startTime >= minTime * 1000) {
+        clearInterval(timer);
+        completeSCORM();
+      }
+    }, 2000);
+  }
+}
+
+document.getElementById('btnPrev').addEventListener('click', async function() {
+  if (currentPage <= 1) return;
+  currentPage--;
+  await renderPage(currentPage);
+});
+
+document.getElementById('btnNext').addEventListener('click', async function() {
+  if (currentPage >= totalPages) return;
+  currentPage++;
+  await renderPage(currentPage);
+});
+
+// Keyboard nav
+document.addEventListener('keydown', async function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    if (currentPage < totalPages) { currentPage++; await renderPage(currentPage); }
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    if (currentPage > 1) { currentPage--; await renderPage(currentPage); }
+  }
+});
+
+init().catch(console.error);
+<\/script>
+</body>
+</html>`;
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────
+function escXml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function readFileAsArrayBuffer(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsArrayBuffer(file);
+  });
+}
+
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let bin = '';
+  const chunk = 8192;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    bin += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(bin);
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+</body>
+</html>
